@@ -3,20 +3,20 @@
   "delayPerChunkEachDirectionMs": 100,
   "eventSamples": 5,
   "eventLatencyMs": [
-    202.06704200000001,
-    200.86033399999997,
-    202.51208399999996,
-    203.84533299999998,
-    204.182417
+    212.19108400000005,
+    209.50633300000004,
+    206.7639590000001,
+    203.39429199999972,
+    206.14441699999998
   ],
   "receiptLatencyMs": [
-    201.93166699999995,
-    200.50320899999997,
-    202.3968339999999,
-    203.66758300000015,
-    204.12095799999997
+    212.57045900000003,
+    209.12470800000006,
+    206.62558400000012,
+    203.24708399999986,
+    206.04058299999997
   ],
-  "interruptionRecoveryMs": 954.6180000000002,
+  "interruptionRecoveryMs": 859.4600420000002,
   "resumedGeneration": 2,
   "errors": [],
   "limitation": "Controlled TCP stream delay and abrupt connection loss; not radio/IP packet-loss percentage or Android hardware evidence"

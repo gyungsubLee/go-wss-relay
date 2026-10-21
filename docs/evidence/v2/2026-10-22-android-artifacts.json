@@ -1,8 +1,8 @@
 [
   {
     "file": "_Build/android/2026-10-22-debug/RelayLab-debug.apk",
-    "bytes": 4939977,
-    "sha256": "fb7cb4a4ffe61631e169213fa580e950755c67d71a65c4f963063ec32b4ca34b",
+    "bytes": 4955733,
+    "sha256": "ba98180c3e3e188cba978e59e6967ad9df5788cc4bc49c2254847bfc44e19b3f",
     "variant": "debug",
     "applicationId": "games.storio.relaydemo",
     "versionCode": 1,
@@ -13,8 +13,8 @@
   },
   {
     "file": "_Build/android/2026-10-22-debug/RelayLab-debug.aab",
-    "bytes": 4234510,
-    "sha256": "5176774a163ee5d3a9bd3b68daad64880e3e1788bf1d7d15fda30271379e7d2f",
+    "bytes": 4234621,
+    "sha256": "81f7e54ff8ccb5ce837f1f48304b1b866d2c708df2b239f4313a516a557c9487",
     "variant": "debug",
     "applicationId": "games.storio.relaydemo",
     "versionCode": 1,

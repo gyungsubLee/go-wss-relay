@@ -36,7 +36,7 @@
 | Android 실제 Origin·WebView | 코드상 https://localhost 설정. 실기기 관찰 전 |
 | Android 화면 잠금·복귀·Wi-Fi/이동통신 | USB 디버깅 기기 없음. 실행하지 않음 |
 | 100·500·1000명, 방 2·8·16명, 10·20 Hz | load/profile.json과 18개 보고서. 최신 연결·IP 정책의 재측정 통과. load/README.md 참고 |
-| 느린 수신자·재접속 집중 | load/slow-*.json, reconnect-*.json. 기본 IP 정책 재측정 통과. 1000명 최장 약 5.9초 |
+| 느린 수신자·재접속 집중 | load/slow-*.json, reconnect-*.json. 기본 IP 정책 재측정 통과. 1000명 최장 약 5.8초 |
 | 실제 뱀 전체 상태·초기 전송 크기 | snake-demo.v1 실제 본문·32/64개 경로·16명 스냅샷 측정과 실제 SDK 수신 통과. JSON 수치에 따라 바이트 변동 |
 | 저속 실제 장치·망 지연·손실 | TCP 방향별 100 ms·연결 손실·g2 복귀 확인. 저속 장치·무선 IP 손실률은 미검증 |
 | 내부 큐·쓰기 p95/p99·최장 대기 | 관리 Stats 계측. 히스토그램은 버킷 상한 |
@@ -50,6 +50,8 @@
 | Caddy·systemd·분산 설정 | infrastructure/v2 추가. 공식 Caddy 2.11.7 adapt·validate 통과. 대상 Linux 서비스 기동·방화벽은 미실행 |
 | 기존 UDP 기본 경로 제거 | 기본 Make 빌드는 wss-relay. v1·UDP 소스는 이력·회귀 범위로 보존 |
 | 공용 상태 권한자 영구 이탈 시 경기 종료 | HTTPS 로비 소유자로 고정. 비권한자 거부·복귀 유지·종료 상태·영구 이탈 검사와 실제 Chrome 종료 확인 |
+| Go·TS 실행 의존성 보안 검사 | Go 1.26.10 적용 후 govulncheck 발견 항목 없음, npm 실행 의존성 0건 |
+| 빠른 매칭의 최초 접속 순서 | 상대가 먼저 WSS에 연결해도 대기. 실제 두 Chrome과 check-snake.ts 회귀 검사 통과 |
 | CI | Go·웹·호환·실제 프로세스 검사 정의 추가. 현재 포크 default main에는 워크플로가 없어 원격 실행 미등록. 로컬 동등 검사는 통과 |
 
 ## 남은 검증

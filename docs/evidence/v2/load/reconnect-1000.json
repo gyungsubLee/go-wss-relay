@@ -1,9 +1,9 @@
 {
   "participants": 1000,
   "recovered": 1000,
-  "recoveryP95Ms": 3417.0675839999994,
-  "recoveryP99Ms": 3573.6809999999996,
-  "maxRecoveryMs": 5871.38325,
+  "recoveryP95Ms": 3402.7227090000006,
+  "recoveryP99Ms": 5505.005,
+  "maxRecoveryMs": 5776.084959000001,
   "errors": [],
   "transport": "same-host WSS; Node extra CA trust; actual TypeScript SDK"
 }

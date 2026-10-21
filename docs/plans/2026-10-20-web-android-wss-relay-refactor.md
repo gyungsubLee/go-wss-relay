@@ -51,7 +51,7 @@ Protobuf 생성 도구, HTTP 검증, 만료 검사, 로비의 동시성 규칙�
 6. 노드가 접속권을 검증·소비하고 `Welcome`을 반환한다.
 7. 클라이언트가 자신의 전체 상태를 발표한 뒤 상태와 사건을 교환한다.
 
-배정 응답에는 `roomId`, `roomInstanceId`, `participantId`, `nodeId`, `websocketUrl`, `protocolVersion`, 접속권과 만료를 담는다.
+배정 응답에는 `roomId`, `roomInstanceId`, `participantId`, `nodeId`, `websocketUrl`, `protocolRevision`, 접속권과 만료를 담는다.
 서버가 참가자 ID를 결정하며, 클라이언트가 임의 ID로 다른 참가자를 선택하지 못하게 한다.
 접속권은 짧은 유효기간과 일회 사용 식별자를 갖는다. 초기 연결과 재접속 권한은 구분한다.
 접속권 만료가 이미 인증한 연결의 게임 참여를 자동 종료시키지는 않는다.

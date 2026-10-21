@@ -36,3 +36,12 @@ client/MinbWebKit 서브모듈로 고정하며 viewport·공통 SR 디버거·�
 데스크톱 Chrome은 Android WebView 실기기 검증을 대신하지 않는다.
 APK/AAB 빌드·실기기·네트워크 전환, 부하·수용량, 노드 분산은 이 증거에 포함하지 않는다.
 ready/revision·공개 목록·퇴장·소유자 이전은 제어 API 회귀 검사로 확인했다. 전체 남은 조건은 completion-audit.md를 따른다.
+
+## 최종 빠른 매칭 재검증
+
+Go 1.26.10 노드와 최종 SDK에서 두 Chrome 탭의 빠른 매칭을 실행했다.
+방 l-7qwDdoFpfmbBPPA_에서 둘째 참가자는 02:23:31, 소유자는 02:23:32에 연결했다.
+예약 참가자가 아직 Welcome에 없다는 이유로 종료하지 않고 두 참가자가 정상 합류했다.
+소유자의 0.50, 0.50 좌표와 전체 몸통을 상대가 표시했다.
+양방향 이벤트 접수·수신과 둘째 참가자의 g2 복귀를 확인했다.
+화면 증거는 client-quickmatch-chrome.png다. 로비 준비·시작 증거와 구분한다.
