@@ -14,6 +14,14 @@
       "adapt": "passed",
       "validate": "passed",
       "httpServers": 2
+    },
+    "Caddyfile.standalone": {
+      "sha256": "6ee69d445636c3172821b8d561b1bb95d60fb89d0f1dbe6c6902ecdb5830822b",
+      "adapt": "passed",
+      "validate": "passed",
+      "httpServers": 1,
+      "sharedApiAndRelayOrigin": true,
+      "managementPortProxied": false
     }
   },
   "notRun": [

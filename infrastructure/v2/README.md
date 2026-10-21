@@ -17,6 +17,10 @@ Caddyfile.coordinator와 Caddyfile.relay는 서로 다른 호스트용이다.
 노드마다 루트가 다르면 두 루트를 하나의 PEM 묶음으로 만들거나 노드별 caFile을 지정한다.
 검증을 끄거나 시스템 전체에 개발 인증서를 신뢰시키지 않는다.
 
+단일 서버에서 웹·앱을 교차 검증할 때는 Caddyfile.standalone과 standalone.env.example을 사용한다.
+같은 공개 도메인의 API와 WSS를 루프백 8090으로 전달하며, 관리 포트는 공개하지 않는다.
+기기 시험은 [Android 실기기 절차](../../docs/evidence/v2/android-device-validation.md)를 따른다.
+
 ## 설치와 실행
 
 1. Linux 대상 바이너리를 빌드해 `/usr/local/bin/wss-relay`에 설치한다.

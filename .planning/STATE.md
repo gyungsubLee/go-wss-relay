@@ -16,6 +16,8 @@
 - 뱀 전체 몸통·공용 상태 권한자·종료와 TCP 지연·연결 손실 검사 통과.
 - 빠른 매칭에서 상대가 먼저 연결되는 시작 순서 오류 수정·실제 두 Chrome 재검증 통과.
 
+- 웹·앱 교차 검증용 standalone 공유 API/WSS 설정과 실기기 절차 추가. Caddy adapt·validate 통과.
+
 ## 남은 필수 작업
 
 완료 감사는 docs/evidence/v2/completion-audit.md를 따른다.
