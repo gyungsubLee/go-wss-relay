@@ -25,7 +25,18 @@ let joined = false
 let disposed = false
 let pulse = 0
 const lifeId = crypto.randomUUID()
-let own: SnakeState = { x: .35, y: .5, lifeId, heading: 0, speed: 0, length: 32, mass: 32, score: 0, isAlive: true, bodyPath: Array.from({ length: 32 }, (_, i) => [.35 - i * .004, .5]) }
+let own: SnakeState = {
+  x: .35,
+  y: .5,
+  lifeId,
+  heading: 0,
+  speed: 0,
+  length: 32,
+  mass: 32,
+  score: 0,
+  isAlive: true,
+  bodyPath: Array.from({ length: 32 }, (_, i) => [.35 - i * .004, .5]),
+}
 let authorityId = ''
 let sharedScene: SharedScene | undefined
 let gameEnded = false
@@ -35,12 +46,19 @@ const drawings = new Map<string, { x: number; y: number }>()
 const relay = new RelayClient({
   applicationProtocol: snakeProtocol,
   onStatus(status) {
-    const labels = { idle: '대기', connecting: '연결 중', active: '연결됨', reconnecting: '재접속 중', suspended: '앱 일시 중단', closed: '연결 종료' }
+    const labels = {
+      idle: '대기',
+      connecting: '연결 중',
+      active: '연결됨',
+      reconnecting: '재접속 중',
+      suspended: '앱 일시 중단',
+      closed: '연결 종료',
+    }
     element('connection').textContent = labels[status]
-    for(const id of ['pulse', 'reconnect', 'leave']) button(id).disabled = status !== 'active'
+    for (const id of ['pulse', 'reconnect', 'leave']) button(id).disabled = status !== 'active'
     document.querySelector('.stage-heading h2')!.textContent = status === 'active' ? '같은 공간에 연결됐어요' : labels[status]
-    if(status === 'active') {
-      if(api.participantId === authorityId && !own.shared) {
+    if (status === 'active') {
+      if (api.participantId === authorityId && !own.shared) {
         own.shared = { revision: 1, seed: crypto.getRandomValues(new Uint32Array(1))[0]!, ended: false }
         sharedScene = own.shared
       }
@@ -51,7 +69,7 @@ const relay = new RelayClient({
   onEvent(event) {
     try {
       const payload = JSON.parse(decoder.decode(event.payload))
-      if(event.kind !== 1 || payload.action !== 'pulse' || typeof payload.id !== 'string') return
+      if (event.kind !== 1 || payload.action !== 'pulse' || typeof payload.id !== 'string') return
       pulse = performance.now()
       addLog(`✦ ${event.participantId.slice(0, 12)}의 이벤트 수신`)
     } catch {
@@ -61,11 +79,11 @@ const relay = new RelayClient({
   onState(state) {
     const decoded = decodeSnakeState(state.payload)
     sharedScene = acceptScene(authorityId, state.participantId, decoded?.shared, sharedScene)
-    if(sharedScene?.ended) finishGame('공용 상태 권한자가 경기를 종료했습니다.')
+    if (sharedScene?.ended) finishGame('공용 상태 권한자가 경기를 종료했습니다.')
   },
   onMessage(message) {
-    if(authorityId && relay.status === 'active' && !relay.peers.has(authorityId)) finishGame('공용 상태 권한자가 영구 이탈해 경기를 종료합니다.')
-    if(message.body.case === 'eventAccepted') addLog(`이벤트 ${message.body.value.clientSequence} 서버 접수`)
+    if (authorityId && relay.status === 'active' && !relay.peers.has(authorityId)) finishGame('공용 상태 권한자가 영구 이탈해 경기를 종료합니다.')
+    if (message.body.case === 'eventAccepted') addLog(`이벤트 ${message.body.value.clientSequence} 서버 접수`)
     renderMembers()
   },
   onError(error) {
@@ -95,23 +113,23 @@ function renderMembers(): void {
 }
 
 function finishGame(reason: string): void {
-  if(gameEnded) return
+  if (gameEnded) return
   gameEnded = true
   own.isAlive = false
-  if(api.participantId === authorityId && own.shared) {
+  if (api.participantId === authorityId && own.shared) {
     own.shared = { ...own.shared, revision: own.shared.revision + 1, ended: true }
-    if(relay.status === 'active') relay.publishState(encodeSnakeState(own))
+    if (relay.status === 'active') relay.publishState(encodeSnakeState(own))
   }
   addLog(reason)
   document.querySelector('.stage-heading h2')!.textContent = '경기가 종료됐어요'
-  for(const id of ['pulse', 'reconnect', 'leave']) button(id).disabled = true
+  for (const id of ['pulse', 'reconnect', 'leave']) button(id).disabled = true
   setTimeout(() => relay.leave(), 200)
 }
 
 async function action(operation: () => Promise<void>): Promise<void> {
   try {
     await operation()
-  } catch(error) {
+  } catch (error) {
     addLog(error instanceof Error ? error.message : '요청 실패')
   }
 }
@@ -125,7 +143,7 @@ button('create').onclick = () => {
 button('join').onclick = () => {
   void action(async () => {
     const id = roomInput.value.trim()
-    if(!id) throw new Error('방 코드를 입력하세요.')
+    if (!id) throw new Error('방 코드를 입력하세요.')
     enterLobby(await api.join(id, snakeProtocol))
   })
 }
@@ -140,8 +158,8 @@ button('lobby-leave').onclick = () => {
     clearTimeout(poll)
     lobbyId = ''
     roomInput.value = ''
-    for(const id of ['create', 'join', 'match']) button(id).disabled = false
-    for(const id of ['ready', 'start', 'lobby-leave']) button(id).disabled = true
+    for (const id of ['create', 'join', 'match']) button(id).disabled = false
+    for (const id of ['ready', 'start', 'lobby-leave']) button(id).disabled = true
     element('room-status').textContent = '대기방에서 나왔습니다.'
   })
 }
@@ -174,7 +192,7 @@ button('pulse').onclick = () => {
   try {
     relay.publishEvent(1, encoder.encode(JSON.stringify({ action: 'pulse', id: crypto.randomUUID() })))
     pulse = performance.now()
-  } catch(error) {
+  } catch (error) {
     addLog((error as Error).message)
   }
 }
@@ -199,8 +217,8 @@ function scheduleLobby(lobby: Lobby): void {
   element('room-status').textContent = `방 ${lobby.id} · ${lobby.participants.length}/${lobby.capacity}명 · 준비 ${Object.values(lobby.ready).filter(Boolean).length}명`
   button('start').disabled = lobby.allocating || lobby.ownerId !== api.participantId || lobby.participants.length !== lobby.capacity || !allReady || lobby.status === 'matched'
   button('start').textContent = lobby.allocationPending ? '배정 다시 시도' : '방 시작'
-  if(disposed || joined) return
-  if(lobby.status === 'matched') {
+  if (disposed || joined) return
+  if (lobby.status === 'matched') {
     void action(async () => connect(await api.assignment(lobby.id), lobby.ownerId))
   } else poll = setTimeout(() => {
     void action(async () => scheduleLobby(await api.get(lobby.id)))
@@ -208,14 +226,14 @@ function scheduleLobby(lobby: Lobby): void {
 }
 function scheduleTicket(ticket: MatchTicket): void {
   element('room-status').textContent = '매칭 상대를 기다리고 있습니다.'
-  if(disposed || joined) return
-  if(ticket.status === 'ended') {
+  if (disposed || joined) return
+  if (ticket.status === 'ended') {
     element('room-status').textContent = '매치가 종료됐습니다. 다시 매칭할 수 있습니다.'
     button('cancel').hidden = true
     button('match').disabled = false
     return
   }
-  if(ticket.assignment) {
+  if (ticket.assignment) {
     button('cancel').hidden = true
     const assignment = ticket.assignment
     void action(async () => connect(assignment, (await api.get(assignment.roomId)).ownerId))
@@ -231,14 +249,14 @@ function connect(assignment: Assignment, ownerId: string): void {
 }
 
 canvas.addEventListener('pointerdown', event => {
-  if(relay.status !== 'active' || gameEnded) return
+  if (relay.status !== 'active' || gameEnded) return
   const rect = canvas.getBoundingClientRect()
   target = { x: Math.max(.04, Math.min(.96, (event.clientX - rect.left) / rect.width)), y: Math.max(.06, Math.min(.94, (event.clientY - rect.top) / rect.height)) }
 })
 canvas.addEventListener('keydown', event => {
   const directions: Record<string, [number, number]> = { ArrowLeft: [-.1, 0], ArrowRight: [.1, 0], ArrowUp: [0, -.1], ArrowDown: [0, .1] }
   const delta = directions[event.key]
-  if(!delta || relay.status !== 'active' || gameEnded) return
+  if (!delta || relay.status !== 'active' || gameEnded) return
   event.preventDefault()
   target = { x: Math.max(.04, Math.min(.96, target.x + delta[0])), y: Math.max(.06, Math.min(.94, target.y + delta[1])) }
 })
@@ -251,25 +269,25 @@ function draw(now: number): void {
   previous = now
   const factor = 1 - Math.exp(-12 * dt)
   const oldX = own.x, oldY = own.y
-  if(!gameEnded) {
+  if (!gameEnded) {
     own = { ...own, x: own.x + (target.x - own.x) * factor, y: own.y + (target.y - own.y) * factor }
     const dx = own.x - oldX, dy = own.y - oldY
     own.speed = dt > 0 ? Math.hypot(dx, dy) / dt : 0
-    if(Math.abs(dx) + Math.abs(dy) > .00001) own.heading = Math.atan2(dy, dx)
+    if (Math.abs(dx) + Math.abs(dy) > .00001) own.heading = Math.atan2(dy, dx)
     const head = own.bodyPath[0]!
-    if(Math.hypot(own.x - head[0], own.y - head[1]) >= .004) {
+    if (Math.hypot(own.x - head[0], own.y - head[1]) >= .004) {
       own.bodyPath.unshift([own.x, own.y])
       own.bodyPath.length = own.length
     }
   }
-  if(!gameEnded && relay.status === 'active' && now - lastPublish >= 50 && (Math.abs(own.x - oldX) + Math.abs(own.y - oldY) > .00001)) {
+  if (!gameEnded && relay.status === 'active' && now - lastPublish >= 50 && (Math.abs(own.x - oldX) + Math.abs(own.y - oldY) > .00001)) {
     relay.publishState(encodeSnakeState(own))
     lastPublish = now
   }
   const width = canvas.clientWidth
   const height = canvas.clientHeight
   const pixelRatio = Math.min(devicePixelRatio || 1, 2)
-  if(canvas.width !== Math.round(width * pixelRatio) || canvas.height !== Math.round(height * pixelRatio)) {
+  if (canvas.width !== Math.round(width * pixelRatio) || canvas.height !== Math.round(height * pixelRatio)) {
     canvas.width = Math.round(width * pixelRatio)
     canvas.height = Math.round(height * pixelRatio)
   }
@@ -277,31 +295,31 @@ function draw(now: number): void {
   context.clearRect(0, 0, width, height)
   context.strokeStyle = '#dbe4d5'
   context.lineWidth = 1
-  for(let x = 20; x < width; x += 40) {
+  for (let x = 20; x < width; x += 40) {
     context.beginPath()
     context.moveTo(x, 0)
     context.lineTo(x, height)
     context.stroke()
   }
-  for(let y = 20; y < height; y += 40) {
+  for (let y = 20; y < height; y += 40) {
     context.beginPath()
     context.moveTo(0, y)
     context.lineTo(width, y)
     context.stroke()
   }
   const points = new Map<string, { x: number; y: number }>()
-  if(joined) points.set(api.participantId, own)
-  for(const [id, state] of relay.states) {
-    if(id === api.participantId) continue
+  if (joined) points.set(api.participantId, own)
+  for (const [id, state] of relay.states) {
+    if (id === api.participantId) continue
     const point = decodeSnakeState(state.payload)
-    if(!point) continue
+    if (!point) continue
     const shown = drawings.get(id) ?? point
     const smoothed = { x: shown.x + (point.x - shown.x) * factor, y: shown.y + (point.y - shown.y) * factor }
     drawings.set(id, smoothed)
     points.set(id, smoothed)
   }
-  for(const id of drawings.keys()) if(!relay.peers.has(id)) drawings.delete(id)
-  for(const [id, point] of points) {
+  for (const id of drawings.keys()) if (!relay.peers.has(id)) drawings.delete(id)
+  for (const [id, point] of points) {
     const x = point.x * width, y = point.y * height
     const self = id === api.participantId
     const snake = self ? own : decodeSnakeState(relay.states.get(id)?.payload)
@@ -309,11 +327,11 @@ function draw(now: number): void {
     context.lineWidth = 20
     context.lineCap = 'round'
     context.lineJoin = 'round'
-    if(snake?.bodyPath.length) {
+    if (snake?.bodyPath.length) {
       const offsetX = point.x - snake.x, offsetY = point.y - snake.y
       context.beginPath()
       context.moveTo(x, y)
-      for(const [bodyX, bodyY] of snake.bodyPath) context.lineTo((bodyX + offsetX) * width, (bodyY + offsetY) * height)
+      for (const [bodyX, bodyY] of snake.bodyPath) context.lineTo((bodyX + offsetX) * width, (bodyY + offsetY) * height)
       context.stroke()
     }
     context.fillStyle = self ? '#367754' : '#c38d48'
@@ -332,7 +350,7 @@ function draw(now: number): void {
     context.font = '13px monospace'
     context.textAlign = 'center'
     context.fillText(self ? 'YOU' : id.slice(0, 10), x, y + 36)
-    if(now - pulse < 600) {
+    if (now - pulse < 600) {
       context.strokeStyle = '#b9985470'
       context.lineWidth = 2
       context.beginPath()
@@ -340,7 +358,7 @@ function draw(now: number): void {
       context.stroke()
     }
   }
-  if(now - lastMembers > 500) {
+  if (now - lastMembers > 500) {
     renderMembers()
     lastMembers = now
     element('latency').textContent = `RTT ${relay.rttMs === undefined ? '—' : `${Math.round(relay.rttMs)} ms`}`
@@ -350,15 +368,15 @@ function draw(now: number): void {
 frame = requestAnimationFrame(draw)
 
 // Native app lifecycle owns reconnect; web background tabs keep their session.
-if(Capacitor.isNativePlatform()) {
+if (Capacitor.isNativePlatform()) {
   void App.addListener('appStateChange', ({ isActive }) => {
-    if(isActive) {
-      void api.renew().catch(error => addLog(error.message)).finally(() => relay.resume())
+    if (isActive) {
+      void api.renew().catch (error => addLog(error.message)).finally(() => relay.resume())
     } else relay.suspend()
   })
 }
 document.addEventListener('visibilitychange', () => {
-  if(!document.hidden && relay.status === 'active') relay.resync()
+  if (!document.hidden && relay.status === 'active') relay.resync()
 })
 window.addEventListener('pagehide', () => {
   disposed = true
@@ -371,11 +389,11 @@ window.addEventListener('pagehide', () => {
 void action(async () => {
   await api.guest()
   element('identity').textContent = api.participantId
-  for(const id of ['create', 'join', 'match']) button(id).disabled = false
+  for (const id of ['create', 'join', 'match']) button(id).disabled = false
   addLog('게스트 인증 완료')
 })
 // MinbWebKit's shared debugger remains available without game-specific copies.
-if(__MINB_SR_DEBUG__) {
+if (__MINB_SR_DEBUG__) {
   void import('@minbgames/web-kit/debugger').then(({ mountDebugger }) => mountDebugger({
     badge: { text: 'SR' },
     settings: { triggerMode: 'enabled', triggerPosition: 'bottomRight', triggerSizePx: 36, tapCount: 2, tapWindowMs: 500, keyboardShortcut: true, requireEntryCode: false, entryCode: '', logCapacity: 200 },

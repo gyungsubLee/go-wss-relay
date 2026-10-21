@@ -71,8 +71,8 @@ export class LobbyClient {
     this.renewal = setTimeout(attempt, Math.max(1000, seconds * 750))
   }
 
-  create(options: { capacity?: number; applicationProtocol?: string; visibility?: 'public' | 'private' } = {}): Promise<Lobby> {
-    return this.request('/lobbies', 'POST', { capacity: options.capacity ?? 2, applicationProtocol: options.applicationProtocol ?? 'relay-demo.v1', visibility: options.visibility ?? 'private' })
+  create(options: { capacity?: number; applicationProtocol: string; visibility?: 'public' | 'private' }): Promise<Lobby> {
+    return this.request('/lobbies', 'POST', { capacity: options.capacity ?? 2, applicationProtocol: options.applicationProtocol, visibility: options.visibility ?? 'private' })
   }
   list(applicationProtocol: string, cursor = '', limit = 50): Promise<{ lobbies: Pick<Lobby, 'id' | 'revision' | 'ownerId' | 'capacity'>[]; nextCursor: string }> {
     return this.request(`/lobbies?${new URLSearchParams({ applicationProtocol, cursor, limit: String(limit) })}`)
@@ -97,7 +97,7 @@ export class LobbyClient {
   }
   assignment(id: string): Promise<Assignment> { return this.request(`/lobbies/${encodeURIComponent(id)}/assignment`) }
   refresh(id: string): Promise<Assignment> { return this.request(`/lobbies/${encodeURIComponent(id)}/assignment`, 'POST', {}) }
-  queue(options: { capacity?: number; applicationProtocol?: string } = {}): Promise<MatchTicket> { return this.request('/matchmaking', 'POST', { capacity: options.capacity ?? 2, applicationProtocol: options.applicationProtocol ?? 'relay-demo.v1' }) }
+  queue(options: { capacity?: number; applicationProtocol: string }): Promise<MatchTicket> { return this.request('/matchmaking', 'POST', { capacity: options.capacity ?? 2, applicationProtocol: options.applicationProtocol }) }
   ticket(id: string): Promise<MatchTicket> { return this.request(`/matchmaking/${encodeURIComponent(id)}`) }
   cancel(id: string): Promise<void> { return this.request(`/matchmaking/${encodeURIComponent(id)}`, 'DELETE') }
 
