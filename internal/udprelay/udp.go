@@ -8,10 +8,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	relayv1 "github.com/gyungsubLee/go-lobby-relay/gen/go/relay/v1"
-	"github.com/gyungsubLee/go-lobby-relay/internal/protocol"
-	"github.com/gyungsubLee/go-lobby-relay/internal/relayroom"
-	"github.com/gyungsubLee/go-lobby-relay/internal/relaytransport"
+	relayv1 "github.com/gyungsubLee/go-wss-relay/gen/go/relay/v1"
+	"github.com/gyungsubLee/go-wss-relay/internal/protocol"
+	"github.com/gyungsubLee/go-wss-relay/internal/relayroom"
+	"github.com/gyungsubLee/go-wss-relay/internal/relaytransport"
 )
 
 const (

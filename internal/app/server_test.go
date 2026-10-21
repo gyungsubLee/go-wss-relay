@@ -17,8 +17,8 @@ import (
 	"time"
 
 	"github.com/coder/websocket"
-	relayv1 "github.com/gyungsubLee/go-lobby-relay/gen/go/relay/v1"
-	"github.com/gyungsubLee/go-lobby-relay/internal/protocol"
+	relayv1 "github.com/gyungsubLee/go-wss-relay/gen/go/relay/v1"
+	"github.com/gyungsubLee/go-wss-relay/internal/protocol"
 	"google.golang.org/protobuf/proto"
 )
 

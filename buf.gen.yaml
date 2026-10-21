@@ -5,8 +5,5 @@ plugins:
     out: gen/go
     opt:
       - paths=source_relative
-  - protoc_builtin: csharp
-    protoc_path: .tools/bin/protoc
-    out: unity/RelaySample/Assets/Relay/Generated
 inputs:
   - directory: api

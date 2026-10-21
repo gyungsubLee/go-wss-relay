@@ -4,8 +4,8 @@ import (
 	"math"
 	"time"
 
-	"github.com/gyungsubLee/go-lobby-relay/internal/clock"
-	"github.com/gyungsubLee/go-lobby-relay/internal/protocol"
+	"github.com/gyungsubLee/go-wss-relay/internal/clock"
+	"github.com/gyungsubLee/go-wss-relay/internal/protocol"
 )
 
 const (

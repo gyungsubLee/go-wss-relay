@@ -1,7 +1,7 @@
 package matchmaking
 
 import (
-	"github.com/gyungsubLee/go-lobby-relay/internal/clock"
+	"github.com/gyungsubLee/go-wss-relay/internal/clock"
 )
 
 type queueBucket struct {

@@ -1,4 +1,4 @@
-module github.com/gyungsubLee/go-lobby-relay
+module github.com/gyungsubLee/go-wss-relay
 
 go 1.26.5
 

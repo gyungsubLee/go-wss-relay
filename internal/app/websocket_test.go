@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/coder/websocket"
-	"github.com/gyungsubLee/go-lobby-relay/internal/wsrelay"
+	"github.com/gyungsubLee/go-wss-relay/internal/wsrelay"
 )
 
 func TestNewRejectsWebSocketOptionsWithoutListener(t *testing.T) {

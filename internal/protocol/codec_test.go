@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	relayv1 "github.com/gyungsubLee/go-lobby-relay/gen/go/relay/v1"
+	relayv1 "github.com/gyungsubLee/go-wss-relay/gen/go/relay/v1"
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/proto"
 )

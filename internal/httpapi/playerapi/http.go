@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gyungsubLee/go-lobby-relay/internal/httpapi/httpx"
-	"github.com/gyungsubLee/go-lobby-relay/internal/matchmaking"
-	"github.com/gyungsubLee/go-lobby-relay/internal/playerauth"
+	"github.com/gyungsubLee/go-wss-relay/internal/httpapi/httpx"
+	"github.com/gyungsubLee/go-wss-relay/internal/matchmaking"
+	"github.com/gyungsubLee/go-wss-relay/internal/playerauth"
 	"golang.org/x/time/rate"
 )
 

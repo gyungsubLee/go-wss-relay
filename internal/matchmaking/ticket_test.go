@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gyungsubLee/go-lobby-relay/internal/relayroom"
+	"github.com/gyungsubLee/go-wss-relay/internal/relayroom"
 )
 
 func TestQuickMatchFIFOEqualityAndOneOver(t *testing.T) {

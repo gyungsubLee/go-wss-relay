@@ -1,6 +1,6 @@
 .planning/research/.cache/
 .cache/
-.tools/
+.tools
 out/
 test/compat/csharp/obj/
 unity/RelaySample/Library/

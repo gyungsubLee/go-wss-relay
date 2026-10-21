@@ -17,10 +17,10 @@ import (
 	"testing"
 	"time"
 
-	relayv1 "github.com/gyungsubLee/go-lobby-relay/gen/go/relay/v1"
-	"github.com/gyungsubLee/go-lobby-relay/internal/clock"
-	"github.com/gyungsubLee/go-lobby-relay/internal/protocol"
-	"github.com/gyungsubLee/go-lobby-relay/internal/relayroom"
+	relayv1 "github.com/gyungsubLee/go-wss-relay/gen/go/relay/v1"
+	"github.com/gyungsubLee/go-wss-relay/internal/clock"
+	"github.com/gyungsubLee/go-wss-relay/internal/protocol"
+	"github.com/gyungsubLee/go-wss-relay/internal/relayroom"
 	"google.golang.org/protobuf/proto"
 )
 

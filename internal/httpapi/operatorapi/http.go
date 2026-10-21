@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gyungsubLee/go-lobby-relay/internal/httpapi/httpx"
-	"github.com/gyungsubLee/go-lobby-relay/internal/playerauth"
-	"github.com/gyungsubLee/go-lobby-relay/internal/protocol"
-	"github.com/gyungsubLee/go-lobby-relay/internal/relayroom"
+	"github.com/gyungsubLee/go-wss-relay/internal/httpapi/httpx"
+	"github.com/gyungsubLee/go-wss-relay/internal/playerauth"
+	"github.com/gyungsubLee/go-wss-relay/internal/protocol"
+	"github.com/gyungsubLee/go-wss-relay/internal/relayroom"
 	"golang.org/x/time/rate"
 )
 

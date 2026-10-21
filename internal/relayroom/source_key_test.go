@@ -4,7 +4,7 @@ import (
 	"net/netip"
 	"testing"
 
-	"github.com/gyungsubLee/go-lobby-relay/internal/relaytransport"
+	"github.com/gyungsubLee/go-wss-relay/internal/relaytransport"
 )
 
 func TestSourceKeyIgnoresCarrierZone(t *testing.T) {

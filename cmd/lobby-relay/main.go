@@ -14,8 +14,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gyungsubLee/go-lobby-relay/internal/app"
-	"github.com/gyungsubLee/go-lobby-relay/internal/httpapi/operatorapi"
+	"github.com/gyungsubLee/go-wss-relay/internal/app"
+	"github.com/gyungsubLee/go-wss-relay/internal/httpapi/operatorapi"
 )
 
 var errStartup = errors.New("relay: startup failed")

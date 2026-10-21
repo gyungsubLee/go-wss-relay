@@ -1,0 +1,206 @@
+syntax = "proto3";
+
+package relay.v2;
+
+option go_package = "github.com/gyungsubLee/go-wss-relay/gen/go/relay/v2;relayv2";
+
+message ClientEnvelope {
+  uint32 protocol_revision = 1;
+  uint32 sequence = 2;
+
+  oneof body {
+    Connect connect = 10;
+    StateUpdate state_update = 11;
+    PublishEvent event = 12;
+    Ping ping = 13;
+    Resync resync = 14;
+    Leave leave = 15;
+  }
+}
+
+message ServerEnvelope {
+  uint32 protocol_revision = 1;
+  uint32 sequence = 2;
+
+  oneof body {
+    Welcome welcome = 10;
+    StateBatch state_batch = 11;
+    RelayedEvent event = 12;
+    PeerJoined peer_joined = 13;
+    PeerStatusChanged peer_status_changed = 14;
+    PeerLeft peer_left = 15;
+    Pong pong = 16;
+    SyncSnapshot sync_snapshot = 17;
+    EventAccepted event_accepted = 18;
+    Left left = 19;
+    Error error = 20;
+  }
+}
+
+message Connect {
+  oneof credential {
+    string connect_ticket = 1;
+    string resume_token = 2;
+  }
+  string application_protocol = 3;
+}
+
+message Welcome {
+  string room_id = 1;
+  string room_instance_id = 2;
+  string node_id = 3;
+  string participant_id = 4;
+  uint32 generation = 5;
+  string application_protocol = 6;
+  string resume_token = 7;
+  uint64 resume_token_expires_unix_ms = 8;
+  uint64 room_expires_unix_ms = 9;
+  Limits limits = 10;
+  RoomSnapshot snapshot = 11;
+  bool resumed = 12;
+}
+
+message Limits {
+  uint32 max_client_message_bytes = 1;
+  uint32 max_server_message_bytes = 2;
+  uint32 max_state_payload_bytes = 3;
+  uint32 max_event_payload_bytes = 4;
+  uint32 max_state_updates_per_second = 5;
+  uint32 max_events_per_second = 6;
+  uint32 state_batch_interval_ms = 7;
+  uint32 heartbeat_interval_ms = 8;
+  uint32 heartbeat_timeout_ms = 9;
+  uint32 resume_grace_ms = 10;
+}
+
+message RoomSnapshot {
+  uint64 room_revision = 1;
+  repeated Peer members = 2;
+  repeated PublishedState states = 3;
+}
+
+message Peer {
+  string participant_id = 1;
+  uint32 generation = 2;
+  ConnectionStatus status = 3;
+  uint64 status_changed_unix_ms = 4;
+}
+
+enum ConnectionStatus {
+  CONNECTION_STATUS_UNSPECIFIED = 0;
+  CONNECTION_STATUS_CONNECTED = 1;
+  CONNECTION_STATUS_DISCONNECTED = 2;
+}
+
+message StateUpdate {
+  bytes payload = 1;
+}
+
+message PublishedState {
+  string participant_id = 1;
+  uint32 generation = 2;
+  uint32 client_sequence = 3;
+  uint64 room_revision = 4;
+  uint64 received_unix_ms = 5;
+  bytes payload = 6;
+}
+
+message StateBatch {
+  uint64 room_revision = 1;
+  repeated PublishedState states = 2;
+}
+
+message PublishEvent {
+  uint32 kind = 1;
+  bytes payload = 2;
+}
+
+message RelayedEvent {
+  string participant_id = 1;
+  uint32 generation = 2;
+  uint32 client_sequence = 3;
+  uint64 room_revision = 4;
+  uint64 received_unix_ms = 5;
+  uint32 kind = 6;
+  bytes payload = 7;
+}
+
+message EventAccepted {
+  uint32 client_sequence = 1;
+  uint64 room_revision = 2;
+}
+
+message PeerJoined {
+  Peer peer = 1;
+  uint64 room_revision = 2;
+}
+
+message PeerStatusChanged {
+  Peer peer = 1;
+  uint64 room_revision = 2;
+}
+
+message PeerLeft {
+  string participant_id = 1;
+  uint32 generation = 2;
+  uint64 room_revision = 3;
+  PeerLeftReason reason = 4;
+}
+
+enum PeerLeftReason {
+  PEER_LEFT_REASON_UNSPECIFIED = 0;
+  PEER_LEFT_REASON_VOLUNTARY = 1;
+  PEER_LEFT_REASON_RESUME_EXPIRED = 2;
+  PEER_LEFT_REASON_REMOVED = 3;
+}
+
+message Ping {
+  uint32 nonce = 1;
+  uint64 client_time_unix_ms = 2;
+}
+
+message Pong {
+  uint32 nonce = 1;
+  uint64 client_time_unix_ms = 2;
+  uint64 server_received_unix_ms = 3;
+  uint64 server_sent_unix_ms = 4;
+}
+
+message Resync {
+  uint64 last_room_revision = 1;
+}
+
+message SyncSnapshot {
+  uint32 request_sequence = 1;
+  RoomSnapshot snapshot = 2;
+}
+
+message Leave {}
+
+message Left {
+  uint32 request_sequence = 1;
+}
+
+message Error {
+  ErrorCode code = 1;
+  string message = 2;
+  bool fatal = 3;
+  uint32 related_client_sequence = 4;
+  uint32 retry_after_ms = 5;
+}
+
+enum ErrorCode {
+  ERROR_CODE_UNSPECIFIED = 0;
+  ERROR_CODE_INVALID_MESSAGE = 1;
+  ERROR_CODE_PROTOCOL_MISMATCH = 2;
+  ERROR_CODE_APPLICATION_PROTOCOL_MISMATCH = 3;
+  ERROR_CODE_UNAUTHENTICATED = 4;
+  ERROR_CODE_ROOM_UNAVAILABLE = 5;
+  ERROR_CODE_SESSION_CONFLICT = 6;
+  ERROR_CODE_STALE_SEQUENCE = 7;
+  ERROR_CODE_PAYLOAD_TOO_LARGE = 8;
+  ERROR_CODE_RATE_LIMITED = 9;
+  ERROR_CODE_SLOW_CONSUMER = 10;
+  ERROR_CODE_ROOM_ENDED = 11;
+  ERROR_CODE_INTERNAL = 12;
+}

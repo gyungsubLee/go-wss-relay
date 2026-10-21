@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gyungsubLee/go-lobby-relay/internal/clock"
-	"github.com/gyungsubLee/go-lobby-relay/internal/relayroom"
+	"github.com/gyungsubLee/go-wss-relay/internal/clock"
+	"github.com/gyungsubLee/go-wss-relay/internal/relayroom"
 )
 
 var lobbyTestWall = time.Date(2026, 8, 20, 13, 0, 0, 0, time.UTC)

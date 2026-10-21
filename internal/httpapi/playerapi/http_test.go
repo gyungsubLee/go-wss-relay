@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gyungsubLee/go-lobby-relay/internal/clock"
-	"github.com/gyungsubLee/go-lobby-relay/internal/matchmaking"
-	"github.com/gyungsubLee/go-lobby-relay/internal/playerauth"
-	"github.com/gyungsubLee/go-lobby-relay/internal/relayroom"
+	"github.com/gyungsubLee/go-wss-relay/internal/clock"
+	"github.com/gyungsubLee/go-wss-relay/internal/matchmaking"
+	"github.com/gyungsubLee/go-wss-relay/internal/playerauth"
+	"github.com/gyungsubLee/go-wss-relay/internal/relayroom"
 )
 
 var apiWall = time.Date(2026, 8, 20, 12, 0, 0, 0, time.UTC)

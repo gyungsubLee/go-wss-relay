@@ -13,8 +13,8 @@ import (
 	"time"
 
 	"github.com/coder/websocket"
-	"github.com/gyungsubLee/go-lobby-relay/internal/protocol"
-	"github.com/gyungsubLee/go-lobby-relay/internal/relaytransport"
+	"github.com/gyungsubLee/go-wss-relay/internal/protocol"
+	"github.com/gyungsubLee/go-wss-relay/internal/relaytransport"
 )
 
 type received struct {

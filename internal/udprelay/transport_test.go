@@ -7,8 +7,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/gyungsubLee/go-lobby-relay/internal/relayroom"
-	"github.com/gyungsubLee/go-lobby-relay/internal/relaytransport"
+	"github.com/gyungsubLee/go-wss-relay/internal/relayroom"
+	"github.com/gyungsubLee/go-wss-relay/internal/relaytransport"
 )
 
 const testZone = "~test"

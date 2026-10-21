@@ -10,7 +10,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/gyungsubLee/go-lobby-relay/internal/protocol"
+	"github.com/gyungsubLee/go-wss-relay/internal/protocol"
 )
 
 const (

@@ -635,7 +635,7 @@ const file_relay_v1_relay_proto_rawDesc = "" +
 	"\apayload\x18\x02 \x01(\fR\apayload\"%\n" +
 	"\x04Ping\x12\x1d\n" +
 	"\n" +
-	"binding_id\x18\x01 \x01(\fR\tbindingIdBJZ=github.com/gyungsubLee/go-lobby-relay/gen/go/relay/v1;relayv1\xaa\x02\bRelay.V1b\x06proto3"
+	"binding_id\x18\x01 \x01(\fR\tbindingIdBHZ;github.com/gyungsubLee/go-wss-relay/gen/go/relay/v1;relayv1\xaa\x02\bRelay.V1b\x06proto3"
 
 var (
 	file_relay_v1_relay_proto_rawDescOnce sync.Once

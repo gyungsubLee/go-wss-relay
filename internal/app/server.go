@@ -10,14 +10,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gyungsubLee/go-lobby-relay/internal/httpapi/operatorapi"
-	"github.com/gyungsubLee/go-lobby-relay/internal/httpapi/playerapi"
-	"github.com/gyungsubLee/go-lobby-relay/internal/matchmaking"
-	"github.com/gyungsubLee/go-lobby-relay/internal/playerauth"
-	"github.com/gyungsubLee/go-lobby-relay/internal/relayroom"
-	"github.com/gyungsubLee/go-lobby-relay/internal/relaytransport"
-	"github.com/gyungsubLee/go-lobby-relay/internal/udprelay"
-	"github.com/gyungsubLee/go-lobby-relay/internal/wsrelay"
+	"github.com/gyungsubLee/go-wss-relay/internal/httpapi/operatorapi"
+	"github.com/gyungsubLee/go-wss-relay/internal/httpapi/playerapi"
+	"github.com/gyungsubLee/go-wss-relay/internal/matchmaking"
+	"github.com/gyungsubLee/go-wss-relay/internal/playerauth"
+	"github.com/gyungsubLee/go-wss-relay/internal/relayroom"
+	"github.com/gyungsubLee/go-wss-relay/internal/relaytransport"
+	"github.com/gyungsubLee/go-wss-relay/internal/udprelay"
+	"github.com/gyungsubLee/go-wss-relay/internal/wsrelay"
 )
 
 var (
