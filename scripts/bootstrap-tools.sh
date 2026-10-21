@@ -16,9 +16,9 @@ fi
 tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/relay-tools.XXXXXX")
 trap 'rm -rf -- "$tmp_dir"' EXIT HUP INT TERM
 
-if [ ! -x "$go_dir/bin/go" ] || ! "$go_dir/bin/go" version | grep -Fxq 'go version go1.26.8 darwin/arm64'; then
-  curl -fL --retry 3 -o "$tmp_dir/go.tar.gz" https://go.dev/dl/go1.26.8.darwin-arm64.tar.gz
-  printf '%s  %s\n' a012b25b571bd0138a03dcd25375ceba866fe5ca822f426d2c66a4de56fd3f4b "$tmp_dir/go.tar.gz" | shasum -a 256 -c -
+if [ ! -x "$go_dir/bin/go" ] || ! GOTOOLCHAIN=local "$go_dir/bin/go" version | grep -Fxq 'go version go1.26.10 darwin/arm64'; then
+  curl -fL --retry 3 -o "$tmp_dir/go.tar.gz" https://go.dev/dl/go1.26.10.darwin-arm64.tar.gz
+  printf '%s  %s\n' 0b5183492292ada170f9b561a834863808dd02edba599e4ad0e89899330020b3 "$tmp_dir/go.tar.gz" | shasum -a 256 -c -
   tar -C "$tmp_dir" -xzf "$tmp_dir/go.tar.gz"
   rm -rf -- "$go_dir"
   mkdir -p "$tools_dir"

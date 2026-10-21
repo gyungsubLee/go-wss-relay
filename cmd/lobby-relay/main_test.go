@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"errors"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -215,6 +216,20 @@ func TestActualMainSignalAndMalformedArgumentsAreSecretFree(t *testing.T) {
 
 	tokenPath := writeTokenFile(t, "")
 	args := validArgs(tokenPath)
+	probe, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	address := probe.Addr().String()
+	if err := probe.Close(); err != nil {
+		t.Fatal(err)
+	}
+	// ponytail: a test-only free-port rebind may collide; pass a listener FD if that becomes frequent.
+	for i := range args {
+		if args[i] == "--player-listen" {
+			args[i+1] = address
+		}
+	}
 	var stdout, stderr bytes.Buffer
 	command := exec.Command(binary, args...)
 	command.Stdout, command.Stderr = &stdout, &stderr
@@ -223,11 +238,24 @@ func TestActualMainSignalAndMalformedArgumentsAreSecretFree(t *testing.T) {
 	}
 	wait := make(chan error, 1)
 	go func() { wait <- command.Wait() }()
-	select {
-	case err := <-wait:
-		t.Fatalf("valid main exited during startup: %v; stdout=%q stderr=%q", err, stdout.String(), stderr.String())
-	// ponytail: :0 listeners expose no readiness address; bounded liveness avoids a production-only test seam.
-	case <-time.After(3 * time.Second):
+	deadline := time.Now().Add(10 * time.Second)
+	for {
+		select {
+		case err := <-wait:
+			t.Fatalf("valid main exited during startup: %v; stdout=%q stderr=%q", err, stdout.String(), stderr.String())
+		default:
+		}
+		connection, err := net.DialTimeout("tcp", address, 100*time.Millisecond)
+		if err == nil {
+			_ = connection.Close()
+			break
+		}
+		if time.Now().After(deadline) {
+			_ = command.Process.Kill()
+			<-wait
+			t.Fatal("actual main did not open its player listener")
+		}
+		time.Sleep(20 * time.Millisecond)
 	}
 	if err := command.Process.Signal(syscall.SIGTERM); err != nil {
 		_ = command.Process.Kill()
