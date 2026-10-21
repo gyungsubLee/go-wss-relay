@@ -102,3 +102,4 @@ jobs:
               raise SystemExit('SDK server startup timed out')
           PYREADY
           node --experimental-transform-types client/scripts/check-sdk.ts
+          node --experimental-transform-types client/scripts/check-snake.ts

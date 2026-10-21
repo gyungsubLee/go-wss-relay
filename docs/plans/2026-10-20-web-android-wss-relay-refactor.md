@@ -318,5 +318,5 @@ SDK 인코딩·상태 교체·이전 연결 거부·입퇴장과 캐시 정리�
 - [Caddy WebSocket 프록시·신뢰 프록시 설정](https://caddyserver.com/docs/caddyfile/directives/reverse_proxy)
 - [Capacitor 앱 상태와 복귀 이벤트](https://capacitorjs.com/docs/apis/app)
 
-이번 작업은 계획 문서 작성과 소스 대조까지다.
-서버 코드 변경, Android 빌드, 실기기·부하·분산 실행 검증은 하지 않았다.
+위 근거는 2026-10-20 계획 작성 시점의 확인 범위다.
+이후 구현·빌드·부하·분산 실행 결과와 남은 조건은 [완료 감사](../evidence/v2/completion-audit.md)를 따른다.

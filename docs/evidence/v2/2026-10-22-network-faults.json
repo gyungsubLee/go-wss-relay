@@ -1,0 +1,23 @@
+{
+  "transport": "end-to-end verified WSS through opaque loopback TCP proxy",
+  "delayPerChunkEachDirectionMs": 100,
+  "eventSamples": 5,
+  "eventLatencyMs": [
+    202.06704200000001,
+    200.86033399999997,
+    202.51208399999996,
+    203.84533299999998,
+    204.182417
+  ],
+  "receiptLatencyMs": [
+    201.93166699999995,
+    200.50320899999997,
+    202.3968339999999,
+    203.66758300000015,
+    204.12095799999997
+  ],
+  "interruptionRecoveryMs": 954.6180000000002,
+  "resumedGeneration": 2,
+  "errors": [],
+  "limitation": "Controlled TCP stream delay and abrupt connection loss; not radio/IP packet-loss percentage or Android hardware evidence"
+}

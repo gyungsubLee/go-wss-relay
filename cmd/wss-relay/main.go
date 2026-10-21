@@ -43,7 +43,7 @@ func run(ctx context.Context, args []string) error {
 	publicURL := flags.String("public-url", "", "full client WebSocket URL")
 	trafficFile := flags.String("traffic-config", "", "optional JSON byte budgets; zero fields use defaults")
 	roomLimit := flags.Int("max-rooms", 512, "maximum reserved rooms")
-	participantLimit := flags.Int("max-participants", 700, "maximum reserved participant slots and connections")
+	participantLimit := flags.Int("max-participants", 200, "maximum reserved participant slots and connections")
 	tlsCert := flags.String("tls-cert", "", "optional TLS certificate PEM")
 	tlsKey := flags.String("tls-key", "", "optional TLS private key PEM")
 	nodeID := flags.String("node-id", "local", "relay node identifier")
