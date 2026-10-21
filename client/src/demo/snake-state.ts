@@ -61,3 +61,9 @@ export function acceptScene(authority: string, sender: string, candidate: Shared
   if (sender !== authority || !candidate || previous && candidate.revision <= previous.revision) return previous
   return { ...candidate }
 }
+
+// Reserved players are absent from Welcome until their first WSS connection.
+// Only disappearance after a confirmed join proves permanent departure.
+export function authorityHasLeft(authority: string, joinedBefore: boolean, peers: ReadonlyMap<string, unknown>): boolean {
+  return joinedBefore && !peers.has(authority)
+}

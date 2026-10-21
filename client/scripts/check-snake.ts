@@ -4,7 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { create, toBinary } from '@bufbuild/protobuf'
 import { ServerEnvelopeSchema } from '../src/relay/gen/relay/v2/relay_pb.ts'
 import { RelayClient, type Assignment } from '../src/relay/client.ts'
-import { snakeProtocol, encodeSnakeState, decodeSnakeState, acceptScene, type SnakeState, type SharedScene } from '../src/demo/snake-state.ts'
+import { snakeProtocol, encodeSnakeState, decodeSnakeState, acceptScene, authorityHasLeft, type SnakeState, type SharedScene } from '../src/demo/snake-state.ts'
 const base = process.argv[2] ?? 'http://127.0.0.1:8090'
 const state: SnakeState = { x: .35, y: .5, lifeId: crypto.randomUUID(), heading: .21, speed: .4,
   length: 32, mass: 32, score: 12, isAlive: true,
@@ -55,6 +55,7 @@ const a = await api<Assignment>('GET', path + '/assignment', alice.token)
 const b = await api<Assignment>('GET', path + '/assignment', bob.token)
 let scene: SharedScene | undefined
 let authorityLeft = false
+let authoritySeen = false
 let bodyReceived = false
 let unauthorizedSeen = false
 let ownerScene = state.shared
@@ -69,10 +70,17 @@ const peer = new RelayClient({ applicationProtocol: snakeProtocol,
     scene = acceptScene(alice.participantId, update.participantId, snake?.shared, scene)
     if (update.participantId === alice.participantId && snake?.bodyPath.length === 32) bodyReceived = true
   },
-  onMessage(message) { if (message.body.case === 'peerLeft' && message.body.value.participantId === alice.participantId) authorityLeft = true },
+  onMessage() {
+    authoritySeen ||= peer.peers.has(alice.participantId)
+    authorityLeft ||= authorityHasLeft(alice.participantId, authoritySeen, peer.peers)
+  },
 })
 try {
-  owner.connect(a); peer.connect(b)
+  peer.connect(b)
+  await until(() => peer.status === 'active', 'second participant connects before owner')
+  assert.equal(authoritySeen, false)
+  assert.equal(authorityLeft, false, 'a reserved owner was mistaken for a departed owner')
+  owner.connect(a)
   await until(() => owner.status === 'active' && peer.status === 'active', 'snake sockets')
   owner.publishState(payload)
   await until(() => bodyReceived && scene?.seed === 42, 'full body and shared scene')
@@ -90,7 +98,7 @@ try {
   const report = { protocol: snakeProtocol, bodyPoints: 32, fullStateBytes: payload.length,
     maxBodyPoints: 64, maxFullStateBytes: maximum.length, snapshot16Bytes: snapshotBytes(payload),
     maxSnapshot16Bytes: snapshotBytes(maximum), fullBodyReceived: bodyReceived,
-    unauthorizedSceneIgnored: true, temporaryDisconnectKeepsAuthority: true,
+    ownerMayConnectAfterPeer: true, unauthorizedSceneIgnored: true, temporaryDisconnectKeepsAuthority: true,
     authorityEndStateReceived: true, permanentAuthorityDepartureObserved: authorityLeft }
   assert.ok(report.maxSnapshot16Bytes < 128 * 1024)
   await writeFile(new URL('../../docs/evidence/v2/2026-10-22-snake-state.json', import.meta.url), JSON.stringify(report, null, 2) + '\n')

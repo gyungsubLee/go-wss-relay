@@ -3,7 +3,7 @@ import { Capacitor } from '@capacitor/core'
 import { App } from '@capacitor/app'
 import { RelayClient, type Assignment } from '../relay/client.ts'
 import { LobbyClient, type Lobby, type MatchTicket } from '../relay/api.ts'
-import { snakeProtocol, encodeSnakeState, decodeSnakeState, acceptScene, type SnakeState, type SharedScene } from './snake-state.ts'
+import { snakeProtocol, encodeSnakeState, decodeSnakeState, acceptScene, authorityHasLeft, type SnakeState, type SharedScene } from './snake-state.ts'
 import './style.css'
 
 const viewport = mountGameViewport({ referenceWidth: 1280, referenceHeight: 800, maxAspectRatio: 1.8 })
@@ -38,6 +38,9 @@ let own: SnakeState = {
   bodyPath: Array.from({ length: 32 }, (_, i) => [.35 - i * .004, .5]),
 }
 let authorityId = ''
+let authoritySeen = false
+let authorityDeadline = 0
+let authorityTimer: ReturnType<typeof setTimeout> | undefined
 let sharedScene: SharedScene | undefined
 let gameEnded = false
 let target = { x: own.x, y: own.y }
@@ -82,7 +85,16 @@ const relay = new RelayClient({
     if (sharedScene?.ended) finishGame('공용 상태 권한자가 경기를 종료했습니다.')
   },
   onMessage(message) {
-    if (authorityId && relay.status === 'active' && !relay.peers.has(authorityId)) finishGame('공용 상태 권한자가 영구 이탈해 경기를 종료합니다.')
+    if (authorityId && relay.status === 'active') {
+      if (relay.peers.has(authorityId)) {
+        authoritySeen = true
+        clearTimeout(authorityTimer)
+      } else if (authorityHasLeft(authorityId, authoritySeen, relay.peers)) {
+        finishGame('공용 상태 권한자가 영구 이탈해 경기를 종료합니다.')
+      } else if (performance.now() >= authorityDeadline) {
+        finishGame('상대의 최초 접속 대기 시간이 끝났습니다.')
+      }
+    }
     if (message.body.case === 'eventAccepted') addLog(`이벤트 ${message.body.value.clientSequence} 서버 접수`)
     renderMembers()
   },
@@ -115,6 +127,7 @@ function renderMembers(): void {
 function finishGame(reason: string): void {
   if (gameEnded) return
   gameEnded = true
+  clearTimeout(authorityTimer)
   own.isAlive = false
   if (api.participantId === authorityId && own.shared) {
     own.shared = { ...own.shared, revision: own.shared.revision + 1, ended: true }
@@ -174,6 +187,7 @@ button('match').onclick = () => {
     button('match').disabled = true
     const ticket = await api.queue({ applicationProtocol: snakeProtocol })
     ticketId = ticket.id
+    for (const id of ['create', 'join']) button(id).disabled = true
     button('cancel').hidden = false
     scheduleTicket(ticket)
   })
@@ -184,7 +198,7 @@ button('cancel').onclick = () => {
     clearTimeout(poll)
     ticketId = ''
     button('cancel').hidden = true
-    button('match').disabled = false
+    for (const id of ['create', 'join', 'match']) button(id).disabled = false
     element('room-status').textContent = '매칭을 취소했습니다.'
   })
 }
@@ -243,8 +257,17 @@ function scheduleTicket(ticket: MatchTicket): void {
 }
 function connect(assignment: Assignment, ownerId: string): void {
   authorityId = ownerId
+  authoritySeen = false
+  authorityDeadline = performance.now() + 31000
+  clearTimeout(authorityTimer)
+  authorityTimer = setTimeout(() => {
+    if (relay.status === 'active' && !authoritySeen) finishGame('상대의 최초 접속 대기 시간이 끝났습니다.')
+  }, 31000)
   joined = true
   lobbyId = assignment.roomId
+  roomInput.value = lobbyId
+  for (const id of ['create', 'join', 'match', 'ready', 'start', 'lobby-leave']) button(id).disabled = true
+  element('room-status').textContent = `방 ${lobbyId} · 경기 중`
   relay.connect(assignment)
 }
 
@@ -380,6 +403,7 @@ document.addEventListener('visibilitychange', () => {
 })
 window.addEventListener('pagehide', () => {
   disposed = true
+  clearTimeout(authorityTimer)
   clearTimeout(poll)
   cancelAnimationFrame(frame)
   relay.close()
