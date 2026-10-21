@@ -1,0 +1,9 @@
+{
+  "sameRoomSingleOwnerAndIsolation": true,
+  "drainPreservesExistingRoomAndResume": true,
+  "coordinatorRestartKeepsWssAndRecoversAssignments": true,
+  "nodeCrashAndRestartDoNotResurrectOldRoom": true,
+  "scaleOutRegistrationAffectsOnlyNewRooms": true,
+  "drainedNodeExitsAfterLastRoom": true,
+  "transport": "actual coordinator and relay child processes; HTTPS + WSS; explicit CA trust"
+}

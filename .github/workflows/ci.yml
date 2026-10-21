@@ -51,3 +51,54 @@ jobs:
           python3 infrastructure/scripts/tests/deploy-backend.py
           python3 infrastructure/scripts/tests/operator-token.py
           python3 infrastructure/scripts/tests/setup-host.py
+
+  web-client:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          submodules: true
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+      - run: npm ci --prefix client
+      - run: npm run build --prefix client
+      - name: Build protocol and process checks
+        run: |
+          mkdir -p out .cache
+          go build -o out/wss-relay ./cmd/wss-relay
+          go build -o out/wire-check ./cmd/wire-check
+          go run ./cmd/dev-tls
+          python3 - <<'PYTOKEN'
+          import os, secrets
+          fd = os.open('.cache/wss-demo.token', os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+          with os.fdopen(fd, 'w') as target:
+              target.write(secrets.token_urlsafe(32))
+          PYTOKEN
+      - name: Binary compatibility and distributed recovery
+        run: |
+          node --experimental-transform-types client/scripts/check-wire.ts
+          NODE_EXTRA_CA_CERTS="$PWD/.cache/dev-tls/cert.pem" node --experimental-transform-types client/scripts/check-cluster.ts
+      - name: SDK against the actual public API and WebSocket
+        run: |
+          out/wss-relay --operator-token-file .cache/wss-demo.token --public-url ws://127.0.0.1:8090/v2/relay > .cache/sdk-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          python3 - <<'PYREADY'
+          import time, urllib.request
+          for attempt in range(100):
+              try:
+                  urllib.request.urlopen('http://127.0.0.1:8090/healthz', timeout=1).close()
+                  break
+              except OSError:
+                  time.sleep(.1)
+          else:
+              raise SystemExit('SDK server startup timed out')
+          PYREADY
+          node --experimental-transform-types client/scripts/check-sdk.ts

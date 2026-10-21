@@ -177,3 +177,22 @@ func testOperatorSecret(value byte) [32]byte {
 type errorReader struct{}
 
 func (errorReader) Read([]byte) (int, error) { return 0, io.ErrUnexpectedEOF }
+
+func TestStableKeySurvivesCoordinatorRestart(t *testing.T) {
+	config := Config{OperatorSecret: testOperatorSecret(0x41), TokenTTL: HardTokenTTL, StableKey: true}
+	first, err := New(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	token, _, err := first.Issue("player-a")
+	if err != nil {
+		t.Fatal(err)
+	}
+	restarted, err := New(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := restarted.Verify(token); err != nil {
+		t.Fatalf("restart invalidated player identity: %v", err)
+	}
+}

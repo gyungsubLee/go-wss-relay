@@ -1,0 +1,15 @@
+# The coordinator exposes HTTPS control only. Its operator port stays on loopback.
+{$COORDINATOR_DOMAIN} {
+	handle /v2/api/* {
+		reverse_proxy 127.0.0.1:8090
+	}
+	handle /healthz {
+		reverse_proxy 127.0.0.1:8090
+	}
+	handle /readyz {
+		reverse_proxy 127.0.0.1:8090
+	}
+	handle {
+		respond 404
+	}
+}

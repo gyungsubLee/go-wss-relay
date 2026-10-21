@@ -1,0 +1,2 @@
+# Preserve protoc-gen-es output, including its final blank line.
+client/src/relay/gen/** whitespace=-blank-at-eof

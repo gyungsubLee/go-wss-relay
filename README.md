@@ -1,58 +1,70 @@
 # go-wss-relay
 
-웹·Android 공용 WSS 전용 중계 서버를 개발하는 저장소다.
-[원본](https://github.com/game-projects97/go-lobby-relay)을 포크했으며 기존 이력과 라이선스를 보존한다.
+웹 TypeScript 게임과 Android WebView 앱을 위한 WSS 중계 서버와 공용 TS SDK다.
+[원본](https://github.com/game-projects97/go-lobby-relay)을 포크했으며 이력과 라이선스를 보존한다.
 
-게임 좌표와 모션은 클라이언트가 계산한다. 서버는 참가자를 검증하고 상태와 이벤트를 중계한다.
-서버는 이동·충돌·승패를 판정하지 않는다. 경쟁 게임의 판정 권한은 별도로 설계해야 한다.
+서버는 인증·로비·FIFO 매칭·방 배정·상태와 이벤트 전달을 담당한다.
+게임 클라이언트가 모션·보간·충돌·승패를 계산한다. 서버 접수 확인은 상대의 적용 완료를 보장하지 않는다.
 
-## 현재 구현
+## 구현
 
-- `/v2/relay`: `relay.v2` 서브프로토콜, 바이너리 Protobuf 메시지.
-- 단회 접속권, 방별 참가자 격리, 재접속 토큰 교체와 세대 증가.
-- 참가자별 최신 상태 보관, 50 ms 간격 상태 묶음 전송.
-- 이벤트 순서 보존과 접수 확인. 재접속 이후 이벤트 재전송은 제공하지 않는다.
-- 메시지 크기와 빈도 제한. 느린 연결의 대기열은 32개·256 KiB로 제한한다.
-- 기본 상한: 방 256개, 동시 연결 1,024개, 방당 참가자 16명. 성능 보장 수치는 아니다.
-- 관리 API의 방 생성, 방 만료, 종료 처리.
+- 바이너리 Protobuf·relay.v2, 일회 접속권, 참가자별 권한, 세대별 재접속·캐시.
+- 50 ms 상태 묶음과 최신 상태 병합. 사건 큐는 32개·256 KiB로 제한한다.
+- 플레이어 토큰 갱신, 공개·비공개 로비, ready/revision, FIFO, 개인 접속권 재발급.
+- MinbWebKit 4.0 기반 검증 화면과 게임에 독립적인 TS SDK. Capacitor Android APK·AAB 구성.
+- standalone/coordinator/relay 역할, 노드 예약·등록·단일 소유·드레이닝·활성 방 복원.
+- IP·참가자·방·노드 제한, 바이트 예산, 큐·쓰기·자원 계측과 실제 TLS 부하 도구.
 
-`EventAccepted`는 서버 접수만 확인한다. 상대 클라이언트의 수신을 보장하지 않는다.
-전체 상태 스냅샷이 약 64 KiB를 넘을 수 있어 신뢰성 대기열 상한을 256 KiB로 정했다.
+전체 목표는 진행 중이다. Android 실기기와 일부 완료 조건은 아직 검증하지 않았다.
+현재 증거와 남은 요구사항은 [완료 감사](docs/evidence/v2/completion-audit.md)를 확인한다.
 
 ## 로컬 실행
 
-Go 버전은 `go.mod`를 따른다. macOS arm64에서는 `make tools`로 고정 도구를 설치할 수 있다.
-
 ```sh
+git submodule update --init
 make tools
 python3 - <<'PYTOKEN'
-import os
-import secrets
-fd = os.open('/private/tmp/wss-relay-token', os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+import os, secrets
+os.makedirs('.cache', exist_ok=True)
+fd = os.open('.cache/wss-demo.token', os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
 with os.fdopen(fd, 'w') as target:
     target.write(secrets.token_urlsafe(32))
 PYTOKEN
 .tools/go/bin/go run ./cmd/wss-relay \
-  --operator-token-file /private/tmp/wss-relay-token \
+  --operator-token-file .cache/wss-demo.token \
   --public-url ws://127.0.0.1:8090/v2/relay \
+  --allowed-origin 127.0.0.1:5173 \
   --allowed-origin localhost:5173
 ```
 
-기존 토큰 파일이 있으면 생성 명령은 실패한다. 기존 파일을 재사용하거나 다른 경로를 지정한다.
-기본 공개 수신 주소는 `127.0.0.1:8090`, 관리 수신 주소는 `127.0.0.1:8091`이다.
-운영 환경에서는 TLS 프록시 뒤에 배치하고 `--public-url wss://도메인/v2/relay`를 지정한다.
-프록시의 WebSocket 업그레이드와 유휴 시간을 설정해야 한다.
+기존 토큰 파일이 있으면 생성 명령은 실패한다. 기존 파일을 재사용한다.
+다른 터미널에서 `cd client`, `npm ci`, `npm run dev`를 실행한다.
+Chrome 두 창에서 http://127.0.0.1:5173 에 접속한다.
+한쪽에서 방을 만들고 다른 쪽에서 코드로 참가한다. 둘 다 준비한 뒤 소유자가 시작한다.
+화면 클릭으로 이동하고 이벤트를 보내면 상대 화면의 좌표와 기록이 바뀐다.
 
-신뢰하는 백엔드가 관리 API `POST /v2/rooms`를 호출한다.
-`Authorization: Bearer <파일의 토큰>` 헤더와 다음 JSON 본문을 사용한다.
+기본 수신은 127.0.0.1:8090, 관리 수신은 127.0.0.1:8091이다.
+CLI 기본 상한은 512개 방·700개 참가자 슬롯, 방당 최대 정원은 16명이다.
+이 값은 운영 성능 보장이 아니다. 대상 호스트에서 지연·전송량을 측정해 확정한다.
+운영 HTTPS·WSS·노드 분산은 [v2 배포 절차](infrastructure/v2/README.md)를 따른다.
+기존 infrastructure/ops와 Unity 문서는 원본용이다.
 
-```json
-{"roomId":"room-1","applicationProtocol":"snake.v1","participants":["alice","bob"],"ttlSeconds":1800}
+## SDK와 Android
+
+[RelayClient](client/src/relay/client.ts)는 연결·바이너리 인코딩·상태 병합·이벤트·복귀를 담당한다.
+[LobbyClient](client/src/relay/api.ts)는 인증·로비·매칭·개인 접속권 API를 담당한다.
+렌더링·전체 상태 생성·수신 상태 적용은 게임 코드가 담당한다.
+
+```sh
+cd client
+VITE_RELAY_API_URL=https://실제-배정기-도메인/v2/api npm run android:sync
 ```
 
-응답에는 `websocketUrl`, `roomInstanceId`, 참가자별 `tickets`가 포함된다.
-백엔드는 로그인한 사용자에게 해당 사용자의 접속권만 반환해야 한다.
-관리 API는 루프백 IP에서만 수신한다. 브라우저에 운영자 토큰이나 전체 접속권을 전달하면 안 된다.
+동기화 후 설치된 JDK 21·Android SDK로 Gradle assembleDebug 또는 bundleDebug를 실행한다.
+`prepare-android-dev.mjs`는 localhost 디버그 CA를 쓰는 로컬 시험에만 필요하다.
+개발 인증서는 릴리스에 포함하지 않는다. 디버그 APK·AAB는 Play 출시 서명 산출물이 아니다.
+USB 기기로 localhost 서버에 연결할 때는 해당 포트의 `adb reverse`가 필요하다.
+프로세스 종료와 30초 유예 만료는 새 인증·재입장을 요구할 수 있다.
 
 ## 검증
 
@@ -61,22 +73,28 @@ GOCACHE="$PWD/.cache/go-build" GOMODCACHE="$PWD/.cache/go-mod" .tools/go/bin/go 
 GOCACHE="$PWD/.cache/go-build" GOMODCACHE="$PWD/.cache/go-mod" .tools/go/bin/go vet ./...
 make protocol-check
 make relay-build
+cd client
+npm run build
+npm run check
 ```
 
-테스트는 실제 WS·TLS WSS 연결, 상태·이벤트 전달, 방 격리, 접속권 재사용 거부,
-Origin 거부, 재접속, 스냅샷 순서, 대기열 상한, 관리 API 인증을 확인한다.
-Go 코드 생성은 v1·v2를 포함한다. 기존 C# 산출물과 `csharp-compat`는 원본 이력으로 남겨 둔다.
+npm run check는 위 로컬 서버가 필요하다. 분산·호환 검사는 아래 바이너리를 먼저 빌드한다.
 
-## 남은 작업
+```sh
+go build -o out/wss-relay ./cmd/wss-relay
+go build -o out/wire-check ./cmd/wire-check
+go run ./cmd/dev-tls
+node --experimental-transform-types client/scripts/check-wire.ts
+NODE_EXTRA_CA_CERTS="$PWD/.cache/dev-tls/cert.pem" node --experimental-transform-types client/scripts/check-cluster.ts
+```
 
-현재 구현은 단일 노드 기반이다. 운영 배포가 완료된 상태는 아니다.
-TypeScript SDK, 사용자 인증·매칭 연동, HTTP 접속권 재발급, 노드 분산과 드레이닝,
-노드별 전송량 예산, IP별 접속 제한, Android 실기기 시험, 부하 시험이 남아 있다.
-상세 명세의 WebSocket 종료 코드 매핑도 추가해야 한다.
-기존 배포 스크립트와 Unity 문서는 원본용이며 v2 운영 배포에 그대로 사용할 수 없다.
+개발 인증서 생성은 새 디렉터리에서 한 번 실행한다. 기존 키·인증서를 덮어쓰지 않는다.
+17종 메시지의 Go→TS→Go 왕복 검사, 실제 SDK 소켓 검사, 실제 노드 프로세스 검사를 구분한다.
+원래 v1·UDP 회귀 검사와 C# 산출물은 보존하며 새 기본 런타임은 cmd/wss-relay다.
 
-- [전체 계획](docs/plans/2026-10-20-web-android-wss-relay-refactor.md)
-- [메시지 명세](docs/specs/2026-10-20-relay-v2-message-spec.md)
+- [원래 1~5단계 계획](docs/plans/2026-10-20-web-android-wss-relay-refactor.md)
+- [WSS 메시지 명세](docs/specs/2026-10-20-relay-v2-message-spec.md)
+- [공개 HTTP API](docs/specs/2026-10-22-control-v2-http.md)
 - [실제 스키마](api/relay/v2/relay.proto)
 
-계획의 레퍼런스 설명은 설계 배경이다. 이 저장소의 구현을 Snake.io의 실제 통신 규격으로 해석하면 안 된다.
+레퍼런스 설명은 설계 배경이다. 이 구현을 Snake.io의 실제 통신 규격으로 해석하지 않는다.

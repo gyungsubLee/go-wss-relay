@@ -1,0 +1,6 @@
+{
+  "nodeIngressBytesPerSecond": 8388608,
+  "nodeEgressBytesPerSecond": 67108864,
+  "roomIngressBytesPerSecond": 524288,
+  "roomEgressBytesPerSecond": 4194304
+}

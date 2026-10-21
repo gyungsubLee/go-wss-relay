@@ -1,20 +1,22 @@
-# WSS fork 작업 상태
+# WSS 전환 작업 상태
 
-- 저장소: https://github.com/gyungsubLee/go-wss-relay
-- 원본: game-projects97/go-lobby-relay, 8d80ece
-- 작업 브랜치: codex/wss-v2
-- 목표: 웹과 Android에서 같은 WSS 메시지 규격을 사용하는 전용 중계 서버.
-- 현재 단계: 단일 노드 v2 기반 구현. 전체 리팩터링은 진행 중이다.
+목표: MinbWebLib 참조로 TS 클라이언트를 만들고 원래 계획 1~5단계까지 구현·검증한다.
+저장소: go-wss-relay. 브랜치: codex/wss-v2. 전체 목표는 진행 중이다.
 
-구현: Protobuf v2, 접속권 검증, 상태 병합, 이벤트 전달, 재접속, 방 할당 관리 API.
-검증 결과와 제한: [실행 안내](../README.md).
+## 확인한 진행
 
-다음 작업:
-1. TypeScript SDK와 웹 예제를 구현한다.
-2. 사용자 인증·매칭 백엔드에 방 할당과 접속권 재발급을 연결한다.
-3. 방 소유 노드 배정, 노드 등록, 드레이닝을 구현한다.
-4. 전송량 예산과 느린 연결 정책을 부하 시험으로 조정한다.
-5. Android WebView 환경에서 재접속과 앱 생명주기를 검증한다.
+- v2 계약·공용 TS SDK·MinbWebKit 검증 화면·Android 빌드 구성 구현.
+- 공개 인증·갱신·로비 ready/revision·공개 목록·퇴장·FIFO·접속권 재발급 구현.
+- 최신 Chrome 두 창의 준비·시작·좌표·양방향 사건·g2 복귀 확인.
+- 전체 Go 경합·정적 검사, TS 빌드, 실제 SDK 통합과 17종 바이너리 호환 검사 통과.
+- 실제 배정기·노드 프로세스의 단일 소유·격리·증설·드레이닝·장애·재시작 검사 통과.
+- 노드·방 바이트 예산·입장 제어·계측·CLI 설정·v2 배포 템플릿 추가.
+- Android 최신 디버그 APK·AAB 빌드 성공. USB 기기는 연결되지 않음.
+- TLS 18개 부하 프로필의 이전 실행은 통과. 최신 코드·IP 정책으로 다시 측정 중.
 
-기존 PROJECT.md, ROADMAP.md와 단계별 증거는 원본의 이력이다.
-새 방향은 docs/plans/2026-10-20-web-android-wss-relay-refactor.md를 따른다.
+## 남은 필수 작업
+
+완료 감사는 docs/evidence/v2/completion-audit.md를 따른다.
+최신 부하·집중 복귀, 실제 뱀 상태·권한자 정책, 지연·손실·저속 장치, Android 실기기,
+대상 Linux/Caddy 설정과 원격 CI의 검증 증거가 필요하다.
+기존 UDP 프로젝트의 GSD 완료 표시는 새 WSS 5단계의 완료 증거가 아니다.

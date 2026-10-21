@@ -1,0 +1,18 @@
+{
+  "nodes": [
+    {
+      "id": "node-a",
+      "controlUrl": "https://node-a-control.internal.example.com",
+      "websocketUrl": "wss://node-a.example.com/v2/relay",
+      "tokenFile": "/etc/wss-relay/secrets/node-a.token",
+      "caFile": "/etc/wss-relay/control-root.pem"
+    },
+    {
+      "id": "node-b",
+      "controlUrl": "https://node-b-control.internal.example.com",
+      "websocketUrl": "wss://node-b.example.com/v2/relay",
+      "tokenFile": "/etc/wss-relay/secrets/node-b.token",
+      "caFile": "/etc/wss-relay/control-root.pem"
+    }
+  ]
+}

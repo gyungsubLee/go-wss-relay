@@ -1,6 +1,6 @@
 module github.com/gyungsubLee/go-wss-relay
 
-go 1.26.5
+go 1.26.8
 
 require (
 	golang.org/x/time v0.15.0

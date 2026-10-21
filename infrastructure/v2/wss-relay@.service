@@ -1,0 +1,28 @@
+[Unit]
+Description=WSS relay v2 (%i)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=wss-relay
+Group=wss-relay
+EnvironmentFile=/etc/wss-relay/%i.env
+# RELAY_ARGS is intentionally split into arguments by systemd. Do not use spaces in paths.
+ExecStart=/usr/local/bin/wss-relay $RELAY_ARGS
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=15
+LimitNOFILE=8192
+TasksMax=4096
+MemoryMax=512M
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+[Install]
+WantedBy=multi-user.target

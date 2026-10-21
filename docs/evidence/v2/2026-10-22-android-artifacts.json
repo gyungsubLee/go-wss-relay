@@ -1,0 +1,26 @@
+[
+  {
+    "file": "_Build/android/2026-10-22-debug/RelayLab-debug.apk",
+    "bytes": 4940797,
+    "sha256": "2de431e23681b0543c6722dd0094e02bbedb0350c9a3b652364b054355519fff",
+    "variant": "debug",
+    "applicationId": "games.storio.relaydemo",
+    "versionCode": 1,
+    "versionName": "1.0",
+    "webAssets": "all _Build/dist-app files match; Capacitor Cordova files also match synced assets",
+    "signing": "debug signature verified; not a Play release upload artifact",
+    "deviceValidation": "not run: no USB device attached"
+  },
+  {
+    "file": "_Build/android/2026-10-22-debug/RelayLab-debug.aab",
+    "bytes": 4233515,
+    "sha256": "fda20424f67db91fe1ef72d15b53e6fa5382569659dfa81a12571662e06f6412",
+    "variant": "debug",
+    "applicationId": "games.storio.relaydemo",
+    "versionCode": 1,
+    "versionName": "1.0",
+    "webAssets": "all _Build/dist-app files match; Capacitor Cordova files also match synced assets",
+    "signing": "debug signature verified; not a Play release upload artifact",
+    "deviceValidation": "not run: no USB device attached"
+  }
+]

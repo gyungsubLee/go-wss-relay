@@ -9,3 +9,17 @@ unity/RelaySample/Temp/
 unity/RelaySample/UserSettings/
 unity/RelaySample/obj/
 __pycache__/
+
+client/node_modules/
+client/dist/
+client/dist-app/
+client/android/.gradle/
+client/android/local.properties
+client/android/**/build/
+
+_Build/
+
+client/android/app/src/debug/
+*.keystore
+*.jks
+*.p12

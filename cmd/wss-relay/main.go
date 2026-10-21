@@ -3,11 +3,11 @@ package main
 
 import (
 	"context"
-	"crypto/subtle"
 	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -18,8 +18,11 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gyungsubLee/go-wss-relay/internal/controlv2"
+	"github.com/gyungsubLee/go-wss-relay/internal/coordv2"
 	"github.com/gyungsubLee/go-wss-relay/internal/httpapi/httpx"
 	"github.com/gyungsubLee/go-wss-relay/internal/httpapi/operatorapi"
+	"github.com/gyungsubLee/go-wss-relay/internal/playerauth"
 	"github.com/gyungsubLee/go-wss-relay/internal/relayv2"
 )
 
@@ -33,15 +36,33 @@ func main() {
 
 func run(ctx context.Context, args []string) error {
 	flags := flag.NewFlagSet("wss-relay", flag.ContinueOnError)
+	role := flags.String("role", "standalone", "standalone, coordinator, or relay")
+	nodesFile := flags.String("nodes-config", "", "coordinator node registry JSON")
 	listen := flags.String("listen", "127.0.0.1:8090", "WSS upstream listener (TLS terminates at reverse proxy)")
 	management := flags.String("management-listen", "127.0.0.1:8091", "loopback-only trusted allocation listener")
 	publicURL := flags.String("public-url", "", "full client WebSocket URL")
+	trafficFile := flags.String("traffic-config", "", "optional JSON byte budgets; zero fields use defaults")
+	roomLimit := flags.Int("max-rooms", 512, "maximum reserved rooms")
+	participantLimit := flags.Int("max-participants", 700, "maximum reserved participant slots and connections")
+	tlsCert := flags.String("tls-cert", "", "optional TLS certificate PEM")
+	tlsKey := flags.String("tls-key", "", "optional TLS private key PEM")
 	nodeID := flags.String("node-id", "local", "relay node identifier")
 	tokenFile := flags.String("operator-token-file", "", "32-byte base64url token file")
-	var origins []string
+	var origins, proxies []string
+	flags.Func("trusted-proxy", "explicit trusted proxy IP/CIDR (repeatable)", func(value string) error { proxies = append(proxies, value); return nil })
+	handshakeRate := flags.Int("handshakes-per-ip", 200, "handshake admissions per second for one client IP")
 	flags.Func("allowed-origin", "allowed browser origin host (repeatable)", func(value string) error { origins = append(origins, value); return nil })
 	if err := flags.Parse(args); err != nil {
 		return err
+	}
+	if *role != "standalone" && *role != "coordinator" && *role != "relay" {
+		return errors.New("invalid role")
+	}
+	if *role == "coordinator" && *nodesFile == "" {
+		return errors.New("coordinator requires nodes-config")
+	}
+	if (*tlsCert == "") != (*tlsKey == "") {
+		return errors.New("tls-cert and tls-key must be provided together")
 	}
 	if flags.NArg() != 0 || *tokenFile == "" {
 		return errors.New("operator-token-file is required; positional arguments are not accepted")
@@ -50,26 +71,75 @@ func run(ctx context.Context, args []string) error {
 	if err != nil || net.ParseIP(host) == nil || !net.ParseIP(host).IsLoopback() {
 		return errors.New("management listener must use a loopback IP address")
 	}
-	u, err := url.Parse(*publicURL)
-	if err != nil || u.User != nil || u.Hostname() == "" || u.Path != "/v2/relay" || u.RawQuery != "" || u.Fragment != "" {
-		return errors.New("public-url must identify /v2/relay without credentials, query, or fragment")
+	if *role != "coordinator" {
+		u, err := url.Parse(*publicURL)
+		if err != nil || u.User != nil || u.Hostname() == "" || u.Path != "/v2/relay" || u.RawQuery != "" || u.Fragment != "" {
+			return errors.New("public-url must identify /v2/relay without credentials, query, or fragment")
+		}
+		if u.Scheme != "wss" && (u.Scheme != "ws" || net.ParseIP(u.Hostname()) == nil || !net.ParseIP(u.Hostname()).IsLoopback()) {
+			return errors.New("public-url requires wss except for loopback development")
+		}
 	}
-	if u.Scheme != "wss" && (u.Scheme != "ws" || net.ParseIP(u.Hostname()) == nil || !net.ParseIP(u.Hostname()).IsLoopback()) {
-		return errors.New("public-url requires wss except for loopback development")
-	}
+
 	data, err := os.ReadFile(*tokenFile)
 	if err != nil {
 		return errors.New("cannot read operator token file")
 	}
 	encoded := strings.TrimSpace(string(data))
-	if _, err := operatorapi.ParseOperatorToken(encoded); err != nil {
+	secret, err := operatorapi.ParseOperatorToken(encoded)
+	if err != nil {
 		return errors.New("invalid operator token file")
 	}
-	relay, err := relayv2.New(relayv2.Config{NodeID: *nodeID, AllowedOrigins: origins})
+
+	traffic, err := readTrafficPolicy(*trafficFile)
 	if err != nil {
 		return err
 	}
-	defer relay.Close()
+
+	var relay *relayv2.Server
+	var pool *coordv2.Pool
+	var allocator controlv2.Allocator
+	var api *controlv2.Server
+	var managementHandler http.Handler
+	if *role == "coordinator" {
+		configs, err := coordv2.ReadConfig(*nodesFile)
+		if err != nil {
+			return err
+		}
+		pool, err = coordv2.New(configs)
+		if err != nil {
+			return err
+		}
+		if err = pool.Reconcile(ctx); err != nil {
+			return err
+		}
+		allocator = pool
+	} else {
+		relay, err = relayv2.New(relayv2.Config{Traffic: traffic, TrustedProxies: proxies, HandshakesPerIP: *handshakeRate, NodeID: *nodeID, AllowedOrigins: origins, MaxRooms: *roomLimit, MaxConnections: *participantLimit})
+		if err != nil {
+			return err
+		}
+		defer relay.Close()
+		allocator = controlv2.LocalAllocator{Relay: relay, NodeID: *nodeID, WebSocketURL: *publicURL}
+		managementHandler = relay.ManagementHandler(encoded, *publicURL)
+	}
+	if *role != "relay" {
+		auth, err := playerauth.New(playerauth.Config{OperatorSecret: secret, TokenTTL: playerauth.HardTokenTTL, StableKey: true})
+		if err != nil {
+			return err
+		}
+		api, err = controlv2.New(controlv2.Config{TrustedProxies: proxies, Auth: auth, Allocator: allocator, AllowedOrigins: origins})
+		if err != nil {
+			return err
+		}
+		if pool != nil {
+			if err = pool.Restore(api); err != nil {
+				return err
+			}
+			managementHandler = pool.ManagementHandler(encoded, *nodesFile, api)
+		}
+	}
+
 	publicListener, err := net.Listen("tcp", *listen)
 	if err != nil {
 		return fmt.Errorf("public listener: %w", err)
@@ -81,16 +151,35 @@ func run(ctx context.Context, args []string) error {
 	}
 	defer controlListener.Close()
 	mux := http.NewServeMux()
-	mux.Handle("/v2/relay", relay)
+	if relay != nil {
+		mux.Handle("/v2/relay", relay)
+	}
+	if api != nil {
+		mux.Handle("/v2/api/", api)
+	}
+	mux.HandleFunc("GET /readyz", func(w http.ResponseWriter, r *http.Request) {
+		if pool != nil && !pool.Ready() {
+			http.Error(w, "nodes unavailable", 503)
+			return
+		}
+		w.WriteHeader(204)
+	})
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) { _, _ = w.Write([]byte("ok\n")) })
-	public := &http.Server{Handler: mux, ReadHeaderTimeout: 2 * time.Second, MaxHeaderBytes: 16 << 10}
-	control := httpx.NewServer(*management, allocationHandler(relay, encoded, *nodeID, *publicURL))
+	public := &http.Server{Handler: mux, ReadHeaderTimeout: 2 * time.Second, ReadTimeout: 5 * time.Second, WriteTimeout: 5 * time.Second, MaxHeaderBytes: 16 << 10}
+	control := httpx.NewServer(*management, managementHandler)
 	done := make(chan error, 2)
-	go func() { done <- public.Serve(publicListener) }()
+	go func() {
+		if *tlsCert != "" {
+			done <- public.ServeTLS(publicListener, *tlsCert, *tlsKey)
+		} else {
+			done <- public.Serve(publicListener)
+		}
+	}()
 	go func() { done <- control.Serve(controlListener) }()
 	log.Printf("relay.v2 listening at %s; management at %s", publicListener.Addr(), controlListener.Addr())
 	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
+	ticks := 0
 	var result error
 	completed := 0
 selectLoop:
@@ -102,12 +191,33 @@ selectLoop:
 			completed++
 			break selectLoop
 		case <-ticker.C:
-			relay.Expire()
+			if relay != nil {
+				relay.Expire()
+				if api != nil {
+					api.ReconcileLocal(relay.HasRoom)
+				}
+				if relay.Drained() {
+					break selectLoop
+				}
+			}
+			if api != nil {
+				api.Expire()
+			}
+			ticks++
+			if pool != nil && ticks%5 == 0 {
+				if err := pool.Reconcile(ctx); err != nil {
+					log.Printf("node reconciliation: %v", err)
+				} else if err := pool.Restore(api); err != nil {
+					log.Printf("node recovery: %v", err)
+				}
+			}
 		}
 	}
 	_ = public.Close()
 	_ = control.Close()
-	_ = relay.Close()
+	if relay != nil {
+		_ = relay.Close()
+	}
 	for completed < 2 {
 		<-done
 		completed++
@@ -118,60 +228,23 @@ selectLoop:
 	return nil
 }
 
-func allocationHandler(relay *relayv2.Server, token, nodeID, publicURL string) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Cache-Control", "no-store")
-		if r.URL.Path != "/v2/rooms" || r.URL.RawQuery != "" {
-			http.NotFound(w, r)
-			return
-		}
-		values := r.Header.Values("Authorization")
-		if len(values) != 1 || subtle.ConstantTimeCompare([]byte(values[0]), []byte("Bearer "+token)) != 1 {
-			httpx.WriteError(w, http.StatusUnauthorized, "unauthorized", "valid operator token required")
-			return
-		}
-		if r.Method != http.MethodPost {
-			httpx.WriteMethodNotAllowed(w, "POST")
-			return
-		}
-		var request struct {
-			RoomID              string   `json:"roomId"`
-			ApplicationProtocol string   `json:"applicationProtocol"`
-			Participants        []string `json:"participants"`
-			TTLSeconds          int64    `json:"ttlSeconds"`
-		}
-		if !httpx.DecodeExact(w, r, &request, "roomId", "applicationProtocol", "participants", "ttlSeconds") {
-			return
-		}
-		if request.TTLSeconds <= 0 || request.TTLSeconds > 7200 {
-			httpx.WriteInvalid(w)
-			return
-		}
-		allocation, err := relay.CreateRoom(request.RoomID, request.ApplicationProtocol, request.Participants, time.Duration(request.TTLSeconds)*time.Second)
-		if err != nil {
-			status := http.StatusBadRequest
-			if errors.Is(err, relayv2.ErrConflict) {
-				status = http.StatusConflict
-			}
-			if errors.Is(err, relayv2.ErrCapacity) || errors.Is(err, relayv2.ErrClosed) {
-				status = http.StatusServiceUnavailable
-			}
-			httpx.WriteError(w, status, "allocation_failed", "room allocation failed")
-			return
-		}
-		// The trusted backend receives all grants; it must return only the caller's ticket.
-		response := struct {
-			RoomID              string            `json:"roomId"`
-			RoomInstanceID      string            `json:"roomInstanceId"`
-			NodeID              string            `json:"nodeId"`
-			WebSocketURL        string            `json:"websocketUrl"`
-			ProtocolRevision    uint32            `json:"protocolRevision"`
-			ApplicationProtocol string            `json:"applicationProtocol"`
-			ExpiresAt           string            `json:"expiresAt"`
-			Tickets             map[string]string `json:"tickets"`
-		}{allocation.RoomID, allocation.RoomInstanceID, nodeID, publicURL, 2, request.ApplicationProtocol, allocation.ExpiresAt.UTC().Format(time.RFC3339Nano), allocation.Tickets}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
-		_ = json.NewEncoder(w).Encode(response)
-	})
+func readTrafficPolicy(path string) (relayv2.TrafficPolicy, error) {
+	var policy relayv2.TrafficPolicy
+	if path == "" {
+		return policy, nil
+	}
+	file, err := os.Open(path)
+	if err != nil {
+		return policy, fmt.Errorf("traffic config: %w", err)
+	}
+	defer file.Close()
+	decoder := json.NewDecoder(io.LimitReader(file, 4097))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&policy); err != nil {
+		return policy, fmt.Errorf("traffic config: %w", err)
+	}
+	if decoder.Decode(new(any)) != io.EOF {
+		return policy, errors.New("traffic config: expected one JSON object")
+	}
+	return policy, nil
 }

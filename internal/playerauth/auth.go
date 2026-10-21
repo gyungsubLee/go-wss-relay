@@ -30,9 +30,12 @@ var (
 
 type Config struct {
 	OperatorSecret [32]byte
-	Now            func() time.Time
-	Random         io.Reader
-	TokenTTL       time.Duration
+	// StableKey preserves player authentication across coordinator restarts.
+	// Relay connection authority remains tied to a node process.
+	StableKey bool
+	Now       func() time.Time
+	Random    io.Reader
+	TokenTTL  time.Duration
 }
 
 type Claims struct {
@@ -60,12 +63,18 @@ func New(config Config) (*Issuer, error) {
 	}
 
 	var nonce [32]byte
-	if _, err := io.ReadFull(random, nonce[:]); err != nil {
-		return nil, ErrFatalRandom
+	if !config.StableKey {
+		if _, err := io.ReadFull(random, nonce[:]); err != nil {
+			return nil, ErrFatalRandom
+		}
 	}
 	mac := hmac.New(sha256.New, config.OperatorSecret[:])
 	_, _ = mac.Write([]byte("go-lobby-relay/player-token/v1\x00"))
-	_, _ = mac.Write(nonce[:])
+	if config.StableKey {
+		_, _ = mac.Write([]byte("coordinator-stable-session/v2"))
+	} else {
+		_, _ = mac.Write(nonce[:])
+	}
 	var key [32]byte
 	copy(key[:], mac.Sum(nil))
 	return &Issuer{key: key, now: now, tokenTTL: config.TokenTTL}, nil

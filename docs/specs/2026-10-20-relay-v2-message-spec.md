@@ -3,7 +3,7 @@
 작성일: 2026-10-20
 
 상태: 목표 계약. 아래 스키마를 api/relay/v2/relay.proto에 적용했다.
-현재 서버는 단일 노드 기반을 구현했다. HTTP 접속권 재발급, SDK, 종료 코드 매핑 등 남은 범위는 [README](../../README.md)를 따른다.
+서버·공용 TS SDK·HTTPS 접속권 재발급·분산 배정에 이 계약을 적용했다. 검증 범위와 남은 항목은 [진행 감사](../evidence/v2/completion-audit.md)를 따른다.
 범위: 웹·Android 공용 WSS 중계. 좌표·충돌·점수의 게임 규칙은 애플리케이션 계약에서 정의한다.
 
 ## 1. v1에서 바뀌는 계약
@@ -92,8 +92,8 @@ Protobuf 인코더가 바이트 표현을 담당한다. 애플리케이션이 �
 
 ## 5. 전체 Protobuf 스키마
 
-아래 코드는 향후 `api/relay/v2/relay.proto`에 적용할 계약안이다.
-현재 `api/relay/v1/relay.proto`나 생성 코드는 수정하지 않는다.
+아래 계약은 `api/relay/v2/relay.proto`에 구현했다. 생성 코드는 해당 파일을 단일 원본으로 사용한다.
+기존 v1 메시지는 이력과 회귀 검사를 위해 남겨 둔다.
 
 ```proto
 syntax = "proto3";
@@ -529,4 +529,4 @@ Envelope 상한에는 Protobuf 메타데이터도 포함한다. 본문만 상한
 - 브라우저와 Android 패키지가 같은 바이너리 메시지를 교환하는지 검사한다.
 
 이 문서의 스키마 구문 검사는 런타임·게임 규칙·전달 보장의 검증과 다르다.
-실제 서버 적용과 Go·TypeScript 호환 검사는 구현 단계에서 실행한다.
+실제 서버와 TS SDK에 적용했다. `client/scripts/check-wire.ts`는 17개 메시지 본문과 uint64 최댓값의 Go→TS→Go 호환을 검사한다.
