@@ -220,7 +220,9 @@ func (c *client) writeLoop() {
 
 func (c *client) readLoop() {
 	total := rate.NewLimiter(40, 40)
-	states := rate.NewLimiter(20, 2)
+	// ponytail: Six frames cover both ends of a 250ms interval at 20Hz.
+	// Longer arrival stalls need a measured pacing policy; the refill stays 20/s.
+	states := rate.NewLimiter(20, 6)
 	events := rate.NewLimiter(5, 10)
 	resyncs := rate.NewLimiter(1, 1)
 	pings := rate.NewLimiter(1, 2)

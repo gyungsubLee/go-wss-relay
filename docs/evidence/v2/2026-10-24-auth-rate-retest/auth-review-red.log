@@ -1,0 +1,6 @@
+=== RUN   TestAuthenticationAdmissionRejectsBeforeConsumingIPBudget
+    auth_admission_test.go:39: global rejection consumed IP budget: next upgrade returned 429, want 426
+--- FAIL: TestAuthenticationAdmissionRejectsBeforeConsumingIPBudget (0.00s)
+FAIL
+FAIL	github.com/gyungsubLee/go-wss-relay/internal/relay	0.718s
+FAIL

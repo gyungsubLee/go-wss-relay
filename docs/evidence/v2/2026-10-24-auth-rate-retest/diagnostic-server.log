@@ -1,0 +1,9 @@
+2026/10/24 00:09:20 relay.v2 listening at 127.0.0.1:19443; management at 127.0.0.1:19092
+2026/10/24 00:11:44 DIAG write_error participant=p-135 context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:54827: write: broken pipe
+2026/10/24 00:11:44 DIAG write_error participant=p-9 context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:54699: write: broken pipe
+2026/10/24 00:11:44 DIAG write_error participant=p-11 context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:54701: write: broken pipe
+2026/10/24 00:11:44 DIAG write_error participant=p-13 context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:54703: write: broken pipe
+2026/10/24 00:11:44 DIAG write_error participant=p-0 context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:54689: write: broken pipe
+2026/10/24 00:11:44 DIAG write_error participant=p-90 context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:54782: write: broken pipe
+2026/10/24 00:11:44 DIAG write_error participant=p-91 context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:54783: write: broken pipe
+2026/10/24 00:11:44 DIAG write_error participant=p-2 context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:54691: write: broken pipe

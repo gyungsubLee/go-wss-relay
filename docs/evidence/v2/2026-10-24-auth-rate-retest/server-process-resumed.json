@@ -1,0 +1,9 @@
+{
+  "pid": 54840,
+  "command": "out/auth-rate-retest-20261024/wss-relay --listen 127.0.0.1:19443 --management-listen 127.0.0.1:19092 --operator-token-file .cache/live-load-20261023/operator.token --tls-cert .cache/live-load-20261023/tls/cert.pem --tls-key .cache/live-load-20261023/tls/key.pem --public-url wss://localhost:19443/v2/relay --allowed-origin localhost:5173",
+  "sameBinariesAsInitialFinal": true,
+  "binarySha256": {
+    "out/auth-rate-retest-20261024/wss-relay": "4dd8e69eea05516138eac366a82ccd699ba92b1235f42e841b5e1147c2994004",
+    "out/auth-rate-retest-20261024/relay-load": "c087f5d8b0748e4ecedd67a8c2f4ca15fa719d5bdec98c26aede145633f931de"
+  }
+}

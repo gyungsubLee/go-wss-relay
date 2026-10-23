@@ -1,0 +1,115 @@
+2026/10/24 00:29:22 relay.v2 listening at 127.0.0.1:19443; management at 127.0.0.1:19092
+2026/10/24 00:29:56 DIAG write_error participant=p-40 body=*relayv2.ServerEnvelope_StateBatch context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: context deadline exceeded
+2026/10/24 00:29:56 DIAG read_end participant=p-40 context=<nil> status=-1 error=failed to get reader: use of closed network connection
+2026/10/24 00:29:56 DIAG write_error participant=p-48 body=*relayv2.ServerEnvelope_StateBatch context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: context deadline exceeded
+2026/10/24 00:29:56 DIAG read_end participant=p-48 context=<nil> status=-1 error=failed to get reader: use of closed network connection
+2026/10/24 00:29:56 DIAG write_error participant=p-24 body=*relayv2.ServerEnvelope_StateBatch context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: context deadline exceeded
+2026/10/24 00:29:56 DIAG read_end participant=p-24 context=context canceled status=-1 error=failed to get reader: context canceled
+2026/10/24 00:29:56 DIAG write_error participant=p-72 body=*relayv2.ServerEnvelope_StateBatch context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: context deadline exceeded
+2026/10/24 00:29:56 DIAG read_end participant=p-72 context=<nil> status=-1 error=failed to get reader: use of closed network connection
+2026/10/24 00:29:56 DIAG write_error participant=p-80 body=*relayv2.ServerEnvelope_StateBatch context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: context deadline exceeded
+2026/10/24 00:29:56 DIAG read_end participant=p-80 context=context canceled status=-1 error=failed to get reader: use of closed network connection
+2026/10/24 00:29:56 DIAG write_error participant=p-8 body=*relayv2.ServerEnvelope_StateBatch context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: context deadline exceeded
+2026/10/24 00:29:56 DIAG read_end participant=p-8 context=context canceled status=-1 error=failed to get reader: context canceled
+2026/10/24 00:29:56 DIAG write_error participant=p-32 body=*relayv2.ServerEnvelope_StateBatch context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: context deadline exceeded
+2026/10/24 00:29:56 DIAG read_end participant=p-32 context=<nil> status=-1 error=failed to get reader: use of closed network connection
+2026/10/24 00:29:56 DIAG write_error participant=p-56 body=*relayv2.ServerEnvelope_StateBatch context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: context deadline exceeded
+2026/10/24 00:29:56 DIAG read_end participant=p-56 context=<nil> status=-1 error=failed to get reader: use of closed network connection
+2026/10/24 00:29:56 DIAG write_error participant=p-16 body=*relayv2.ServerEnvelope_StateBatch context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: context deadline exceeded
+2026/10/24 00:29:56 DIAG read_end participant=p-16 context=<nil> status=-1 error=failed to get reader: use of closed network connection
+2026/10/24 00:29:56 DIAG write_error participant=p-88 body=*relayv2.ServerEnvelope_StateBatch context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: context deadline exceeded
+2026/10/24 00:29:56 DIAG read_end participant=p-88 context=context canceled status=-1 error=failed to get reader: use of closed network connection
+2026/10/24 00:29:56 DIAG write_error participant=p-64 body=*relayv2.ServerEnvelope_StateBatch context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: context deadline exceeded
+2026/10/24 00:29:56 DIAG read_end participant=p-64 context=<nil> status=-1 error=failed to get reader: use of closed network connection
+2026/10/24 00:29:57 DIAG write_error participant=p-0 body=*relayv2.ServerEnvelope_StateBatch context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: context deadline exceeded
+2026/10/24 00:29:57 DIAG read_end participant=p-0 context=<nil> status=-1 error=failed to get reader: use of closed network connection
+2026/10/24 00:30:07 DIAG read_end participant=p-96 context=<nil> status=-1 error=failed to get reader: use of closed network connection
+2026/10/24 00:30:07 DIAG write_error participant=p-96 body=*relayv2.ServerEnvelope_StateBatch context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: context deadline exceeded
+2026/10/24 00:30:09 DIAG read_end participant=p-29 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-58 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-46 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-91 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-54 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-13 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-7 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-83 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-97 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-51 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-79 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-84 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-36 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG write_error participant=p-86 body=*relayv2.ServerEnvelope_PeerStatusChanged context=<nil> terminal=<nil> status=-1 error=failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:60576: write: broken pipe
+2026/10/24 00:30:09 DIAG read_end participant=p-15 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-86 context=<nil> status=-1 error=failed to get reader: use of closed network connection
+2026/10/24 00:30:09 DIAG read_end participant=p-93 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-33 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-49 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-4 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-67 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-55 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-12 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-5 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-27 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-1 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-68 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-57 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-31 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-61 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-22 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-69 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-99 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-10 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-38 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-9 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-50 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-14 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-20 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-78 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-89 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-60 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-71 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-63 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-87 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-6 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-95 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-43 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-25 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-81 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-17 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-23 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-26 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-41 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-42 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-73 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-39 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-37 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-74 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-77 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-59 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-94 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-2 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-92 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-82 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-62 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-90 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-28 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-65 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-11 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-53 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-76 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-85 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-44 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-30 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-21 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-34 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-52 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-45 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-19 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-47 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-70 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-75 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-18 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-35 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-66 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-3 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF
+2026/10/24 00:30:09 DIAG read_end participant=p-98 context=<nil> status=-1 error=failed to get reader: failed to read frame header: EOF

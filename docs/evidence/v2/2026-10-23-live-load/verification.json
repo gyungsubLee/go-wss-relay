@@ -1,0 +1,39 @@
+{
+  "sourceBindingsMatch": true,
+  "sourceFiles": 50,
+  "productionSourceDiff": false,
+  "pythonSyntax": "passed",
+  "jsonParsing": "passed",
+  "goBuild": "completed; binary hashes in bindings.json",
+  "goRace": {
+    "command": "go test -race -count=1 ./...",
+    "exitCode": 0,
+    "log": "go-race-unsandboxed.log"
+  },
+  "goVet": {
+    "command": "go vet ./...",
+    "log": "go-vet.log",
+    "exitCode": 0
+  },
+  "sdk20": {
+    "driverExitCode": 1,
+    "rateRejectedDelta": 19,
+    "overallPassed": false
+  },
+  "sdk10": {
+    "driverExitCode": 0,
+    "functionalPassed": true,
+    "rateRejectedDelta": 0,
+    "writeErrorsDelta": 1,
+    "conservativeNodeGatePassed": false
+  },
+  "stress500and1000": "not executed:200participant60second10Hz gate failed",
+  "reportLinksExist": true,
+  "testServersStopped": true,
+  "resourceCountsBeforeStop": "rooms=connections=reservedParticipants=0 on all3 servers",
+  "credentialScanClean": true,
+  "independentReportReview": {
+    "verdict": "no actionable inaccuracies",
+    "scope": "report vs JSON, logs, source, bindings and cleanup"
+  }
+}

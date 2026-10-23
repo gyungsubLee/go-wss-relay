@@ -1,0 +1,10 @@
+=== RUN   TestAuthenticationAdmissionRejectsBeforeConsumingIPBudget
+--- PASS: TestAuthenticationAdmissionRejectsBeforeConsumingIPBudget (0.00s)
+=== RUN   TestAuthenticationAdmissionPreservesOtherIPsAndGlobalCapacity
+--- PASS: TestAuthenticationAdmissionPreservesOtherIPsAndGlobalCapacity (0.08s)
+=== RUN   TestAuthenticationAdmissionIgnoresUntrustedForwardedAddresses
+--- PASS: TestAuthenticationAdmissionIgnoresUntrustedForwardedAddresses (0.03s)
+=== RUN   TestAuthenticationAdmissionReleasesEveryCompletedAttempt
+--- PASS: TestAuthenticationAdmissionReleasesEveryCompletedAttempt (1.04s)
+PASS
+ok  	github.com/gyungsubLee/go-wss-relay/internal/relay	2.756s

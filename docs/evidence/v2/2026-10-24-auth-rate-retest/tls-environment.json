@@ -1,0 +1,5 @@
+{
+  "NODE_TLS_REJECT_UNAUTHORIZED": null,
+  "NODE_EXTRA_CA_CERTS": ".cache/live-load-20261023/tls/cert.pem",
+  "verificationDisabled": false
+}

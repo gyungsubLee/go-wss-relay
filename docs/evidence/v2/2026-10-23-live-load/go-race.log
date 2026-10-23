@@ -1,0 +1,133 @@
+?   	github.com/gyungsubLee/go-wss-relay/cmd/dev-tls	[no test files]
+?   	github.com/gyungsubLee/go-wss-relay/cmd/relay-load	[no test files]
+?   	github.com/gyungsubLee/go-wss-relay/cmd/wire-check	[no test files]
+?   	github.com/gyungsubLee/go-wss-relay/cmd/wss-relay	[no test files]
+?   	github.com/gyungsubLee/go-wss-relay/gen/go/relay/v2	[no test files]
+--- FAIL: TestRunAcceptsCanonicalOperatorTokenFiles (0.01s)
+    --- FAIL: TestRunAcceptsCanonicalOperatorTokenFiles/suffix_"" (0.00s)
+        config_test.go:146: public listener: listen tcp 127.0.0.1:0: bind: operation not permitted
+    --- FAIL: TestRunAcceptsCanonicalOperatorTokenFiles/suffix_"\n" (0.00s)
+        config_test.go:146: public listener: listen tcp 127.0.0.1:0: bind: operation not permitted
+    --- FAIL: TestRunAcceptsCanonicalOperatorTokenFiles/suffix_"\r\n" (0.00s)
+        config_test.go:146: public listener: listen tcp 127.0.0.1:0: bind: operation not permitted
+--- FAIL: TestRunRolesStartAndCancel (0.01s)
+    --- FAIL: TestRunRolesStartAndCancel/standalone (0.00s)
+        run_test.go:125: listen tcp 127.0.0.1:0: bind: operation not permitted
+    --- FAIL: TestRunRolesStartAndCancel/coordinator (0.00s)
+        run_test.go:125: listen tcp 127.0.0.1:0: bind: operation not permitted
+    --- FAIL: TestRunRolesStartAndCancel/relay (0.00s)
+        run_test.go:125: listen tcp 127.0.0.1:0: bind: operation not permitted
+--- FAIL: TestRunManagementListenerFailureReleasesPublicListener (0.01s)
+    --- FAIL: TestRunManagementListenerFailureReleasesPublicListener/standalone (0.00s)
+        run_test.go:137: listen tcp 127.0.0.1:0: bind: operation not permitted
+    --- FAIL: TestRunManagementListenerFailureReleasesPublicListener/coordinator (0.00s)
+        run_test.go:137: listen tcp 127.0.0.1:0: bind: operation not permitted
+    --- FAIL: TestRunManagementListenerFailureReleasesPublicListener/relay (0.00s)
+        run_test.go:137: listen tcp 127.0.0.1:0: bind: operation not permitted
+--- FAIL: TestRunServeFailureReleasesListeners (0.00s)
+    run_test.go:153: listen tcp 127.0.0.1:0: bind: operation not permitted
+--- FAIL: TestRunEmptyDrainedRelayStops (0.00s)
+    --- FAIL: TestRunEmptyDrainedRelayStops/standalone (0.00s)
+        run_test.go:164: listen tcp 127.0.0.1:0: bind: operation not permitted
+    --- FAIL: TestRunEmptyDrainedRelayStops/relay (0.00s)
+        run_test.go:164: listen tcp 127.0.0.1:0: bind: operation not permitted
+--- FAIL: TestRunCoordinatorClosesNodeConnections (0.00s)
+    --- FAIL: TestRunCoordinatorClosesNodeConnections/cancel (0.00s)
+panic: httptest: failed to listen on a port: listen tcp6 [::1]:0: bind: operation not permitted [recovered, repanicked]
+
+goroutine 71 [running]:
+testing.tRunner.func1.2({0x10146f780, 0xc0000383c0})
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/testing/testing.go:1974 +0x2b8
+testing.tRunner.func1()
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/testing/testing.go:1977 +0x460
+panic({0x10146f780?, 0xc0000383c0?})
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/runtime/panic.go:860 +0x12c
+net/http/httptest.newLocalListener()
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/net/http/httptest/server.go:72 +0x13c
+net/http/httptest.NewUnstartedServer(...)
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/net/http/httptest/server.go:120
+github.com/gyungsubLee/go-wss-relay/internal/app.TestRunCoordinatorClosesNodeConnections.func1(0xc000215208)
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/internal/app/run_test.go:197 +0x24c
+testing.tRunner(0xc000215208, 0xc000010210)
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/testing/testing.go:2036 +0x168
+created by testing.(*T).Run in goroutine 70
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/testing/testing.go:2101 +0x7c0
+FAIL	github.com/gyungsubLee/go-wss-relay/internal/app	0.820s
+--- FAIL: TestLobbyFlowAndPrivateAssignments (0.00s)
+panic: httptest: failed to listen on a port: listen tcp6 [::1]:0: bind: operation not permitted [recovered, repanicked]
+
+goroutine 5 [running]:
+testing.tRunner.func1.2({0x1018b6f60, 0xc0000383d0})
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/testing/testing.go:1974 +0x2b8
+testing.tRunner.func1()
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/testing/testing.go:1977 +0x460
+panic({0x1018b6f60?, 0xc0000383d0?})
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/runtime/panic.go:860 +0x12c
+net/http/httptest.newLocalListener()
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/net/http/httptest/server.go:72 +0x13c
+net/http/httptest.NewUnstartedServer(...)
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/net/http/httptest/server.go:120
+net/http/httptest.NewServer({0x10199cfe0, 0xc0000dc180})
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/net/http/httptest/server.go:107 +0x30
+github.com/gyungsubLee/go-wss-relay/internal/control.newFixture(0xc000280908)
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/internal/control/http_test.go:32 +0x148
+github.com/gyungsubLee/go-wss-relay/internal/control.TestLobbyFlowAndPrivateAssignments(0xc000280908)
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/internal/control/http_test.go:87 +0x34
+testing.tRunner(0xc000280908, 0x1019961c0)
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/testing/testing.go:2036 +0x168
+created by testing.(*T).Run in goroutine 1
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/testing/testing.go:2101 +0x7c0
+FAIL	github.com/gyungsubLee/go-wss-relay/internal/control	1.828s
+--- FAIL: TestLostReservationResponseNeverMovesRoom (0.00s)
+panic: httptest: failed to listen on a port: listen tcp6 [::1]:0: bind: operation not permitted [recovered, repanicked]
+
+goroutine 5 [running]:
+testing.tRunner.func1.2({0x1059e36a0, 0xc0000383f0})
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/testing/testing.go:1974 +0x2b8
+testing.tRunner.func1()
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/testing/testing.go:1977 +0x460
+panic({0x1059e36a0?, 0xc0000383f0?})
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/runtime/panic.go:860 +0x12c
+net/http/httptest.newLocalListener()
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/net/http/httptest/server.go:72 +0x13c
+net/http/httptest.NewUnstartedServer(...)
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/net/http/httptest/server.go:120
+github.com/gyungsubLee/go-wss-relay/internal/coordinator.(*testNode).start(0xc0000ac300, 0xc000200908)
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/internal/coordinator/pool_test.go:59 +0x1cc
+github.com/gyungsubLee/go-wss-relay/internal/coordinator.newTestNode(0xc000200908, {0x1054e7b48, 0x1})
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/internal/coordinator/pool_test.go:47 +0x26c
+github.com/gyungsubLee/go-wss-relay/internal/coordinator.TestLostReservationResponseNeverMovesRoom(0xc000200908)
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/internal/coordinator/pool_test.go:118 +0x40
+testing.tRunner(0xc000200908, 0x105ac3390)
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/testing/testing.go:2036 +0x168
+created by testing.(*T).Run in goroutine 1
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/testing/testing.go:2101 +0x7c0
+FAIL	github.com/gyungsubLee/go-wss-relay/internal/coordinator	1.306s
+ok  	github.com/gyungsubLee/go-wss-relay/internal/httpx	4.768s
+ok  	github.com/gyungsubLee/go-wss-relay/internal/operatortoken	3.804s
+ok  	github.com/gyungsubLee/go-wss-relay/internal/playerauth	3.294s
+ok  	github.com/gyungsubLee/go-wss-relay/internal/protocol	5.228s
+--- FAIL: TestWebSocketStateEventAndResume (0.00s)
+panic: httptest: failed to listen on a port: listen tcp6 [::1]:0: bind: operation not permitted [recovered, repanicked]
+
+goroutine 33 [running]:
+testing.tRunner.func1.2({0x100fd1f80, 0xc000110440})
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/testing/testing.go:1974 +0x2b8
+testing.tRunner.func1()
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/testing/testing.go:1977 +0x460
+panic({0x100fd1f80?, 0xc000110440?})
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/runtime/panic.go:860 +0x12c
+net/http/httptest.newLocalListener()
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/net/http/httptest/server.go:72 +0x13c
+net/http/httptest.NewUnstartedServer(...)
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/net/http/httptest/server.go:120
+net/http/httptest.NewServer({0x1010b51e0, 0xc000198008})
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/net/http/httptest/server.go:107 +0x30
+github.com/gyungsubLee/go-wss-relay/internal/relay.TestWebSocketStateEventAndResume(0xc000214b48)
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/internal/relay/server_test.go:33 +0x380
+testing.tRunner(0xc000214b48, 0x1010ae510)
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/testing/testing.go:2036 +0x168
+created by testing.(*T).Run in goroutine 1
+	/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/src/testing/testing.go:2101 +0x7c0
+FAIL	github.com/gyungsubLee/go-wss-relay/internal/relay	3.333s
+FAIL

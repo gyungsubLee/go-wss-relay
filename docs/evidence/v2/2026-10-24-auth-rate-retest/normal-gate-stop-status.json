@@ -1,0 +1,30 @@
+{
+  "goCpuReady": false,
+  "systemBytes": 37275912,
+  "goBusyFractionEstimate": 0,
+  "nodeId": "local",
+  "rooms": 0,
+  "connections": 0,
+  "reservedParticipants": 0,
+  "ingressBytes": 375968249,
+  "egressBytes": 5298405818,
+  "receivedMessages": 682265,
+  "sentMessages": 732929,
+  "rateRejected": 0,
+  "queueOverflows": 0,
+  "writeErrors": 19,
+  "queueP95UpperMs": 50,
+  "queueP99UpperMs": 50,
+  "writeP95UpperMs": 1,
+  "writeP99UpperMs": 1,
+  "oldestQueuedMs": 0,
+  "heapAllocBytes": 4387664,
+  "gcCycles": 1422,
+  "goroutines": 7,
+  "traffic": {
+    "nodeIngressBytesPerSecond": 8388608,
+    "nodeEgressBytesPerSecond": 67108864,
+    "roomIngressBytesPerSecond": 524288,
+    "roomEgressBytesPerSecond": 4194304
+  }
+}

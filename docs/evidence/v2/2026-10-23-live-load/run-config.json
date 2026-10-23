@@ -1,0 +1,74 @@
+{
+  "default": {
+    "argv": [
+      "out/live-load-20261023/wss-relay",
+      "--operator-token-file",
+      ".cache/live-load-20261023/operator.token",
+      "--tls-cert",
+      ".cache/live-load-20261023/tls/cert.pem",
+      "--tls-key",
+      ".cache/live-load-20261023/tls/key.pem",
+      "--listen",
+      "127.0.0.1:19443",
+      "--management-listen",
+      "127.0.0.1:19092",
+      "--public-url",
+      "wss://localhost:19443/v2/relay",
+      "--allowed-origin",
+      "localhost:5173"
+    ],
+    "role": "standalone",
+    "trustedProxies": [],
+    "actuallyLoadTested": true
+  },
+  "stress-prepared-only": {
+    "argv": [
+      "out/live-load-20261023/wss-relay",
+      "--operator-token-file",
+      ".cache/live-load-20261023/operator.token",
+      "--tls-cert",
+      ".cache/live-load-20261023/tls/cert.pem",
+      "--tls-key",
+      ".cache/live-load-20261023/tls/key.pem",
+      "--listen",
+      "127.0.0.1:19444",
+      "--management-listen",
+      "127.0.0.1:19093",
+      "--public-url",
+      "wss://localhost:19444/v2/relay",
+      "--max-participants",
+      "1024"
+    ],
+    "role": "standalone",
+    "trustedProxies": [],
+    "actuallyLoadTested": false
+  },
+  "room8mib": {
+    "argv": [
+      "out/live-load-20261023/wss-relay",
+      "--operator-token-file",
+      ".cache/live-load-20261023/operator.token",
+      "--tls-cert",
+      ".cache/live-load-20261023/tls/cert.pem",
+      "--tls-key",
+      ".cache/live-load-20261023/tls/key.pem",
+      "--listen",
+      "127.0.0.1:19445",
+      "--management-listen",
+      "127.0.0.1:19094",
+      "--public-url",
+      "wss://localhost:19445/v2/relay",
+      "--traffic-config",
+      ".cache/live-load-20261023/room8mib.json"
+    ],
+    "role": "standalone",
+    "trustedProxies": [],
+    "actuallyLoadTested": true
+  },
+  "tokenFileMode": "0o600",
+  "roomBudgetComparison": {
+    "defaultBytesPerSecond": 4194304,
+    "comparisonBytesPerSecond": 8388608
+  },
+  "testCAFileSha256": "11df9ab9c10600087eb0cb864df93d2ca794f14e11c85b6f8ac4a57484c56d49"
+}

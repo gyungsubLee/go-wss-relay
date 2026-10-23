@@ -1,0 +1,6 @@
+=== RUN   TestPacedStateUpdatesSurviveReaderPause
+--- PASS: TestPacedStateUpdatesSurviveReaderPause (0.30s)
+=== RUN   TestPublisherRateDoesNotBlockNewRoomsAndMetricsCountTraffic
+--- PASS: TestPublisherRateDoesNotBlockNewRoomsAndMetricsCountTraffic (0.00s)
+PASS
+ok  	github.com/gyungsubLee/go-wss-relay/internal/relay	1.025s

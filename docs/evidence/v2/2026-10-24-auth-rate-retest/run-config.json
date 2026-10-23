@@ -1,0 +1,82 @@
+{
+  "status": "final binaries built from corrected source; actual executions are recorded in tagged result artifacts",
+  "default": {
+    "argv": [
+      "out/auth-rate-retest-20261024/wss-relay",
+      "--listen",
+      "127.0.0.1:19443",
+      "--management-listen",
+      "127.0.0.1:19092",
+      "--operator-token-file",
+      ".cache/live-load-20261023/operator.token",
+      "--tls-cert",
+      ".cache/live-load-20261023/tls/cert.pem",
+      "--tls-key",
+      ".cache/live-load-20261023/tls/key.pem",
+      "--public-url",
+      "wss://localhost:19443/v2/relay",
+      "--allowed-origin",
+      "localhost:5173"
+    ],
+    "role": "standalone",
+    "trustedProxies": [],
+    "maxParticipants": 200,
+    "maxRooms": 512,
+    "traffic": {
+      "nodeIngressBytesPerSecond": 8388608,
+      "nodeEgressBytesPerSecond": 67108864,
+      "roomIngressBytesPerSecond": 524288,
+      "roomEgressBytesPerSecond": 4194304
+    }
+  },
+  "credentials": {
+    "reusedFrom": ".cache/live-load-20261023",
+    "operatorTokenModeRequired": "0600",
+    "verifyCertificateBeforeExecution": true,
+    "tlsVerificationDisabled": false
+  },
+  "authAdmissionExpectation": {
+    "maxPerIP": 64,
+    "global": 128,
+    "source": "relay authentication cap: half of unchanged global128; live evidence follows"
+  },
+  "diagnosis": {
+    "binaryDirectory": "out/auth-rate-diagnosis",
+    "source": "baseline product source plus temporary diagnostic overlay; record exact hashes before running"
+  },
+  "final": {
+    "binaryDirectory": "out/auth-rate-retest-20261024",
+    "source": "current fixed product source; rebuild both binaries and record hashes before running"
+  },
+  "profiles": {
+    "sdk": {
+      "participants": 200,
+      "roomSize": 16,
+      "payloadBytes": 679,
+      "publishHz": [
+        20,
+        10
+      ],
+      "warmupSeconds": 3,
+      "measurementSeconds": 30,
+      "afterReconnectSeconds": 5
+    },
+    "go60": {
+      "participants": 200,
+      "roomSize": 16,
+      "payloadBytes": 679,
+      "publishHz": 10,
+      "warmupSeconds": 2,
+      "measurementSeconds": 60
+    }
+  },
+  "execution": "single server and sequential load processes; no stress or increased byte budget",
+  "stateAdmission": {
+    "sustainedPerSecond": 20,
+    "burstFrames": 6,
+    "arrivalCompressionEnvelopeMs": 250,
+    "previousBurstFrames": 2,
+    "totalMessagesPerSecond": 40,
+    "byteBudgetsChanged": false
+  }
+}

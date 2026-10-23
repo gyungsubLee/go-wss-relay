@@ -28,10 +28,12 @@ var (
 
 const (
 	maxAuthenticating = 128
-	maxRooms          = 256
-	maxParticipants   = 16
-	maxConnections    = 1024
-	resumeGrace       = 30 * time.Second
+	// Leave half of authentication capacity available to other client addresses.
+	maxAuthenticatingPerIP = maxAuthenticating / 2
+	maxRooms               = 256
+	maxParticipants        = 16
+	maxConnections         = 1024
+	resumeGrace            = 30 * time.Second
 )
 
 type Config struct {
@@ -51,6 +53,7 @@ type Server struct {
 	trustedProxies             []netip.Prefix
 	handshakeIPs               *httpx.IPBudget
 	authAdmission              *httpx.Admission
+	authenticatingIPs          map[netip.Addr]int
 	instanceID                 string
 	draining                   bool
 	reservationMu              sync.Mutex
@@ -113,8 +116,13 @@ func New(config Config) (*Server, error) {
 		return nil, err
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	return &Server{clients: make(map[*client]struct{}), trustedProxies: trusted, handshakeIPs: httpx.NewIPBudget(rate.Limit(config.HandshakesPerIP), config.HandshakesPerIP*2, 16384, time.Now), authAdmission: httpx.NewAdmission(1000, 2000, maxAuthenticating, time.Now),
-		instanceID: "ni-" + instance, reservations: make(map[string]reservation),
+	return &Server{
+		clients:           make(map[*client]struct{}),
+		trustedProxies:    trusted,
+		handshakeIPs:      httpx.NewIPBudget(rate.Limit(config.HandshakesPerIP), config.HandshakesPerIP*2, 16384, time.Now),
+		authAdmission:     httpx.NewAdmission(1000, 2000, maxAuthenticating, time.Now),
+		authenticatingIPs: make(map[netip.Addr]int),
+		instanceID:        "ni-" + instance, reservations: make(map[string]reservation),
 		nodeID:    config.NodeID,
 		roomLimit: config.MaxRooms, connectionLimit: config.MaxConnections,
 		traffic: config.Traffic, ingress: byteLimiter(config.Traffic.NodeIngress), egress: byteLimiter(config.Traffic.NodeEgress),
@@ -141,10 +149,22 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, request *http.Request) {
 	if !ok {
 		return
 	}
-	authenticating := true
+	authenticating, ipReserved := true, false
+	var ip netip.Addr
+	releaseAuthentication := func() {
+		if ipReserved {
+			server.mu.Lock()
+			server.authenticatingIPs[ip]--
+			if server.authenticatingIPs[ip] == 0 {
+				delete(server.authenticatingIPs, ip)
+			}
+			server.mu.Unlock()
+		}
+		release()
+	}
 	defer func() {
 		if authenticating {
-			release()
+			releaseAuthentication()
 		}
 	}()
 	ip, err := httpx.ClientIP(request, server.trustedProxies)
@@ -163,6 +183,14 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, request *http.Request) {
 		http.Error(w, "relay unavailable", http.StatusServiceUnavailable)
 		return
 	}
+	if server.authenticatingIPs[ip] >= maxAuthenticatingPerIP {
+		server.mu.Unlock()
+		w.Header().Set("Retry-After", "1")
+		http.Error(w, "authentication concurrency exceeded", http.StatusTooManyRequests)
+		return
+	}
+	server.authenticatingIPs[ip]++
+	ipReserved = true
 	server.connections++
 	server.wg.Add(1)
 	server.mu.Unlock()
@@ -211,7 +239,7 @@ func (server *Server) ServeHTTP(w http.ResponseWriter, request *http.Request) {
 		return
 	}
 	authenticating = false
-	release()
+	releaseAuthentication()
 	defer c.disconnect()
 	if c.write(&wire.ServerEnvelope{Body: &wire.ServerEnvelope_Welcome{Welcome: welcome}}) != nil {
 		return

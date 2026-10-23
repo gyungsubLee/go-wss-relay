@@ -1,0 +1,14 @@
+{
+  "productAndSDKSourceBytesUnchangedSinceBuild": true,
+  "binaryBytesUnchangedSinceBuild": true,
+  "intentionalEvidenceHarnessChangesAfterInitialBinding": [
+    "docs/evidence/v2/2026-10-24-auth-rate-retest/record-bindings.py",
+    "docs/evidence/v2/2026-10-24-auth-rate-retest/run-load.py"
+  ],
+  "addedSchemaBindings": [
+    "api/relay/v2/relay-baseline.binpb",
+    "api/relay/v2/relay.proto"
+  ],
+  "currentSourceBindingsMatch": true,
+  "currentBinaryBindingsMatch": true
+}
