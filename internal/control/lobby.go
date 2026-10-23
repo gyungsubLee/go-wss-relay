@@ -1,146 +1,100 @@
 package control
 
 import (
+	"cmp"
 	"math"
-	"net/http"
 	"slices"
-	"strconv"
 
-	"github.com/gyungsubLee/go-wss-relay/internal/httpx"
 	"github.com/gyungsubLee/go-wss-relay/internal/protocol"
 )
 
-type revisionRequest struct {
-	Revision uint32 `json:"revision"`
+func currentRevision(group *lobby, revision uint32, allowPending bool) error {
+	if revision == 0 || group.Revision != revision || group.Revision == math.MaxUint32 || group.Allocating || group.AllocationPending && !allowPending || group.Status != "open" {
+		return &Error{"conflict", "lobby changed; reload before retrying"}
+	}
+	return nil
 }
 
-func (server *Server) currentRevision(w http.ResponseWriter, lobby *lobby, revision uint32, allowPending bool) bool {
-	if revision == 0 || lobby.Revision != revision || lobby.Revision == math.MaxUint32 || lobby.Allocating || lobby.AllocationPending && !allowPending || lobby.Status != "open" {
-		problem(w, 409, "lobby changed; reload before retrying")
-		return false
-	}
-	return true
-}
-func resetReady(lobby *lobby) {
-	lobby.Ready = make(map[string]bool, len(lobby.Participants))
-	for _, id := range lobby.Participants {
-		lobby.Ready[id] = false
+func resetReady(group *lobby) {
+	group.Ready = make(map[string]bool, len(group.Participants))
+	for _, id := range group.Participants {
+		group.Ready[id] = false
 	}
 }
-func (server *Server) preview(w http.ResponseWriter, r *http.Request) {
-	server.mu.Lock()
-	defer server.mu.Unlock()
-	server.expireLocked()
-	lobby := server.lobbies[r.PathValue("id")]
-	if lobby == nil || lobby.Status != "open" {
-		problem(w, 404, "open lobby not found")
-		return
+
+func (manager *Manager) Preview(id string) (LobbyPreview, error) {
+	manager.mu.Lock()
+	defer manager.mu.Unlock()
+	manager.expireLocked()
+	group := manager.lobbies[id]
+	if group == nil || group.Status != "open" {
+		return LobbyPreview{}, &Error{"not_found", "open lobby not found"}
 	}
-	// A private lobby code is an invite capability; never expose its roster or credentials.
-	reply(w, 200, map[string]any{"id": lobby.ID, "revision": lobby.Revision, "capacity": lobby.Capacity, "participantCount": len(lobby.Participants), "visibility": lobby.Visibility, "applicationProtocol": lobby.application})
+	// A private lobby code is an invite capability; exclude its roster and credentials.
+	return LobbyPreview{ID: group.ID, Revision: group.Revision, Capacity: group.Capacity, ParticipantCount: len(group.Participants), Visibility: group.Visibility, ApplicationProtocol: group.application}, nil
 }
-func (server *Server) list(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query()
-	for key, values := range query {
-		if len(values) != 1 || key != "applicationProtocol" && key != "cursor" && key != "limit" {
-			httpx.WriteInvalid(w)
-			return
-		}
-	}
-	application, cursor := query.Get("applicationProtocol"), query.Get("cursor")
-	limit := 50
-	if raw := query.Get("limit"); raw != "" {
-		var err error
-		limit, err = strconv.Atoi(raw)
-		if err != nil {
-			httpx.WriteInvalid(w)
-			return
-		}
-	}
+
+func (manager *Manager) List(application, cursor string, limit int) (LobbyPage, error) {
 	if !protocol.ValidID(application) || cursor != "" && !protocol.ValidID(cursor) || limit < 1 || limit > 50 {
-		httpx.WriteInvalid(w)
-		return
+		return LobbyPage{}, &Error{"invalid", "invalid request"}
 	}
-	server.mu.Lock()
-	defer server.mu.Unlock()
-	server.expireLocked()
-	var records []*lobby
-	for _, lobby := range server.lobbies {
-		if lobby.Visibility == "public" && lobby.Status == "open" && lobby.application == application && lobby.ID > cursor {
-			records = append(records, lobby)
+	manager.mu.Lock()
+	defer manager.mu.Unlock()
+	manager.expireLocked()
+	records := make([]LobbySummary, 0)
+	for _, group := range manager.lobbies {
+		if group.Visibility == "public" && group.Status == "open" && group.application == application && group.ID > cursor {
+			records = append(records, LobbySummary{ID: group.ID, Revision: group.Revision, OwnerID: group.OwnerID, Capacity: group.Capacity, ParticipantCount: len(group.Participants)})
 		}
 	}
-	slices.SortFunc(records, func(a, b *lobby) int {
-		if a.ID < b.ID {
-			return -1
-		}
-		if a.ID > b.ID {
-			return 1
-		}
-		return 0
-	})
+	slices.SortFunc(records, func(a, b LobbySummary) int { return cmp.Compare(a.ID, b.ID) })
 	var next string
 	if len(records) > limit {
 		records = records[:limit]
 		next = records[len(records)-1].ID
 	}
-	summaries := make([]map[string]any, 0, len(records))
-	for _, lobby := range records {
-		summaries = append(summaries, map[string]any{"id": lobby.ID, "revision": lobby.Revision, "ownerId": lobby.OwnerID, "capacity": lobby.Capacity, "participantCount": len(lobby.Participants)})
-	}
-	reply(w, 200, map[string]any{"lobbies": summaries, "nextCursor": next})
+	return LobbyPage{Lobbies: records, NextCursor: next}, nil
 }
-func (server *Server) ready(w http.ResponseWriter, r *http.Request) {
-	var request struct {
-		Revision uint32 `json:"revision"`
-		Ready    bool   `json:"ready"`
+
+func (manager *Manager) Ready(player, id string, revision uint32, ready bool) (Lobby, error) {
+	manager.mu.Lock()
+	defer manager.mu.Unlock()
+	manager.expireLocked()
+	group, err := manager.authorizedLobby(player, id)
+	if err != nil {
+		return Lobby{}, err
 	}
-	if !httpx.DecodeExact(w, r, &request, "revision", "ready") {
-		return
+	if err := currentRevision(group, revision, false); err != nil {
+		return Lobby{}, err
 	}
-	server.mu.Lock()
-	defer server.mu.Unlock()
-	server.expireLocked()
-	lobby := server.authorizedLobby(w, r)
-	if lobby == nil {
-		return
+	if group.Ready[player] != ready {
+		group.Ready[player] = ready
+		group.Revision++
 	}
-	if !server.currentRevision(w, lobby, request.Revision, false) {
-		return
-	}
-	if lobby.Ready[player(r)] != request.Ready {
-		lobby.Ready[player(r)] = request.Ready
-		lobby.Revision++
-	}
-	reply(w, 200, lobby)
+	return group.view(), nil
 }
-func (server *Server) leave(w http.ResponseWriter, r *http.Request) {
-	var request revisionRequest
-	if !httpx.DecodeExact(w, r, &request, "revision") {
-		return
+
+func (manager *Manager) Leave(player, id string, revision uint32) (*Lobby, error) {
+	manager.mu.Lock()
+	defer manager.mu.Unlock()
+	manager.expireLocked()
+	group, err := manager.authorizedLobby(player, id)
+	if err != nil {
+		return nil, err
 	}
-	server.mu.Lock()
-	defer server.mu.Unlock()
-	server.expireLocked()
-	lobby := server.authorizedLobby(w, r)
-	if lobby == nil {
-		return
+	if err := currentRevision(group, revision, false); err != nil {
+		return nil, err
 	}
-	if !server.currentRevision(w, lobby, request.Revision, false) {
-		return
+	group.Participants = slices.DeleteFunc(group.Participants, func(id string) bool { return id == player })
+	delete(manager.byPlayer, player)
+	if len(group.Participants) == 0 {
+		delete(manager.lobbies, group.ID)
+		return nil, nil
 	}
-	who := player(r)
-	lobby.Participants = slices.DeleteFunc(lobby.Participants, func(id string) bool { return id == who })
-	delete(server.byPlayer, who)
-	if len(lobby.Participants) == 0 {
-		delete(server.lobbies, lobby.ID)
-		w.WriteHeader(204)
-		return
+	if group.OwnerID == player {
+		group.OwnerID = group.Participants[0]
 	}
-	if lobby.OwnerID == who {
-		lobby.OwnerID = lobby.Participants[0]
-	}
-	resetReady(lobby)
-	lobby.Revision++
-	reply(w, 200, lobby)
+	resetReady(group)
+	group.Revision++
+	return new(group.view()), nil
 }

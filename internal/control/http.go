@@ -3,22 +3,19 @@ package control
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"net/netip"
 	"net/url"
 	"slices"
+	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/gyungsubLee/go-wss-relay/internal/httpx"
 	"github.com/gyungsubLee/go-wss-relay/internal/playerauth"
 	"github.com/gyungsubLee/go-wss-relay/internal/protocol"
-	"github.com/gyungsubLee/go-wss-relay/internal/relay"
 )
 
 type Config struct {
@@ -30,44 +27,13 @@ type Config struct {
 }
 
 type Server struct {
-	mu             sync.Mutex
+	*Manager
 	auth           *playerauth.Issuer
-	allocator      Allocator
 	origins        []string
-	now            func() time.Time
-	lobbies        map[string]*lobby
-	byPlayer       map[string]string
-	tickets        map[string]*matchTicket
-	queue          []string
 	ips            *httpx.IPBudget
 	trustedProxies []netip.Prefix
 	admission      *httpx.Admission
 	mux            *http.ServeMux
-}
-
-type lobby struct {
-	Revision          uint32          `json:"revision"`
-	Ready             map[string]bool `json:"ready"`
-	Visibility        string          `json:"visibility"`
-	ID                string          `json:"id"`
-	OwnerID           string          `json:"ownerId"`
-	Participants      []string        `json:"participants"`
-	Capacity          int             `json:"capacity"`
-	Status            string          `json:"status"`
-	application       string
-	expires           time.Time
-	allocation        *Allocation
-	Allocating        bool `json:"allocating"`
-	AllocationPending bool `json:"allocationPending"`
-}
-
-type matchTicket struct {
-	ID                          string      `json:"id"`
-	Status                      string      `json:"status"`
-	Assignment                  *Assignment `json:"assignment,omitempty"`
-	player, application, roomID string
-	capacity                    int
-	expires                     time.Time
 }
 
 type identityKey struct{}
@@ -83,9 +49,19 @@ func New(config Config) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
-	server := &Server{trustedProxies: trusted, auth: config.Auth, allocator: config.Allocator, origins: slices.Clone(config.AllowedOrigins), now: config.Now,
-		lobbies: make(map[string]*lobby), byPlayer: make(map[string]string), tickets: make(map[string]*matchTicket),
-		ips: httpx.NewIPBudget(20, 40, 16384, config.Now), admission: httpx.NewAdmission(2000, 4000, 128, config.Now), mux: http.NewServeMux()}
+	manager, err := NewManager(config.Allocator, config.Now)
+	if err != nil {
+		return nil, err
+	}
+	server := &Server{
+		Manager:        manager,
+		trustedProxies: trusted,
+		auth:           config.Auth,
+		origins:        slices.Clone(config.AllowedOrigins),
+		ips:            httpx.NewIPBudget(20, 40, 16384, config.Now),
+		admission:      httpx.NewAdmission(2000, 4000, 128, config.Now),
+		mux:            http.NewServeMux(),
+	}
 	server.mux.HandleFunc("POST /v2/api/sessions", server.session)
 	server.mux.HandleFunc("POST /v2/api/sessions/refresh", server.renewSession)
 	server.mux.HandleFunc("POST /v2/api/lobbies", server.create)
@@ -151,18 +127,13 @@ func player(r *http.Request) string {
 	value, _ := r.Context().Value(identityKey{}).(string)
 	return value
 }
-func randomID(prefix string) (string, error) {
-	var data [12]byte
-	if _, err := rand.Read(data[:]); err != nil {
-		return "", err
-	}
-	return prefix + base64.RawURLEncoding.EncodeToString(data[:]), nil
-}
+
 func reply(w http.ResponseWriter, status int, value any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(value)
 }
+
 func problem(w http.ResponseWriter, status int, message string) {
 	httpx.WriteError(w, status, "control_failed", message)
 }
@@ -212,245 +183,6 @@ func readGroup(w http.ResponseWriter, r *http.Request) (groupRequest, bool) {
 	return request, true
 }
 
-func (server *Server) create(w http.ResponseWriter, r *http.Request) {
-	var request struct {
-		Capacity            int    `json:"capacity"`
-		ApplicationProtocol string `json:"applicationProtocol"`
-		Visibility          string `json:"visibility"`
-	}
-	if !httpx.DecodeExact(w, r, &request, "capacity", "applicationProtocol", "visibility") {
-		return
-	}
-	if request.Capacity < 2 || request.Capacity > 16 || !protocol.ValidID(request.ApplicationProtocol) || request.Visibility != "public" && request.Visibility != "private" {
-		httpx.WriteInvalid(w)
-		return
-	}
-	id, err := randomID("l-")
-	if err != nil {
-		problem(w, 503, "random source failed")
-		return
-	}
-	server.mu.Lock()
-	defer server.mu.Unlock()
-	server.expireLocked()
-	who := player(r)
-	if server.byPlayer[who] != "" {
-		problem(w, 409, "already in lobby or queue")
-		return
-	}
-	if len(server.lobbies) >= 4096 {
-		problem(w, 503, "lobby capacity exhausted")
-		return
-	}
-	lobby := &lobby{Revision: 1, Visibility: request.Visibility, ID: id, OwnerID: who, Participants: []string{who}, Capacity: request.Capacity, Status: "open", application: request.ApplicationProtocol, expires: server.now().Add(30 * time.Minute)}
-	resetReady(lobby)
-	server.lobbies[id] = lobby
-	server.byPlayer[who] = id
-	reply(w, 201, lobby)
-}
-
-func (server *Server) authorizedLobby(w http.ResponseWriter, r *http.Request) *lobby {
-	lobby := server.lobbies[r.PathValue("id")]
-	if lobby == nil {
-		problem(w, 404, "lobby not found")
-		return nil
-	}
-	if !slices.Contains(lobby.Participants, player(r)) {
-		problem(w, 403, "not a participant")
-		return nil
-	}
-	return lobby
-}
-func (server *Server) get(w http.ResponseWriter, r *http.Request) {
-	server.mu.Lock()
-	defer server.mu.Unlock()
-	server.expireLocked()
-	lobby := server.authorizedLobby(w, r)
-	if lobby != nil {
-		reply(w, 200, lobby)
-	}
-}
-func (server *Server) join(w http.ResponseWriter, r *http.Request) {
-	var request revisionRequest
-	if !httpx.DecodeExact(w, r, &request, "revision") {
-		return
-	}
-	server.mu.Lock()
-	defer server.mu.Unlock()
-	server.expireLocked()
-	lobby := server.lobbies[r.PathValue("id")]
-	if lobby == nil {
-		problem(w, 404, "lobby not found")
-		return
-	}
-	who := player(r)
-	if slices.Contains(lobby.Participants, who) {
-		reply(w, 200, lobby)
-		return
-	}
-	if !server.currentRevision(w, lobby, request.Revision, false) {
-		return
-	}
-	if server.byPlayer[who] != "" || lobby.Status != "open" || lobby.Allocating || len(lobby.Participants) >= lobby.Capacity {
-		problem(w, 409, "cannot join lobby")
-		return
-	}
-	lobby.Participants = append(lobby.Participants, who)
-	resetReady(lobby)
-	lobby.Revision++
-	server.byPlayer[who] = lobby.ID
-	reply(w, 200, lobby)
-}
-func (server *Server) start(w http.ResponseWriter, r *http.Request) {
-	var request revisionRequest
-	if !httpx.DecodeExact(w, r, &request, "revision") {
-		return
-	}
-	server.mu.Lock()
-	server.expireLocked()
-	lobby := server.authorizedLobby(w, r)
-	if lobby == nil {
-		server.mu.Unlock()
-		return
-	}
-	if lobby.OwnerID != player(r) {
-		server.mu.Unlock()
-		problem(w, 403, "owner required")
-		return
-	}
-	if lobby.Status == "matched" {
-		server.mu.Unlock()
-		w.WriteHeader(204)
-		return
-	}
-	if !server.currentRevision(w, lobby, request.Revision, true) {
-		server.mu.Unlock()
-		return
-	}
-	allReady := true
-	for _, id := range lobby.Participants {
-		allReady = allReady && lobby.Ready[id]
-	}
-	if !allReady || lobby.Allocating || len(lobby.Participants) != lobby.Capacity {
-		server.mu.Unlock()
-		problem(w, 409, "lobby not ready")
-		return
-	}
-	participants := server.prepareAllocationLocked(lobby)
-	server.mu.Unlock()
-	if err := server.allocate(r.Context(), lobby, participants); err != nil {
-		problem(w, 503, "allocation unavailable; retry the same lobby")
-		return
-	}
-	w.WriteHeader(204)
-}
-func (server *Server) assignment(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		var request struct{}
-		if !httpx.DecodeExact(w, r, &request) {
-			return
-		}
-	}
-	server.mu.Lock()
-	server.expireLocked()
-	lobby := server.authorizedLobby(w, r)
-	if lobby == nil {
-		server.mu.Unlock()
-		return
-	}
-	if lobby.Status == "ended" {
-		server.mu.Unlock()
-		problem(w, 410, "match ended")
-		return
-	}
-	if lobby.allocation == nil {
-		server.mu.Unlock()
-		problem(w, 409, "match not formed")
-		return
-	}
-	allocation := *lobby.allocation
-	result := allocation.Assignment(player(r))
-	server.mu.Unlock()
-	if r.Method == http.MethodPost || result.ConnectTicket == "" {
-		ticket, err := server.allocator.Refresh(r.Context(), allocation, player(r))
-		if err != nil {
-			status := http.StatusServiceUnavailable
-			if errors.Is(err, relay.ErrGone) || errors.Is(err, relay.ErrInvalid) {
-				status = http.StatusGone
-			}
-			problem(w, status, "room unavailable")
-			return
-		}
-		result.ConnectTicket = ticket.Value
-		result.TicketExpiresAt = ticket.ExpiresAt
-	}
-	// Never expose the map containing the other participants' credentials.
-	reply(w, 200, result)
-}
-
-func (server *Server) Expire() { server.mu.Lock(); defer server.mu.Unlock(); server.expireLocked() }
-func (server *Server) expireLocked() {
-	now := server.now()
-	for id, lobby := range server.lobbies {
-		if !lobby.Allocating && !now.Before(lobby.expires) {
-			for _, who := range lobby.Participants {
-				if server.byPlayer[who] == id {
-					delete(server.byPlayer, who)
-				}
-			}
-			delete(server.lobbies, id)
-		}
-	}
-	for id, ticket := range server.tickets {
-		if ticket.roomID != "" {
-			group := server.lobbies[ticket.roomID]
-			if group != nil && group.Allocating {
-				continue
-			}
-			if group == nil {
-				delete(server.tickets, id)
-				continue
-			}
-		}
-		if !now.Before(ticket.expires) {
-			if server.byPlayer[ticket.player] == id {
-				delete(server.byPlayer, ticket.player)
-			}
-			delete(server.tickets, id)
-		}
-	}
-
-	server.queue = slices.DeleteFunc(server.queue, func(id string) bool { return server.tickets[id] == nil || server.tickets[id].Status != "queued" })
-}
-
-// Restore imports node-owned active matches after coordinator restart.
-// It never creates a replacement room or changes existing room authority.
-func (server *Server) Restore(allocation Allocation, participants []string) error {
-	if !protocol.ValidID(allocation.RoomID) || !protocol.ValidID(allocation.RoomInstanceID) || len(participants) == 0 || len(participants) > 16 {
-		return errors.New("invalid recovered match")
-	}
-	server.mu.Lock()
-	defer server.mu.Unlock()
-	server.expireLocked()
-	if existing := server.lobbies[allocation.RoomID]; existing != nil {
-		if existing.allocation != nil && existing.allocation.RoomInstanceID == allocation.RoomInstanceID {
-			return nil
-		}
-		return errors.New("recovered room conflicts with coordinator state")
-	}
-	for _, participant := range participants {
-		if !protocol.ValidID(participant) || server.byPlayer[participant] != "" {
-			return errors.New("recovered participant conflicts with coordinator state")
-		}
-	}
-	copy := allocation
-	server.lobbies[allocation.RoomID] = &lobby{Revision: 1, Visibility: "private", Ready: map[string]bool{}, ID: allocation.RoomID, OwnerID: participants[0], Participants: slices.Clone(participants), Capacity: len(participants), Status: "matched", application: allocation.ApplicationProtocol, expires: allocation.ExpiresAt, allocation: &copy}
-	for _, participant := range participants {
-		server.byPlayer[participant] = allocation.RoomID
-	}
-	return nil
-}
-
 func (server *Server) renewSession(w http.ResponseWriter, r *http.Request) {
 	var request struct{}
 	if !httpx.DecodeExact(w, r, &request) {
@@ -464,52 +196,194 @@ func (server *Server) renewSession(w http.ResponseWriter, r *http.Request) {
 	reply(w, 200, map[string]any{"participantId": claims.PlayerID, "token": token, "expiresAt": claims.ExpiresAt, "expiresInSeconds": max(1, int(claims.ExpiresAt.Sub(server.now())/time.Second))})
 }
 
-// EndMatch releases lobby/queue ownership only after its exact node authority has ended.
-func (server *Server) EndMatch(id, instance string) {
-	server.mu.Lock()
-	defer server.mu.Unlock()
-	server.endMatchLocked(id, instance)
+func writeBusinessError(w http.ResponseWriter, err error) {
+	failure, ok := errors.AsType[*Error](err)
+	if !ok {
+		problem(w, http.StatusServiceUnavailable, "control unavailable")
+		return
+	}
+	if failure.Kind == "invalid" {
+		httpx.WriteInvalid(w)
+		return
+	}
+	status := http.StatusServiceUnavailable
+	switch failure.Kind {
+	case "forbidden":
+		status = http.StatusForbidden
+	case "not_found":
+		status = http.StatusNotFound
+	case "conflict":
+		status = http.StatusConflict
+	case "gone":
+		status = http.StatusGone
+	}
+	problem(w, status, failure.Message)
 }
 
-func (server *Server) endMatchLocked(id, instance string) {
-	lobby := server.lobbies[id]
-	if lobby == nil || lobby.Status == "ended" {
-		return
-	}
-	if lobby.allocation != nil && lobby.allocation.RoomInstanceID != instance {
-		return
-	}
-	if lobby.Status != "matched" && !lobby.AllocationPending {
-		return
-	}
-	lobby.Status = "ended"
-	lobby.AllocationPending = false
-	lobby.Allocating = false
-	lobby.expires = server.now().Add(2 * time.Minute)
-	for _, participant := range lobby.Participants {
-		if server.byPlayer[participant] == id {
-			delete(server.byPlayer, participant)
-		}
-	}
-	for _, ticket := range server.tickets {
-		if ticket.roomID == id {
-			ticket.Status = "ended"
-			ticket.Assignment = nil
-			ticket.expires = lobby.expires
-		}
-	}
+type revisionRequest struct {
+	Revision uint32 `json:"revision"`
 }
 
-func (server *Server) ReconcileLocal(exists func(string) bool) {
-	server.mu.Lock()
-	var ended []struct{ id, instance string }
-	for id, lobby := range server.lobbies {
-		if lobby.allocation != nil && lobby.Status == "matched" && !exists(lobby.allocation.RoomInstanceID) {
-			ended = append(ended, struct{ id, instance string }{id, lobby.allocation.RoomInstanceID})
+func (server *Server) create(w http.ResponseWriter, r *http.Request) {
+	var request struct {
+		Capacity            int    `json:"capacity"`
+		ApplicationProtocol string `json:"applicationProtocol"`
+		Visibility          string `json:"visibility"`
+	}
+	if !httpx.DecodeExact(w, r, &request, "capacity", "applicationProtocol", "visibility") {
+		return
+	}
+	result, err := server.Manager.Create(player(r), request.Capacity, request.ApplicationProtocol, request.Visibility)
+	if err != nil {
+		writeBusinessError(w, err)
+		return
+	}
+	reply(w, http.StatusCreated, result)
+}
+
+func (server *Server) get(w http.ResponseWriter, r *http.Request) {
+	result, err := server.Manager.Get(player(r), r.PathValue("id"))
+	if err != nil {
+		writeBusinessError(w, err)
+		return
+	}
+	reply(w, http.StatusOK, result)
+}
+
+func (server *Server) preview(w http.ResponseWriter, r *http.Request) {
+	result, err := server.Manager.Preview(r.PathValue("id"))
+	if err != nil {
+		writeBusinessError(w, err)
+		return
+	}
+	reply(w, http.StatusOK, result)
+}
+
+func (server *Server) list(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	for key, values := range query {
+		if len(values) != 1 || key != "applicationProtocol" && key != "cursor" && key != "limit" {
+			httpx.WriteInvalid(w)
+			return
 		}
 	}
-	server.mu.Unlock()
-	for _, room := range ended {
-		server.EndMatch(room.id, room.instance)
+	limit := 50
+	if raw := query.Get("limit"); raw != "" {
+		var err error
+		limit, err = strconv.Atoi(raw)
+		if err != nil {
+			httpx.WriteInvalid(w)
+			return
+		}
 	}
+	result, err := server.Manager.List(query.Get("applicationProtocol"), query.Get("cursor"), limit)
+	if err != nil {
+		writeBusinessError(w, err)
+		return
+	}
+	reply(w, http.StatusOK, result)
+}
+
+func (server *Server) join(w http.ResponseWriter, r *http.Request) {
+	var request revisionRequest
+	if !httpx.DecodeExact(w, r, &request, "revision") {
+		return
+	}
+	result, err := server.Manager.Join(player(r), r.PathValue("id"), request.Revision)
+	if err != nil {
+		writeBusinessError(w, err)
+		return
+	}
+	reply(w, http.StatusOK, result)
+}
+
+func (server *Server) ready(w http.ResponseWriter, r *http.Request) {
+	var request struct {
+		Revision uint32 `json:"revision"`
+		Ready    bool   `json:"ready"`
+	}
+	if !httpx.DecodeExact(w, r, &request, "revision", "ready") {
+		return
+	}
+	result, err := server.Manager.Ready(player(r), r.PathValue("id"), request.Revision, request.Ready)
+	if err != nil {
+		writeBusinessError(w, err)
+		return
+	}
+	reply(w, http.StatusOK, result)
+}
+
+func (server *Server) leave(w http.ResponseWriter, r *http.Request) {
+	var request revisionRequest
+	if !httpx.DecodeExact(w, r, &request, "revision") {
+		return
+	}
+	result, err := server.Manager.Leave(player(r), r.PathValue("id"), request.Revision)
+	if err != nil {
+		writeBusinessError(w, err)
+		return
+	}
+	if result == nil {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+	reply(w, http.StatusOK, result)
+}
+
+func (server *Server) start(w http.ResponseWriter, r *http.Request) {
+	var request revisionRequest
+	if !httpx.DecodeExact(w, r, &request, "revision") {
+		return
+	}
+	if err := server.Manager.Start(r.Context(), player(r), r.PathValue("id"), request.Revision); err != nil {
+		writeBusinessError(w, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (server *Server) assignment(w http.ResponseWriter, r *http.Request) {
+	refresh := r.Method == http.MethodPost
+	if refresh {
+		var request struct{}
+		if !httpx.DecodeExact(w, r, &request) {
+			return
+		}
+	}
+	result, err := server.Manager.Assignment(r.Context(), player(r), r.PathValue("id"), refresh)
+	if err != nil {
+		writeBusinessError(w, err)
+		return
+	}
+	reply(w, http.StatusOK, result)
+}
+
+func (server *Server) enqueue(w http.ResponseWriter, r *http.Request) {
+	request, ok := readGroup(w, r)
+	if !ok {
+		return
+	}
+	result, err := server.Manager.Enqueue(r.Context(), player(r), request.Capacity, request.ApplicationProtocol)
+	if err != nil {
+		writeBusinessError(w, err)
+		return
+	}
+	reply(w, http.StatusCreated, result)
+}
+
+func (server *Server) ticket(w http.ResponseWriter, r *http.Request) {
+	result, err := server.Manager.Ticket(r.Context(), player(r), r.PathValue("id"))
+	if err != nil {
+		writeBusinessError(w, err)
+		return
+	}
+	reply(w, http.StatusOK, result)
+}
+
+func (server *Server) cancel(w http.ResponseWriter, r *http.Request) {
+	if err := server.Manager.Cancel(player(r), r.PathValue("id")); err != nil {
+		writeBusinessError(w, err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }

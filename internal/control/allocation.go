@@ -3,6 +3,7 @@ package control
 import (
 	"context"
 	"errors"
+	"maps"
 	"slices"
 	"time"
 
@@ -69,37 +70,38 @@ func (local LocalAllocator) Refresh(_ context.Context, allocation Allocation, pa
 	return local.Relay.RefreshTicket(allocation.RoomInstanceID, participant)
 }
 
-// prepareAllocationLocked freezes the roster before the caller releases server.mu.
-func (server *Server) prepareAllocationLocked(group *lobby) []string {
+// prepareAllocationLocked freezes the roster before the caller releases manager.mu.
+func (manager *Manager) prepareAllocationLocked(group *lobby) []string {
 	group.Allocating = true
 	group.AllocationPending = true
 	return slices.Clone(group.Participants)
 }
 
-// allocate commits only to the same live group; network calls never hold server.mu.
-func (server *Server) allocate(ctx context.Context, group *lobby, participants []string) error {
-	allocation, err := server.allocator.Allocate(ctx, group.ID, group.application, participants)
-	server.mu.Lock()
-	defer server.mu.Unlock()
-	if server.lobbies[group.ID] != group || group.Status != "open" || !group.Allocating {
+// allocate commits only to the same live group; network calls never hold manager.mu.
+func (manager *Manager) allocate(ctx context.Context, group *lobby, participants []string) error {
+	allocation, err := manager.allocator.Allocate(ctx, group.ID, group.application, participants)
+	manager.mu.Lock()
+	defer manager.mu.Unlock()
+	if manager.lobbies[group.ID] != group || group.Status != "open" || !group.Allocating {
 		return relay.ErrGone
 	}
 	group.Allocating = false
 	if err != nil {
 		if errors.Is(err, relay.ErrGone) {
-			server.endMatchLocked(group.ID, "")
+			manager.endMatchLocked(group.ID, "")
 		} else if errors.Is(err, relay.ErrCapacity) || errors.Is(err, relay.ErrInvalid) || errors.Is(err, relay.ErrClosed) {
 			group.AllocationPending = false
 		}
-		server.expireLocked()
+		manager.expireLocked()
 		return err
 	}
 	group.AllocationPending = false
+	allocation.Tickets = maps.Clone(allocation.Tickets)
 	group.allocation = &allocation
 	group.expires = allocation.ExpiresAt
 	group.Status = "matched"
 	group.Revision++
-	for _, ticket := range server.tickets {
+	for _, ticket := range manager.tickets {
 		if ticket.roomID == group.ID {
 			assignment := allocation.Assignment(ticket.player)
 			ticket.Assignment = &assignment

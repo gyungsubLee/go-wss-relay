@@ -411,3 +411,58 @@ func TestQueueFailureAfterFormedDeadlineExpiresTogether(t *testing.T) {
 		t.Fatal("failed allocation retained an expired group, ticket or membership")
 	}
 }
+
+// A stalled client must not hold the lock needed by independent lobby changes.
+func TestBlockedHTTPResponseDoesNotBlockManager(t *testing.T) {
+	f := newFixture(t)
+	alice, _ := f.guest()
+	bob, _ := f.guest()
+	writer := &blockedResponseWriter{header: make(http.Header), entered: make(chan struct{}), release: make(chan struct{})}
+	firstDone := make(chan struct{})
+	request := httptest.NewRequest("POST", "/v2/api/lobbies", bytes.NewBufferString(`{"capacity":2,"applicationProtocol":"demo.v1","visibility":"private"}`))
+	request.Header.Set("Authorization", "Bearer "+alice)
+	request.Header.Set("Content-Type", "application/json")
+	go func() { f.control.ServeHTTP(writer, request); close(firstDone) }()
+	select {
+	case <-writer.entered:
+	case <-time.After(2 * time.Second):
+		close(writer.release)
+		t.Fatal("first response did not reach writer")
+	}
+	secondDone := make(chan int, 1)
+	go func() {
+		request := httptest.NewRequest("POST", "/v2/api/lobbies", bytes.NewBufferString(`{"capacity":2,"applicationProtocol":"demo.v1","visibility":"private"}`))
+		request.Header.Set("Authorization", "Bearer "+bob)
+		request.Header.Set("Content-Type", "application/json")
+		response := httptest.NewRecorder()
+		f.control.ServeHTTP(response, request)
+		secondDone <- response.Code
+	}()
+	var status int
+	select {
+	case status = <-secondDone:
+	case <-time.After(2 * time.Second):
+		close(writer.release)
+		<-firstDone
+		<-secondDone
+		t.Fatal("blocked HTTP response prevented independent lobby change")
+	}
+	close(writer.release)
+	<-firstDone
+	if status != http.StatusCreated {
+		t.Fatalf("independent create: status %d", status)
+	}
+}
+
+type blockedResponseWriter struct {
+	header           http.Header
+	entered, release chan struct{}
+}
+
+func (w *blockedResponseWriter) Header() http.Header { return w.header }
+func (w *blockedResponseWriter) WriteHeader(int)     {}
+func (w *blockedResponseWriter) Write(data []byte) (int, error) {
+	close(w.entered)
+	<-w.release
+	return len(data), nil
+}

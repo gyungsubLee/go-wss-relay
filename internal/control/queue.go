@@ -2,41 +2,43 @@ package control
 
 import (
 	"context"
-	"net/http"
 	"slices"
 	"time"
+
+	"github.com/gyungsubLee/go-wss-relay/internal/protocol"
 )
 
-func (server *Server) enqueue(w http.ResponseWriter, r *http.Request) {
-	request, ok := readGroup(w, r)
-	if !ok {
-		return
+func (manager *Manager) Enqueue(ctx context.Context, player string, capacity int, application string) (MatchTicket, error) {
+	if capacity < 2 || capacity > 16 || !protocol.ValidID(application) || !protocol.ValidID(player) {
+		return MatchTicket{}, &Error{"invalid", "invalid request"}
 	}
 	id, err := randomID("q-")
 	if err != nil {
-		problem(w, 503, "random source failed")
-		return
+		return MatchTicket{}, &Error{"unavailable", "random source failed"}
 	}
-	server.mu.Lock()
-	server.expireLocked()
-	who := player(r)
-	if server.byPlayer[who] != "" {
-		server.mu.Unlock()
-		problem(w, 409, "already in lobby or queue")
-		return
+	manager.mu.Lock()
+	manager.expireLocked()
+	if manager.byPlayer[player] != "" {
+		manager.mu.Unlock()
+		return MatchTicket{}, &Error{"conflict", "already in lobby or queue"}
 	}
-	if len(server.tickets) >= 4096 {
-		server.mu.Unlock()
-		problem(w, 503, "queue capacity exhausted")
-		return
+	if len(manager.tickets) >= 4096 {
+		manager.mu.Unlock()
+		return MatchTicket{}, &Error{"unavailable", "queue capacity exhausted"}
 	}
-	ticket := &matchTicket{ID: id, Status: "queued", player: who, application: request.ApplicationProtocol, capacity: request.Capacity, expires: server.now().Add(2 * time.Minute)}
-	server.tickets[id] = ticket
-	server.byPlayer[who] = id
-	server.queue = append(server.queue, id)
+	ticket := &matchTicket{
+		MatchTicket: MatchTicket{ID: id, Status: "queued"},
+		player:      player,
+		application: application,
+		capacity:    capacity,
+		expires:     manager.now().Add(2 * time.Minute),
+	}
+	manager.tickets[id] = ticket
+	manager.byPlayer[player] = id
+	manager.queue = append(manager.queue, id)
 	var candidates []*matchTicket
-	for _, queuedID := range server.queue {
-		candidate := server.tickets[queuedID]
+	for _, queuedID := range manager.queue {
+		candidate := manager.tickets[queuedID]
 		if candidate != nil && candidate.roomID == "" && candidate.application == ticket.application && candidate.capacity == ticket.capacity {
 			candidates = append(candidates, candidate)
 		}
@@ -45,92 +47,99 @@ func (server *Server) enqueue(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	var grouped *lobby
-	if len(candidates) == ticket.capacity && len(server.lobbies) < 4096 {
+	if len(candidates) == ticket.capacity && len(manager.lobbies) < 4096 {
 		roomID, err := randomID("l-")
 		if err != nil {
-			server.mu.Unlock()
-			problem(w, 503, "random source failed")
-			return
+			manager.mu.Unlock()
+			return MatchTicket{}, &Error{"unavailable", "random source failed"}
 		}
-		expires := server.now().Add(2 * time.Minute)
+		expires := manager.now().Add(2 * time.Minute)
 		participants := make([]string, 0, len(candidates))
 		for _, candidate := range candidates {
 			candidate.roomID = roomID
 			candidate.expires = expires
-			server.byPlayer[candidate.player] = roomID
+			manager.byPlayer[candidate.player] = roomID
 			participants = append(participants, candidate.player)
 		}
-		grouped = &lobby{Revision: 1, Visibility: "private", Ready: map[string]bool{}, ID: roomID, OwnerID: participants[0], Participants: participants, Capacity: ticket.capacity, Status: "open", application: ticket.application, expires: expires}
-		server.lobbies[roomID] = grouped
+		grouped = &lobby{
+			Lobby: Lobby{
+				Revision:     1,
+				Visibility:   "private",
+				Ready:        map[string]bool{},
+				ID:           roomID,
+				OwnerID:      participants[0],
+				Participants: participants,
+				Capacity:     ticket.capacity,
+				Status:       "open",
+			},
+			application: ticket.application,
+			expires:     expires,
+		}
+		manager.lobbies[roomID] = grouped
 	}
-	server.mu.Unlock()
+	manager.mu.Unlock()
 	if grouped != nil {
-		server.allocateQueue(r.Context(), grouped.ID)
+		manager.allocateQueue(ctx, grouped.ID)
 	}
-	server.mu.Lock()
-	defer server.mu.Unlock()
-	reply(w, 201, ticket)
+	manager.mu.Lock()
+	defer manager.mu.Unlock()
+	return ticket.view(), nil
 }
 
 // A formed group keeps the same room ID on retries, including ambiguous network outcomes.
-func (server *Server) allocateQueue(ctx context.Context, id string) {
-	server.mu.Lock()
-	group := server.lobbies[id]
+func (manager *Manager) allocateQueue(ctx context.Context, id string) {
+	manager.mu.Lock()
+	group := manager.lobbies[id]
 	if group == nil || group.Allocating || group.Status != "open" {
-		server.mu.Unlock()
+		manager.mu.Unlock()
 		return
 	}
-	participants := server.prepareAllocationLocked(group)
-	server.mu.Unlock()
-	_ = server.allocate(ctx, group, participants)
+	participants := manager.prepareAllocationLocked(group)
+	manager.mu.Unlock()
+	_ = manager.allocate(ctx, group, participants)
 }
 
-func (server *Server) ticket(w http.ResponseWriter, r *http.Request) {
-	server.mu.Lock()
-	server.expireLocked()
-	ticket := server.tickets[r.PathValue("id")]
+func (manager *Manager) Ticket(ctx context.Context, player, id string) (MatchTicket, error) {
+	manager.mu.Lock()
+	manager.expireLocked()
+	ticket := manager.tickets[id]
 	if ticket == nil {
-		server.mu.Unlock()
-		problem(w, 404, "ticket not found")
-		return
+		manager.mu.Unlock()
+		return MatchTicket{}, &Error{"not_found", "ticket not found"}
 	}
-	if ticket.player != player(r) {
-		server.mu.Unlock()
-		problem(w, 403, "not your ticket")
-		return
+	if ticket.player != player {
+		manager.mu.Unlock()
+		return MatchTicket{}, &Error{"forbidden", "not your ticket"}
 	}
 	roomID := ticket.roomID
-	server.mu.Unlock()
+	manager.mu.Unlock()
 	if roomID != "" {
-		server.allocateQueue(r.Context(), roomID)
+		manager.allocateQueue(ctx, roomID)
 	}
-	server.mu.Lock()
-	defer server.mu.Unlock()
-	if server.tickets[ticket.ID] != ticket {
-		problem(w, 404, "ticket not found")
-		return
+	manager.mu.Lock()
+	defer manager.mu.Unlock()
+	if manager.tickets[ticket.ID] != ticket {
+		return MatchTicket{}, &Error{"not_found", "ticket not found"}
 	}
-	reply(w, 200, ticket)
+	return ticket.view(), nil
 }
-func (server *Server) cancel(w http.ResponseWriter, r *http.Request) {
-	server.mu.Lock()
-	defer server.mu.Unlock()
-	server.expireLocked()
-	ticket := server.tickets[r.PathValue("id")]
+
+func (manager *Manager) Cancel(player, id string) error {
+	manager.mu.Lock()
+	defer manager.mu.Unlock()
+	manager.expireLocked()
+	ticket := manager.tickets[id]
 	if ticket == nil {
-		problem(w, 404, "ticket not found")
-		return
+		return &Error{"not_found", "ticket not found"}
 	}
-	if ticket.player != player(r) {
-		problem(w, 403, "not your ticket")
-		return
+	if ticket.player != player {
+		return &Error{"forbidden", "not your ticket"}
 	}
 	if ticket.roomID != "" {
-		problem(w, 409, "match already forming")
-		return
+		return &Error{"conflict", "match already forming"}
 	}
-	delete(server.tickets, ticket.ID)
-	delete(server.byPlayer, ticket.player)
-	server.queue = slices.DeleteFunc(server.queue, func(id string) bool { return id == ticket.ID })
-	w.WriteHeader(204)
+	delete(manager.tickets, ticket.ID)
+	delete(manager.byPlayer, ticket.player)
+	manager.queue = slices.DeleteFunc(manager.queue, func(id string) bool { return id == ticket.ID })
+	return nil
 }
