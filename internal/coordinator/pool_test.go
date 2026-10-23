@@ -393,7 +393,7 @@ func controlRequest(t *testing.T, api *control.Server, method, path, token strin
 
 func readyControlLobby(t *testing.T, pool *Pool) (*control.Server, string, string, string) {
 	t.Helper()
-	auth, err := playerauth.New(playerauth.Config{OperatorSecret: [32]byte{1}, TokenTTL: playerauth.HardTokenTTL, StableKey: true})
+	auth, err := playerauth.New(playerauth.Config{OperatorSecret: [32]byte{1}, TokenTTL: playerauth.HardTokenTTL})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -504,6 +504,30 @@ func TestNode503RequiresBoundedAllocationRefusal(t *testing.T) {
 			err := n.call(t.Context(), "POST", "/v2/reservations", nil, nil)
 			if err == nil || errors.Is(err, relay.ErrCapacity) != tc.definitive {
 				t.Fatalf("definitive=%t, error=%v", tc.definitive, err)
+			}
+		})
+	}
+}
+
+func TestPlacementRejectsQueuePercentileOverflow(t *testing.T) {
+	for _, p95 := range []int64{-1, -2, 101, 100, 0} {
+		t.Run(fmt.Sprint(p95), func(t *testing.T) {
+			a := newTestNode(t, "a")
+			pool := newPool(t, a)
+			pool.mu.Lock()
+			pool.nodes["a"].report.Stats.QueueP95UpperMs = p95
+			pool.nodes["a"].report.Stats.GoCPUReady = false
+			pool.mu.Unlock()
+			_, err := pool.Allocate(t.Context(), "overflow", "demo.v1", []string{"alice"})
+			rejected := p95 < 0 || p95 > 100
+			if rejected && !errors.Is(err, relay.ErrCapacity) {
+				t.Fatalf("p95=%d: got %v, want capacity refusal", p95, err)
+			}
+			if !rejected && err != nil {
+				t.Fatalf("p95=%d: %v", p95, err)
+			}
+			if rejected && len(a.relay.Inventory().Rooms) != 0 {
+				t.Fatal("refused node received a reservation")
 			}
 		})
 	}

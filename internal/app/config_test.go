@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"context"
@@ -122,7 +122,7 @@ func TestRunRejectsUnsafeOperatorTokenFiles(t *testing.T) {
 			}
 			ctx, cancel := context.WithCancel(t.Context())
 			cancel()
-			err := run(ctx, []string{"--operator-token-file", path, "--public-url", "ws://127.0.0.1/v2/relay", "--listen", "127.0.0.1:0", "--management-listen", "127.0.0.1:0"})
+			err := Run(ctx, []string{"--operator-token-file", path, "--public-url", "ws://127.0.0.1/v2/relay", "--listen", "127.0.0.1:0", "--management-listen", "127.0.0.1:0"})
 			if err == nil {
 				t.Fatal("unsafe operator token file was accepted")
 			}
@@ -142,7 +142,7 @@ func TestRunAcceptsCanonicalOperatorTokenFiles(t *testing.T) {
 			}
 			ctx, cancel := context.WithCancel(t.Context())
 			cancel()
-			if err := run(ctx, []string{"--operator-token-file", path, "--public-url", "ws://127.0.0.1/v2/relay", "--listen", "127.0.0.1:0", "--management-listen", "127.0.0.1:0"}); err != nil {
+			if err := Run(ctx, []string{"--operator-token-file", path, "--public-url", "ws://127.0.0.1/v2/relay", "--listen", "127.0.0.1:0", "--management-listen", "127.0.0.1:0"}); err != nil {
 				t.Fatal(err)
 			}
 		})
@@ -161,7 +161,7 @@ func TestOperatorTokenPreservesStablePlayerToken(t *testing.T) {
 		t.Fatal(err)
 	}
 	now := time.Date(2026, 10, 23, 0, 0, 0, 0, time.UTC)
-	config := playerauth.Config{OperatorSecret: secret, StableKey: true, TokenTTL: playerauth.HardTokenTTL, Now: func() time.Time { return now }}
+	config := playerauth.Config{OperatorSecret: secret, TokenTTL: playerauth.HardTokenTTL, Now: func() time.Time { return now }}
 	issuer, err := playerauth.New(config)
 	if err != nil {
 		t.Fatal(err)

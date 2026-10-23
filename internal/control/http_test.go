@@ -30,7 +30,7 @@ func newFixture(t *testing.T) apiFixture {
 	}
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
-	auth, err := playerauth.New(playerauth.Config{OperatorSecret: [32]byte{1}, TokenTTL: playerauth.HardTokenTTL, StableKey: true})
+	auth, err := playerauth.New(playerauth.Config{OperatorSecret: [32]byte{1}, TokenTTL: playerauth.HardTokenTTL})
 	if err != nil {
 		t.Fatal(err)
 	}
