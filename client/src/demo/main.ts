@@ -23,6 +23,7 @@ let poll: ReturnType<typeof setTimeout> | undefined
 let ownReady = false
 let joined = false
 let disposed = false
+let entryPending = false
 let participationEpoch = 0
 let waitingLobby: Lobby | undefined
 let waitingTicket: MatchTicket | undefined
@@ -150,21 +151,36 @@ async function action(operation: () => Promise<void>, epoch = participationEpoch
   }
 }
 
-button('create').onclick = () => {
+function entryAction(operation: (epoch: number) => Promise<void>): void {
+  if (disposed || joined || entryPending || lobbyId || ticketId) return
+  entryPending = true
   const epoch = invalidateWaiting()
+  for (const id of ['create', 'join', 'match']) button(id).disabled = true
   void action(async () => {
-    const lobby = await api.create({ applicationProtocol: snakeProtocol })
-    if (isWaiting(epoch)) enterLobby(lobby, epoch)
+    try {
+      await operation(epoch)
+    } finally {
+      entryPending = false
+      if (isWaiting(epoch) && !lobbyId && !ticketId) {
+        for (const id of ['create', 'join', 'match']) button(id).disabled = false
+      }
+    }
   }, epoch)
 }
+
+button('create').onclick = () => {
+  entryAction(async epoch => {
+    const lobby = await api.create({ applicationProtocol: snakeProtocol })
+    if (isWaiting(epoch)) enterLobby(lobby, epoch)
+  })
+}
 button('join').onclick = () => {
-  const epoch = invalidateWaiting()
-  void action(async () => {
+  entryAction(async epoch => {
     const id = roomInput.value.trim()
     if (!id) throw new Error('방 코드를 입력하세요.')
     const lobby = await api.join(id, snakeProtocol)
     if (isWaiting(epoch)) enterLobby(lobby, epoch)
-  }, epoch)
+  })
 }
 button('ready').onclick = () => {
   const epoch = participationEpoch
@@ -192,16 +208,13 @@ button('start').onclick = () => {
   })
 }
 button('match').onclick = () => {
-  const epoch = invalidateWaiting()
-  void action(async () => {
-    button('match').disabled = true
+  entryAction(async epoch => {
     const ticket = await api.queue({ applicationProtocol: snakeProtocol })
     if (!isWaiting(epoch)) return
     ticketId = ticket.id
-    for (const id of ['create', 'join']) button(id).disabled = true
     button('cancel').hidden = false
     scheduleTicket(ticket, epoch)
-  }, epoch)
+  })
 }
 button('cancel').onclick = () => {
   const ticket = waitingTicket
@@ -258,9 +271,6 @@ function retryWaiting(error: unknown, epoch: number): boolean {
 function enterLobby(lobby: Lobby, epoch: number): void {
   lobbyId = lobby.id
   roomInput.value = lobby.id
-  button('create').disabled = true
-  button('join').disabled = true
-  button('match').disabled = true
   scheduleLobby(lobby, epoch)
 }
 function scheduleLobby(lobby: Lobby, epoch: number): void {
