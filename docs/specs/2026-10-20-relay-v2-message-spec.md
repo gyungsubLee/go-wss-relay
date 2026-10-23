@@ -2,11 +2,13 @@
 
 작성일: 2026-10-20
 
-상태: 목표 계약. 아래 스키마를 api/relay/v2/relay.proto에 적용했다.
+상태: 2026-10-23 현재 계약. 아래 스키마를 api/relay/v2/relay.proto에 적용했다.
 서버·공용 TS SDK·HTTPS 접속권 재발급·분산 배정에 이 계약을 적용했다. 검증 범위와 남은 항목은 [진행 감사](../evidence/v2/completion-audit.md)를 따른다.
 범위: 웹·Android 공용 WSS 중계. 좌표·충돌·점수의 게임 규칙은 애플리케이션 계약에서 정의한다.
 
-## 1. v1에서 바뀌는 계약
+## 1. 이전 계약과 비교
+
+다음 표는 전환 배경이다. v1 실행 코드·스키마·생성물·전용 검사는 제거했다. 이전 구현은 Git 이력에 있다.
 
 | v1 | v2 |
 |---|---|
@@ -93,7 +95,8 @@ Protobuf 인코더가 바이트 표현을 담당한다. 애플리케이션이 �
 ## 5. 전체 Protobuf 스키마
 
 아래 계약은 `api/relay/v2/relay.proto`에 구현했다. 생성 코드는 해당 파일을 단일 원본으로 사용한다.
-기존 v1 메시지는 이력과 회귀 검사를 위해 남겨 둔다.
+Go 생성 package alias `relayv2`는 wire 계약의 이름이다. 기능 모듈 `internal/relay`와 구분한다.
+현재 생성·breaking 검사는 고정한 v2 baseline만 사용한다. [구조 변경 증거](../evidence/v2/2026-10-23-structure-refactor.md)를 참고한다.
 
 ```proto
 syntax = "proto3";

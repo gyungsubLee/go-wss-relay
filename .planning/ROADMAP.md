@@ -1,201 +1,29 @@
-# Roadmap: Go Lobby & Relay Server
+# WSS 진행 계획
 
-## Overview
+2026-10-23 기준으로 v2 전용 구조와 로컬 검사를 마쳤다. 전체 제품 목표와 최종 리뷰는 진행 중이다.
+기준은 [원래 WSS 1-5단계 계획](../docs/plans/2026-10-20-web-android-wss-relay-refactor.md)이다.
 
-완료된 Relay 기반을 유지하면서 player identity, mutable Lobby와 FIFO Quick Match를 같은 단일 Go 프로세스에 추가한다. M1은 Unity build 없이 backend 전체 HTTP→UDP 흐름을 닫는다. 실제 client integration과 Unity 지원 matrix, 운영·패키징·성능은 M2가 소유한다.
+## 제품 단계
 
-## Milestones
+| 단계 | 확인한 범위 | 남은 조건 |
+|---|---|---|
+| 1. 계약 전환 | Go·TS relay.v2·17종 wire·고정 baseline | Android와 실제 바이너리 교환 |
+| 2. 단일 WSS 중계 | 실제 Chrome 로비·FIFO·상태·사건·복귀 | 실제 WebView 관찰 |
+| 3. SDK·복구 | epoch 격리·5초 본문 제한·실제 SDK 소켓 | 기기 중단·잠금·망 전환 |
+| 4. 전송량 검증 | 2026-10-22 TLS·뱀 본문·TCP 지연 측정 | 저속 실제 장치·무선 망·대상 호스트 수용량 |
+| 5. 노드 분산 | 실제 로컬 HTTPS·WSS 6개 시나리오·임시 호스트 보호 검사 | 실제 Linux 운영 배포·원격 CI |
 
-- [x] **Milestone 1 — Room/Lobby & Quick Match MVP** (Phases 1–5) — Complete 2026-08-20
-- [ ] **Milestone 2 — Client Integration & Single-Host Operation** (Phases 6–9)
+[완료 감사](../docs/evidence/v2/completion-audit.md)는 단계별 증거와 제한을 관리한다.
+2026-10-22 부하 측정을 구조 변경 후 성능 보장으로 바꾸지 않는다.
 
-## Phase Details
+## 구조 변경 작업
 
-### Phase 1: Wire Contract and Threat Boundary
+[승인한 실행 계획](../docs/superpowers/plans/2026-10-23-go-structure-refactor.md)의 Task 1-9는 구현·검사·개별 리뷰를 마쳤다.
+Task 10은 문서·증거·로컬 문서 검사를 정리했다. Task 10 독립 리뷰와 전체 브랜치 리뷰는 대기 중이다.
+이 작업은 원래 실기기·망·호스트 완료 조건을 닫지 않는다.
 
-**Goal:** Go와 C#이 동일한 bounded Relay wire/security contract를 사용한다.
+## 다음 행동
 
-**Mode:** mvp
-
-**Depends on:** Nothing
-
-**Requirements:** PROT-01, PROT-02
-
-**Status:** Complete — 2026-08-09
-
-**Plan:** [Phase 1 plan](../docs/superpowers/plans/2026-08-09-phase-1-wire-contract.md)
-
-**Evidence:** [Phase 1 evidence](../docs/evidence/m1/phase-1.md)
-
-### Phase 2: Relay Room and Session Kernel
-
-**Goal:** authenticated operator가 immutable Relay room과 grant lifecycle을 안전하게 제어한다.
-
-**Mode:** mvp
-
-**Depends on:** Phase 1
-
-**Requirements:** ROOM-01, ROOM-02, SESS-01
-
-**Status:** Complete — 2026-08-09
-
-**Plan:** [Phase 2 plan](../docs/superpowers/plans/2026-08-09-phase-2-in-memory-room-session.md)
-
-**Evidence:** [Phase 2 evidence](../docs/evidence/m1/phase-2.md)
-
-### Phase 3: Authenticated UDP Relay
-
-**Goal:** authenticated bound participant만 bounded resource로 same-room opaque UDP payload를 중계한다.
-
-**Mode:** mvp
-
-**Depends on:** Phase 2
-
-**Requirements:** ROOM-03, SESS-02~04, RELY-01~03, SAFE-01~03
-
-**Status:** Complete — 2026-08-10
-
-**Plan:** [Phase 3 plan](../docs/superpowers/plans/2026-08-09-phase-3-authenticated-udp-relay.md)
-
-**Evidence:** [Phase 3 evidence](../docs/evidence/m1/phase-3.md)
-
-### Phase 4: Player Identity and Lobby Lifecycle
-
-**Goal:** authenticated player가 public/private Lobby를 create/search/get/join/leave/ready/start하고 모든 mutation이 exact deadline, revision과 hard limit을 지킨다.
-
-**Mode:** mvp
-
-**Depends on:** Phase 3
-
-**Requirements:** AUTH-01, LOBBY-01, LOBBY-02, LOBBY-03, LOBBY-04
-
-**Success Criteria:**
-
-1. operator가 발급한 15분 Player Token만 player identity를 결정하며 tamper, expiry와 restart 후 token이 거부된다.
-2. public/private visibility, bounded list, membership exclusivity, capacity, owner transfer와 empty close가 원자적으로 동작한다.
-3. ready mutation은 revision을 검사하고 membership change가 ready를 reset하며 owner만 full/all-ready Lobby를 시작한다.
-4. successful start만 기존 Relay room과 caller-private assignment를 만든다.
-5. focused, concurrent, race와 HTTP integration tests가 통과한다.
-
-**Status:** Complete — 2026-08-20
-
-**Plan:** [M1 Phase 4–5 plan](../docs/superpowers/plans/2026-08-20-room-lobby-quick-match-m1.md)
-
-**Evidence:** [Phase 4 evidence](../docs/evidence/m1/phase-4.md)
-
-### Phase 5: Quick Match and Relay Assignment
-
-**Goal:** single-player FIFO tickets가 compatible group을 정확히 한 Relay match로 만들고 participant-private assignment를 제공한다.
-
-**Mode:** mvp
-
-**Depends on:** Phase 4
-
-**Requirements:** MATCH-01, MATCH-02, MATCH-03
-
-**Success Criteria:**
-
-1. exact `queue_key`와 capacity가 같은 live tickets만 FIFO로 match된다.
-2. cancel, exact expiry, capacity와 per-player ownership이 partial state 없이 적용된다.
-3. allocation failure가 ticket order를 보존하고 concurrent enqueue가 duplicate match/player/room을 만들지 않는다.
-4. Lobby start와 Quick Match 양쪽 HTTP→private grant→UDP bind→same-room exchange가 자동 end-to-end로 통과한다.
-
-**Status:** Complete — 2026-08-20
-
-**Plan:** [M1 Phase 4–5 plan](../docs/superpowers/plans/2026-08-20-room-lobby-quick-match-m1.md)
-
-**Evidence:** [Phase 5 evidence](../docs/evidence/m1/phase-5.md)
-
-#### Milestone 1 Completion Gate
-
-- [x] PROT-01부터 MATCH-03까지 M1 requirement 23개가 evidence에 매핑되어 통과한다.
-- [x] 단일 Go process가 operator HTTP, player HTTP, Lobby/Quick Match, Relay store와 UDP Relay를 외부 상태 없이 실행한다.
-- [x] 두 독립 client가 Lobby 및 Quick Match 경로에서 자기 grant만 받아 UDP payload를 교환한다.
-- [x] Steamworks, FishNet, Open Match runtime, Redis, database, Kubernetes, Agones와 Unity build가 M1 실행 경로에 없다.
-
-**Evidence:** [Milestone 1 evidence](../docs/evidence/m1/milestone-1.md)
-
-### Phase 6: Client SDK Integration
-
-**Goal:** 실제 game client가 정해진 뒤 C# API/Relay lifecycle을 통합하고 주장할 platform matrix를 검증한다.
-
-**Mode:** mvp
-
-**Depends on:** Milestone 1
-
-**Requirements:** UNITY-01, UNITY-02, UNITY-03
-
-**Status:** Not started — exact Unity/editor/device/network matrix intentionally undecided
-
-### Phase 7: Single-Host Runtime Operations
-
-**Goal:** configuration, private status, structured operations와 bounded drain을 제공한다.
-
-**Mode:** mvp
-
-**Depends on:** Phase 6
-
-**Requirements:** OPS-01, OPS-02, OPS-03, OPS-04
-
-**Status:** Not started
-
-### Phase 8: Static Packaging and Host Deployment
-
-**Goal:** reproducible CGO-free Linux artifact와 최소 container를 한 host에 안전하게 배포·복구한다.
-
-**Mode:** mvp
-
-**Depends on:** Phase 7
-
-**Requirements:** SHIP-01, SHIP-02, SHIP-03
-
-**Status:** Not started
-
-### Phase 9: Failure Drills and Performance Evidence
-
-**Goal:** failure recovery와 named load/soak profile의 correctness·resource·latency 주장을 재현한다.
-
-**Mode:** mvp
-
-**Depends on:** Phase 8
-
-**Requirements:** VERI-01, VERI-02, PERF-01, PERF-02
-
-**Status:** Not started
-
-#### Milestone 2 Completion Gate
-
-- [ ] 실제 client integration matrix와 lifecycle evidence가 통과한다.
-- [ ] 한 Docker host에서 같은 artifact를 configure, observe, drain, upgrade와 rollback한다.
-- [ ] failure/load/soak evidence가 resource와 latency 목표를 명시적으로 pass/fail 판정한다.
-
-## Requirement Coverage
-
-| Phase | Milestone | Requirement Count |
-|---|---|---:|
-| 1. Wire Contract and Threat Boundary | M1 | 2 |
-| 2. Relay Room and Session Kernel | M1 | 3 |
-| 3. Authenticated UDP Relay | M1 | 10 |
-| 4. Player Identity and Lobby Lifecycle | M1 | 5 |
-| 5. Quick Match and Relay Assignment | M1 | 3 |
-| 6. Client SDK Integration | M2 | 3 |
-| 7. Single-Host Runtime Operations | M2 | 4 |
-| 8. Static Packaging and Host Deployment | M2 | 3 |
-| 9. Failure Drills and Performance Evidence | M2 | 4 |
-| **Total** | **2 milestones** | **37** |
-
-## Progress
-
-**Execution Order:** Phase 1 → 2 → 3 → 4 → 5 → M1 gate → Phase 6 → 7 → 8 → 9 → M2 gate
-
-| Phase | Plans Complete | Status | Completed |
-|---|---:|---|---|
-| 1 | 1/1 | Complete | 2026-08-09 |
-| 2 | 1/1 | Complete | 2026-08-09 |
-| 3 | 1/1 | Complete | 2026-08-10 |
-| 4 | 1/1 | Complete | 2026-08-20 |
-| 5 | 1/1 | Complete | 2026-08-20 |
-| 6 | 0/unplanned | Not started | - |
-| 7 | 0/unplanned | Not started | - |
-| 8 | 0/unplanned | Not started | - |
-| 9 | 0/unplanned | Not started | - |
+독립 리뷰에서 문서·소스·실행 증거를 확인한다. 중요한 발견사항을 해결한 뒤 전체 브랜치 리뷰를 마친다.
+실기기가 준비되면 [Android 검증 절차](../docs/evidence/v2/android-device-validation.md)를 실행한다.
+운영 호스트 검증은 별도 승인 후 [운영 절차](../infrastructure/docs/operations.md)를 따른다.

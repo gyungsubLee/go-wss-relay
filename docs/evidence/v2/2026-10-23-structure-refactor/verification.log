@@ -1,0 +1,630 @@
+Selected original stdout/stderr and exit statuses; only tooling regression is excerpted.
+Commands with task-only fixture paths identify the recorded run, not retained launchers.
+
+=== final-go-race.log ===
+$ .tools/go/bin/go test -race ./...
+?   	github.com/gyungsubLee/go-wss-relay/cmd/dev-tls	[no test files]
+?   	github.com/gyungsubLee/go-wss-relay/cmd/relay-load	[no test files]
+?   	github.com/gyungsubLee/go-wss-relay/cmd/wire-check	[no test files]
+?   	github.com/gyungsubLee/go-wss-relay/cmd/wss-relay	[no test files]
+?   	github.com/gyungsubLee/go-wss-relay/gen/go/relay/v2	[no test files]
+ok  	github.com/gyungsubLee/go-wss-relay/internal/app	(cached)
+ok  	github.com/gyungsubLee/go-wss-relay/internal/control	(cached)
+ok  	github.com/gyungsubLee/go-wss-relay/internal/coordinator	(cached)
+ok  	github.com/gyungsubLee/go-wss-relay/internal/httpx	(cached)
+ok  	github.com/gyungsubLee/go-wss-relay/internal/operatortoken	(cached)
+ok  	github.com/gyungsubLee/go-wss-relay/internal/playerauth	(cached)
+ok  	github.com/gyungsubLee/go-wss-relay/internal/protocol	(cached)
+ok  	github.com/gyungsubLee/go-wss-relay/internal/relay	(cached)
+
+EXIT_STATUS=0
+
+=== final-go-vet.log ===
+$ .tools/go/bin/go vet ./...
+
+EXIT_STATUS=0
+
+=== final-go-fmt.log ===
+$ test -z "$(.tools/go/bin/gofmt -l cmd internal gen/go)"
+
+EXIT_STATUS=0
+
+=== final-go-vuln.log ===
+$ .tools/go/bin/go run golang.org/x/vuln/cmd/govulncheck@v1.8.0 ./...
+No vulnerabilities found.
+
+EXIT_STATUS=0
+
+=== final-go-package-graph.log ===
+$ .tools/go/bin/go list -deps ./...
+github.com/gyungsubLee/go-wss-relay/cmd/dev-tls
+github.com/gyungsubLee/go-wss-relay/gen/go/relay/v2
+github.com/gyungsubLee/go-wss-relay/internal/httpx
+github.com/gyungsubLee/go-wss-relay/internal/protocol
+github.com/gyungsubLee/go-wss-relay/internal/relay
+github.com/gyungsubLee/go-wss-relay/cmd/relay-load
+github.com/gyungsubLee/go-wss-relay/cmd/wire-check
+github.com/gyungsubLee/go-wss-relay/internal/playerauth
+github.com/gyungsubLee/go-wss-relay/internal/control
+github.com/gyungsubLee/go-wss-relay/internal/operatortoken
+github.com/gyungsubLee/go-wss-relay/internal/coordinator
+github.com/gyungsubLee/go-wss-relay/internal/app
+github.com/gyungsubLee/go-wss-relay/cmd/wss-relay
+EXIT_STATUS=0
+
+=== final-process-run.log ===
+$ .tools/go/bin/go run ./cmd/dev-tls --out .superpowers/sdd/2026-10-23-go-structure-refactor/final-process-fixtures/dev-tls
+
+EXIT_STATUS=0
+
+$ node --disable-warning=ExperimentalWarning --experimental-transform-types client/scripts/.check-cluster-final-refactor.ts
+{"sameRoomSingleOwnerAndIsolation":true,"drainPreservesExistingRoomAndResume":true,"coordinatorRestartKeepsWssAndRecoversAssignments":true,"nodeCrashAndRestartDoNotResurrectOldRoom":true,"scaleOutRegistrationAffectsOnlyNewRooms":true,"drainedNodeExitsAfterLastRoom":true,"transport":"actual coordinator and relay child processes; HTTPS + WSS; explicit CA trust"}
+
+EXIT_STATUS=0
+
+$ node --disable-warning=ExperimentalWarning --experimental-transform-types client/scripts/.check-snake-final-refactor.ts http://127.0.0.1:58566
+{"protocol":"snake-demo.v1","bodyPoints":32,"fullStateBytes":679,"maxBodyPoints":64,"maxFullStateBytes":1127,"snapshot16Bytes":11337,"maxSnapshot16Bytes":18507,"fullBodyReceived":true,"ownerMayConnectAfterPeer":true,"unauthorizedSceneIgnored":true,"temporaryDisconnectKeepsAuthority":true,"authorityEndStateReceived":true,"permanentAuthorityDepartureObserved":true}
+
+EXIT_STATUS=0
+
+PASS: all62 source/runner/binary/public-cert bindings unchanged
+
+EXIT_STATUS=0
+
+=== final-process-snake-server.log ===
+2026/10/23 22:03:04 relay.v2 listening at 127.0.0.1:58566; management at 127.0.0.1:58567
+
+OWNED_SERVER_PID=31348; REAPED_EXIT_STATUS=0
+
+=== final-ci-yaml.log ===
+PASS: final CI YAML parses
+
+EXIT_STATUS=0
+
+=== logs/task-8-final-environment.log ===
++ sh -c uname -sm; node --version; npm --version; .tools/go/bin/go version; client/node_modules/.bin/protoc-gen-es --version
+Darwin arm64
+v24.3.0
+11.11.0
+go version go1.26.10 darwin/arm64
+protoc-gen-es v2.16.0
+
+exit_status=0
+
+=== logs/task-8-final-syntax.log ===
++ sh -n scripts/bootstrap-tools.sh scripts/generate-protocol.sh
+
+exit_status=0
+
+=== logs/task-8-final-yaml.log ===
++ ruby -e require "yaml"; ARGV.each { |path| YAML.load_file(path); puts "PASS: #{path}" } .github/workflows/ci.yml buf.gen.yaml buf.yaml
+PASS: .github/workflows/ci.yml
+PASS: buf.gen.yaml
+PASS: buf.yaml
+
+exit_status=0
+
+=== logs/task-8-final-bootstrap.log ===
++ make tools
+./scripts/bootstrap-tools.sh
+go version go1.26.10 darwin/arm64
+1.72.0
+libprotoc 35.1
+protoc-gen-go v1.36.11
+
+exit_status=0
+
+=== logs/task-8-final-generate.log ===
++ npm run proto --prefix client
+
+> @storio/wss-relay-client@0.1.0 proto
+> make -C .. proto-generate
+
+./scripts/bootstrap-tools.sh
+go version go1.26.10 darwin/arm64
+1.72.0
+libprotoc 35.1
+protoc-gen-go v1.36.11
+sh scripts/generate-protocol.sh
+
+exit_status=0
+
+=== logs/task-8-final-protocol.log ===
++ make protocol-check
+./scripts/bootstrap-tools.sh
+go version go1.26.10 darwin/arm64
+1.72.0
+libprotoc 35.1
+protoc-gen-go v1.36.11
+/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/bin/buf lint
+/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/bin/buf breaking --against api/relay/v2/relay-baseline.binpb
+sh scripts/generate-protocol.sh check
+GOCACHE=/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.cache/go-build GOMODCACHE=/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.cache/go-mod /Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/bin/go test ./internal/protocol ./internal/relay
+ok  	github.com/gyungsubLee/go-wss-relay/internal/protocol	(cached)
+ok  	github.com/gyungsubLee/go-wss-relay/internal/relay	1.952s
+
+exit_status=0
+
+=== logs/task-8-final-build.log ===
++ npm run build --prefix client
+
+> @storio/wss-relay-client@0.1.0 build
+> tsc --noEmit && vite build
+
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 94 modules transformed.
+rendering chunks...
+computing gzip size...
+../_Build/dist/build-profile.json             0.09 kB │ gzip:  0.10 kB
+../_Build/dist/index.html                     3.11 kB │ gzip:  1.53 kB
+../_Build/dist/assets/index-D4atbVeR.css      5.19 kB │ gzip:  1.84 kB
+../_Build/dist/assets/web-DfVWB9_r.js         0.76 kB │ gzip:  0.35 kB
+../_Build/dist/assets/debugger-Ck1-lATq.js   19.62 kB │ gzip:  7.68 kB
+../_Build/dist/assets/index-DqxFF9Kg.js     110.32 kB │ gzip: 34.40 kB
+
+✓ built in 422ms
+
+exit_status=0
+
+=== logs/task-8-final-lifecycle.log ===
++ npm run check:lifecycle --prefix client
+
+> @storio/wss-relay-client@0.1.0 check:lifecycle
+> node --disable-warning=ExperimentalWarning --experimental-transform-types scripts/check-lifecycle.ts
+
+PASS: stale refresh success/failure/invalid/finally, connect/close/leave/suspend/resume, input validation
+PASS: HTTP 200 stalled body aborted within the existing 5-second deadline
+PASS: HTTP 503 stalled body aborted within the existing 5-second deadline
+
+exit_status=0
+
+=== logs/task-8-final-wire-build.log ===
++ .tools/go/bin/go build -o out/wire-check ./cmd/wire-check
+
+exit_status=0
+
+=== logs/task-8-final-wire.log ===
++ node --disable-warning=ExperimentalWarning --experimental-transform-types client/scripts/check-wire.ts
+PASS: 17 Go→TS→Go body variants, including uint64 max
+
+exit_status=0
+
+=== logs/task-8-final-relay-build.log ===
++ .tools/go/bin/go build -o out/wss-relay ./cmd/wss-relay
+
+exit_status=0
+
+=== logs/task-8-final-sdk.log ===
++ npm run check --prefix client -- http://127.0.0.1:18098
+
+> @storio/wss-relay-client@0.1.0 check
+> node --disable-warning=ExperimentalWarning --experimental-transform-types scripts/check-sdk.ts http://127.0.0.1:18098
+
+PASS: bigint, HTTP lobby authorization, two real SDK sockets, coalescing, event receipt, reconnect, ticket reissue, suspend/resume
+
+exit_status=0
+
+=== logs/task-8-final-regression.log ===
+$ python3 scripts/check-protocol-tools.py
+exit_status=0
+exit_status=0
+exit_status=0
+exit_status=0
+exit_status=0
+exit_status=0
+exit_status=0
+exit_status=2
+PASS: schema + Go update rejects stale TS without changing outputs
+exit_status=0
+exit_status=0
+exit_status=0
+exit_status=2
+PASS: schema + TS update rejects stale Go without changing outputs
+exit_status=0
+PASS: updated Go and TS pass with a dirty working tree
+exit_status=2
+PASS: schema-only addition rejects stale outputs without changing them
+exit_status=0
+exit_status=0
+PASS: generation updates both languages and restored gate passes
+exit_status=2
+PASS: TS generator failure preserves both tracked outputs and baseline
+The v2 baseline is immutable; baseline replacement requires an explicit review.
+exit_status=2
+exit_status=0
+PASS: original schema/outputs restored; immutable baseline unchanged
+exit_status=0
+
+=== logs/task-9-green-operator-token.log ===
+$ python3 -u infrastructure/scripts/tests/operator-token.py
+operator token: all assertions passed
+token filename, canonical suffix and hardlink protection passed
+exclusive installation and bounded token reads passed
+
+EXIT_STATUS=0
+
+=== logs/task-9-green-traffic-budget.log ===
+$ python3 -u infrastructure/scripts/tests/traffic-budget.py
+traffic budget: accounting, persistent stop and cold-start gate assertions passed
+explicit initialization never resets existing ledger or marker
+
+EXIT_STATUS=0
+
+=== logs/task-9-green-shell.log ===
+$ bash -n infrastructure/scripts/check-deployment.sh infrastructure/scripts/deploy-backend.sh infrastructure/scripts/package-release.sh
+
+EXIT_STATUS=0
+
+=== logs/task-9-green-wrapper.log ===
+$ sh -n infrastructure/scripts/check-traffic-budget.sh
+
+EXIT_STATUS=0
+
+=== logs/task-9-round1-green.log ===
+$ python3 -u infrastructure/scripts/tests/deploy-backend.py
+PASS coordinator node-url upgrade
+PASS coordinator node-url upgrade
+PASS coordinator node-url upgrade
+PASS coordinator node-url upgrade
+PASS coordinator node-url upgrade
+PASS coordinator node-url upgrade
+PASS coordinator node-url upgrade
+PASS coordinator node-url upgrade
+PASS coordinator node-url upgrade
+PASS coordinator node-url upgrade
+PASS coordinator node-url upgrade
+PASS coordinator node-url upgrade
+PASS coordinator promotion upgrade
+PASS standalone capacity-spelling upgrade
+PASS standalone capacity-spelling upgrade
+PASS standalone capacity-spelling upgrade
+PASS standalone capacity-spelling upgrade
+PASS standalone capacity-spelling upgrade
+PASS standalone capacity-spelling upgrade
+PASS standalone promotion upgrade
+PASS standalone promotion upgrade
+PASS coordinator ca-type upgrade
+PASS coordinator ca-type upgrade
+PASS coordinator ca-type upgrade
+PASS coordinator ca-type upgrade
+PASS coordinator ca-type upgrade
+PASS coordinator promotion upgrade
+PASS coordinator promotion upgrade
+PASS standalone promotion upgrade
+PASS standalone promotion first
+PASS standalone health upgrade
+PASS standalone health first
+PASS standalone guard-latch upgrade
+PASS standalone guard-latch first
+PASS coordinator promotion upgrade
+PASS coordinator promotion first
+PASS coordinator health upgrade
+PASS coordinator health first
+PASS coordinator guard-latch upgrade
+PASS coordinator guard-latch first
+PASS relay promotion upgrade
+PASS relay promotion first
+PASS relay health upgrade
+PASS relay health first
+PASS relay guard-latch upgrade
+PASS relay guard-latch first
+PASS standalone lock upgrade
+PASS standalone marker upgrade
+PASS standalone missing-ledger upgrade
+PASS standalone injection upgrade
+PASS standalone unknown upgrade
+PASS standalone duplicate upgrade
+PASS standalone listen upgrade
+PASS standalone tls upgrade
+PASS standalone role upgrade
+PASS standalone capacity upgrade
+PASS standalone relative-file upgrade
+PASS standalone token-mode upgrade
+PASS standalone token-cr upgrade
+PASS standalone traffic upgrade
+PASS standalone caddy-env upgrade
+PASS standalone second-instance upgrade
+PASS standalone second-active upgrade
+PASS standalone caddy upgrade
+PASS standalone unit upgrade
+PASS standalone unlisted upgrade
+PASS standalone checksum upgrade
+PASS standalone same-sha upgrade
+PASS standalone traversal upgrade
+PASS standalone absolute upgrade
+PASS standalone symlink upgrade
+PASS standalone hardlink upgrade
+PASS standalone device upgrade
+PASS standalone special upgrade
+PASS standalone count upgrade
+PASS standalone size upgrade
+PASS coordinator nodes upgrade
+PASS coordinator invalid-ca upgrade
+PASS relay reserved-ip upgrade
+PASS real health checker: healthz 200, readyz 204, auth 401, upgrade 426; readiness 503 refused
+
+EXIT_STATUS=0
+
+=== logs/task-9-round1-package.log ===
+$ bash infrastructure/scripts/package-release.sh /Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.superpowers/sdd/2026-10-23-go-structure-refactor/task-9-linux-release.tar.gz
+Release archive: /Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.superpowers/sdd/2026-10-23-go-structure-refactor/task-9-linux-release.tar.gz
+
+EXIT_STATUS=0
+
+=== logs/task-9-round1-archive-inspect.log ===
+PASS Linux amd64 ELF64; 17 members; 14 verified files
+56e64b8ab9ceefaeb6da0ef68577037343e76d5f0fbb32da3614a94babebc32a  ops/Caddyfile.coordinator
+ddcfde44bb51007b78737c962afd18982ce6d89cf2008f99d7137435fa695d2c  ops/Caddyfile.relay
+6ee69d445636c3172821b8d561b1bb95d60fb89d0f1dbe6c6902ecdb5830822b  ops/Caddyfile.standalone
+8d6dcc12512ba7960a0a640bbc0e734359bb1ef15e4252b90339010ab487e33e  ops/caddy-wss-relay.conf
+fa6dbec9349e798ea262683b6dd5aba09c3ff9e53ed63815f6abe7e3de4a5243  ops/traffic-guard.service
+eea86154b206f9ebc9d715efc1ed25af86185aaec0a75be4f9343119a4174b6d  ops/traffic-guard.timer
+5ccf5cb732690034f8b241b48ca276af2af38f4c16203501e9332cf3392edeb0  ops/wss-relay@.service
+ab8c03841bfd527e7d19494249591ee4abead99ec06bfc05b8b553f520f306a2  scripts/check-deployment.sh
+f224aaac7fc7c83774c2d99c561267b6352a49c846e69b9b06a1c42cc4ead5e5  scripts/check-traffic-budget.sh
+0a77fae3c27d7e6c3ad096f71b810e04f79c496cab3720d38f90b73684005c9d  scripts/deploy-backend.sh
+94869bc8e1eeb93d80b7e2212193def6623c474cbc3fb7b0170db4345905aa71  scripts/deploy-preflight.py
+66006930cd4047cdfd133d6bfbcbfb43bf72c37f219d67e6f8a385d97354b332  scripts/install-operator-token.py
+d4321ae49ae3f7d61102980066643bcf83b8f3d896a4be3d42db0a7235e45ea7  scripts/traffic_budget.py
+7bcc243cc97821ecd084d1730610d33f8e1402bc19dc3a23807d70f4bf707b86  wss-relay
+EXIT_STATUS=0
+
+=== logs/task-9-round1-package-no-overwrite.log ===
+$ bash infrastructure/scripts/package-release.sh /Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.superpowers/sdd/2026-10-23-go-structure-refactor/task-9-linux-release.tar.gz
+output already exists; choose a new archive path
+
+EXIT_STATUS=2
+
+=== task-7-lobby-live.ax.txt ===
+Browser tab: 1490580632, Title: "Relay Lab · WSS", URL: "http://127.0.0.1:38173/".
+1 AXWebArea Relay Lab · WSS, URL: 127.0.0.1:38173/
+	2 container
+		3 link Description: ◈ Relay Lab, Value: 127.0.0.1:38173/
+		4 text WEB + ANDROID
+		62 text 연결됨
+		6 container 세션 설정
+			7 text MULTIPLAYER WORKSPACE
+			8 heading 같은 방, 같은 순간., Value: 1
+				9 text 같은 방,
+				10 text 같은 순간.
+			11 container
+				12 text 두 창에서 접속하고 움직여 보세요.
+				13 text 좌표와 이벤트를 같은 방에 전달합니다.
+			14 text 내 참가자
+			15 text p-s9i1CnfMZLpsbzNa
+			16 container
+				17 heading 친구와 연결, Value: 2
+					18 text 친구와 연결
+				19 button (disabled) 새 방 만들기 ↗, ID: create
+					20 text 새 방 만들기 ↗
+				22 text 방 코드
+				23 text field (settable) 방 코드, Value: l-wAQkWHZ9eeVccQzb, ID: room-id
+				24 button (disabled) 참가, ID: join
+				25 button (disabled) 준비 취소, ID: ready
+				26 button (disabled) 대기방 나가기, ID: lobby-leave
+				27 button (disabled) 방 시작, ID: start
+				58 text 방 l-wAQkWHZ9eeVccQzb · 경기 중
+			29 container
+				30 heading 빠른 매칭, Value: 2
+					31 text 빠른 매칭
+				32 button (disabled) 상대 찾기, ID: match
+			33 container
+				34 text 화면을 클릭하거나 터치해 이동합니다.
+				35 text 이동과 보간은 이 클라이언트에서 처리합니다.
+		36 container 플레이 화면
+			37 text LIVE ROOM
+			38 heading 같은 공간에 연결됐어요, Value: 2
+				63 text 같은 공간에 연결됐어요
+			74 text RTT 1 ms
+			41 image Description: 좌표 교환 영역. 클릭하거나 터치해 이동합니다., ID: arena
+			42 text  내 위치 · 녹색
+			43 button 이벤트 보내기 ✦, ID: pulse
+			44 button 재접속, ID: reconnect
+			45 button 퇴장, ID: leave
+			46 container
+				47 heading 참가자와 좌표, Value: 3
+					48 text 참가자와 좌표
+				61 content list peers
+					75 text p-Bim6C4Z3kBd1 · g1 · 0.35, 0.50
+					76 text p-s9i1CnfMZLps · g2 · 0.35, 0.50
+			51 container
+				52 heading 이벤트 기록, Value: 3
+					53 text 이벤트 기록
+				54 content list events
+					67 text 21시 35분 0초 연결 완료 · 세대 2
+					68 text 21시 34분 52초 이벤트 4 서버 접수
+					69 text 21시 34분 28초 연결 완료 · 세대 1
+					70 text 21시 34분 28초 503: {"error":{"code":"audit_fault","message":"injected for local verification"}}
+					71 text 21시 33분 38초 503: {"error":{"code":"audit_fault","message":"injected for local verification"}}
+					72 text 21시 33분 38초 429: {"error":{"code":"audit_fault","message":"injected for local verification"}}
+					73 text 21시 33분 31초 게스트 인증 완료
+		56 text STORIO / NETWORK LAB WSS · PROTOBUF v2
+
+The focused UI element is 1 AXWebArea Relay Lab · WSS, URL: 127.0.0.1:38173/
+Browser tab: 1490580634, Title: "Relay Lab · WSS", URL: "http://127.0.0.1:38173/".
+0 AXWebArea Relay Lab · WSS, URL: 127.0.0.1:38173/
+	1 container
+		2 link Description: ◈ Relay Lab, Value: 127.0.0.1:38173/
+		3 text WEB + ANDROID
+		56 text 연결됨
+		5 container 세션 설정
+			6 text MULTIPLAYER WORKSPACE
+			7 heading 같은 방, 같은 순간., Value: 1
+				8 text 같은 방,
+				9 text 같은 순간.
+			10 container
+				11 text 두 창에서 접속하고 움직여 보세요.
+				12 text 좌표와 이벤트를 같은 방에 전달합니다.
+			13 text 내 참가자
+			14 text p-Bim6C4Z3kBd1n_OH
+			15 container
+				16 heading 친구와 연결, Value: 2
+					17 text 친구와 연결
+				18 button (disabled) 새 방 만들기 ↗, ID: create
+					19 text 새 방 만들기 ↗
+				21 text 방 코드
+				22 text field (settable) 방 코드, Value: l-wAQkWHZ9eeVccQzb, ID: room-id
+				23 button (disabled) 참가, ID: join
+				24 button (disabled) 준비 취소, ID: ready
+				25 button (disabled) 대기방 나가기, ID: lobby-leave
+				26 button (disabled) 방 시작, ID: start
+				57 text 방 l-wAQkWHZ9eeVccQzb · 경기 중
+			28 container
+				29 heading 빠른 매칭, Value: 2
+					30 text 빠른 매칭
+				31 button (disabled) 상대 찾기, ID: match
+			32 container
+				33 text 화면을 클릭하거나 터치해 이동합니다.
+				34 text 이동과 보간은 이 클라이언트에서 처리합니다.
+		35 container 플레이 화면
+			36 text LIVE ROOM
+			37 heading 같은 공간에 연결됐어요, Value: 2
+				58 text 같은 공간에 연결됐어요
+			67 text RTT 3 ms
+			40 image Description: 좌표 교환 영역. 클릭하거나 터치해 이동합니다., ID: arena
+			41 text  내 위치 · 녹색
+			42 button 이벤트 보내기 ✦, ID: pulse
+			43 button 재접속, ID: reconnect
+			44 button 퇴장, ID: leave
+			45 container
+				46 heading 참가자와 좌표, Value: 3
+					47 text 참가자와 좌표
+				60 content list peers
+					68 text p-Bim6C4Z3kBd1 · g1 · 0.35, 0.50
+					69 text p-s9i1CnfMZLps · g2 · 0.35, 0.50
+			50 container
+				51 heading 이벤트 기록, Value: 3
+					52 text 이벤트 기록
+				53 content list events
+					64 text 21시 34분 52초 ✦ p-s9i1CnfMZL의 이벤트 수신
+					65 text 21시 34분 28초 연결 완료 · 세대 1
+					66 text 21시 33분 56초 게스트 인증 완료
+		55 text STORIO / NETWORK LAB WSS · PROTOBUF v2
+
+The focused UI element is 0 AXWebArea Relay Lab · WSS, URL: 127.0.0.1:38173/
+
+=== task-7-quickmatch-live.ax.txt ===
+Browser tab: 1490580632, Title: "Relay Lab · WSS", URL: "http://127.0.0.1:38173/".
+1 AXWebArea Relay Lab · WSS, URL: 127.0.0.1:38173/
+	2 container
+		3 link Description: ◈ Relay Lab, Value: 127.0.0.1:38173/
+		4 text WEB + ANDROID
+		57 text 연결됨
+		6 container 세션 설정
+			7 text MULTIPLAYER WORKSPACE
+			8 heading 같은 방, 같은 순간., Value: 1
+				9 text 같은 방,
+				10 text 같은 순간.
+			11 container
+				12 text 두 창에서 접속하고 움직여 보세요.
+				13 text 좌표와 이벤트를 같은 방에 전달합니다.
+			14 text 내 참가자
+			15 text p-3sGBOsv6b9wJzir-
+			16 container
+				17 heading 친구와 연결, Value: 2
+					18 text 친구와 연결
+				19 button (disabled) 새 방 만들기 ↗, ID: create
+					20 text 새 방 만들기 ↗
+				22 text 방 코드
+				23 text field (settable) 방 코드, Value: l-0EiLoyS8YhAmml9H, ID: room-id
+				24 button (disabled) 참가, ID: join
+				25 button (disabled) 준비하기, ID: ready
+				26 button (disabled) 대기방 나가기, ID: lobby-leave
+				27 button (disabled) 방 시작, ID: start
+				58 text 방 l-0EiLoyS8YhAmml9H · 경기 중
+			29 container
+				30 heading 빠른 매칭, Value: 2
+					31 text 빠른 매칭
+				32 button (disabled) 상대 찾기, ID: match
+			33 container
+				34 text 화면을 클릭하거나 터치해 이동합니다.
+				35 text 이동과 보간은 이 클라이언트에서 처리합니다.
+		36 container 플레이 화면
+			37 text LIVE ROOM
+			38 heading 같은 공간에 연결됐어요, Value: 2
+				59 text 같은 공간에 연결됐어요
+			60 text RTT 4 ms
+			41 image Description: 좌표 교환 영역. 클릭하거나 터치해 이동합니다., ID: arena
+			42 text  내 위치 · 녹색
+			43 button 이벤트 보내기 ✦, ID: pulse
+			44 button 재접속, ID: reconnect
+			45 button 퇴장, ID: leave
+			46 container
+				47 heading 참가자와 좌표, Value: 3
+					48 text 참가자와 좌표
+				61 content list peers
+					62 text p-3sGBOsv6b9wJ · g1 · 0.35, 0.50
+					63 text p-GVzgnhz9zw6w · g1 · 0.35, 0.50
+			51 container
+				52 heading 이벤트 기록, Value: 3
+					53 text 이벤트 기록
+				54 content list events
+					64 text 21시 36분 0초 연결 완료 · 세대 1
+					65 text 21시 35분 37초 503: {"error":{"code":"audit_fault","message":"injected for local verification"}}
+					66 text 21시 35분 36초 429: {"error":{"code":"audit_fault","message":"injected for local verification"}}
+					67 text 21시 35분 28초 게스트 인증 완료
+		56 text STORIO / NETWORK LAB WSS · PROTOBUF v2
+
+The focused UI element is 1 AXWebArea Relay Lab · WSS, URL: 127.0.0.1:38173/
+Browser tab: 1490580634, Title: "Relay Lab · WSS", URL: "http://127.0.0.1:38173/".
+1 AXWebArea Relay Lab · WSS, URL: 127.0.0.1:38173/
+	2 container
+		3 link Description: ◈ Relay Lab, Value: 127.0.0.1:38173/
+		4 text WEB + ANDROID
+		57 text 연결됨
+		6 container 세션 설정
+			7 text MULTIPLAYER WORKSPACE
+			8 heading 같은 방, 같은 순간., Value: 1
+				9 text 같은 방,
+				10 text 같은 순간.
+			11 container
+				12 text 두 창에서 접속하고 움직여 보세요.
+				13 text 좌표와 이벤트를 같은 방에 전달합니다.
+			14 text 내 참가자
+			15 text p-GVzgnhz9zw6wrdnv
+			16 container
+				17 heading 친구와 연결, Value: 2
+					18 text 친구와 연결
+				19 button (disabled) 새 방 만들기 ↗, ID: create
+					20 text 새 방 만들기 ↗
+				22 text 방 코드
+				23 text field (settable) 방 코드, Value: l-0EiLoyS8YhAmml9H, ID: room-id
+				24 button (disabled) 참가, ID: join
+				25 button (disabled) 준비하기, ID: ready
+				26 button (disabled) 대기방 나가기, ID: lobby-leave
+				27 button (disabled) 방 시작, ID: start
+				58 text 방 l-0EiLoyS8YhAmml9H · 경기 중
+			29 container
+				30 heading 빠른 매칭, Value: 2
+					31 text 빠른 매칭
+				32 button (disabled) 상대 찾기, ID: match
+			33 container
+				34 text 화면을 클릭하거나 터치해 이동합니다.
+				35 text 이동과 보간은 이 클라이언트에서 처리합니다.
+		36 container 플레이 화면
+			37 text LIVE ROOM
+			38 heading 같은 공간에 연결됐어요, Value: 2
+				59 text 같은 공간에 연결됐어요
+			60 text RTT 1 ms
+			41 image Description: 좌표 교환 영역. 클릭하거나 터치해 이동합니다., ID: arena
+			42 text  내 위치 · 녹색
+			43 button 이벤트 보내기 ✦, ID: pulse
+			44 button 재접속, ID: reconnect
+			45 button 퇴장, ID: leave
+			46 container
+				47 heading 참가자와 좌표, Value: 3
+					48 text 참가자와 좌표
+				61 content list peers
+					62 text p-3sGBOsv6b9wJ · g1 · 0.35, 0.50
+					63 text p-GVzgnhz9zw6w · g1 · 0.35, 0.50
+			51 container
+				52 heading 이벤트 기록, Value: 3
+					53 text 이벤트 기록
+				54 content list events
+					64 text 21시 36분 0초 연결 완료 · 세대 1
+					65 text 21시 35분 59초 503: {"error":{"code":"audit_fault","message":"injected for local verification"}}
+					66 text 21시 35분 28초 게스트 인증 완료
+		56 text STORIO / NETWORK LAB WSS · PROTOBUF v2
+
+The focused UI element is 1 AXWebArea Relay Lab · WSS, URL: 127.0.0.1:38173/

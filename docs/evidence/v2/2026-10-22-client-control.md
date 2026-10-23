@@ -45,3 +45,9 @@ Go 1.26.10 노드와 최종 SDK에서 두 Chrome 탭의 빠른 매칭을 실행�
 소유자의 0.50, 0.50 좌표와 전체 몸통을 상대가 표시했다.
 양방향 이벤트 접수·수신과 둘째 참가자의 g2 복귀를 확인했다.
 화면 증거는 client-quickmatch-chrome.png다. 로비 준비·시작 증거와 구분한다.
+
+## 현재 경로
+
+위 검사 명령과 package 이름은 2026-10-22 실행 당시 기록이다.
+2026-10-23에 `controlv2`·`relayv2`·`coordv2`를 `control`·`relay`·`coordinator`로 옮겼다.
+현재 소스·Chrome 화면·검사 한계는 [구조 변경 증거](2026-10-23-structure-refactor.md)를 따른다.

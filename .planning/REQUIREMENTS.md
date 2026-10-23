@@ -1,106 +1,33 @@
-# Requirements: Go Lobby & Relay Server
+# WSS 요구사항
 
-**Defined:** 2026-08-08
+재기준일: 2026-10-23. 이전 UDP·Unity 완료 표시는 현재 WSS 완료 증거로 사용하지 않는다.
+아래 완료 표시는 적은 범위만 뜻한다. 전체 제품 완료와 최종 브랜치 리뷰는 별도로 판정한다.
 
-**Rebaselined:** 2026-08-20
+## 확인한 요구사항
 
-**Core Value:** 플레이어가 방을 만들거나 빠르게 매칭되고, 매칭된 참가자만 안전하게 같은 UDP Relay room에서 통신할 수 있다.
+- [x] **WSS-01**: `relay.v2` Protobuf를 Go·TS가 공유한다. 17종 본문과 uint64 최댓값을 왕복 보존한다.
+- [x] **WSS-02**: 고정 v2 baseline·lint·breaking·staging 생성물 차이 검사로 오래된 Go·TS 출력을 거부한다.
+- [x] **AUTH-01**: 현재 플레이어 토큰·운영자 토큰·개인 접속권을 분리한다. 활성 인증 바이트와 재시작 검증을 유지한다.
+- [x] **CONTROL-01**: 공개·비공개 로비·revision·ready·소유자 이전·개인 배정을 구현하고 경합 검사를 통과한다.
+- [x] **MATCH-01**: FIFO 그룹의 기한·소속을 함께 유지한다. 결과 불명은 같은 방·구성으로 재시도하고 늦은 성공은 종료를 되돌리지 않는다.
+- [x] **RELAY-01**: 방 단일 소유·접속권·세대·상태 병합·유계 사건 큐·느린 연결 격리를 유지한다.
+- [x] **SDK-01**: 연결 epoch로 이전 갱신을 격리한다. HTTP 5초 제한은 응답 본문까지 포함한다.
+- [x] **DEMO-01**: 실제 Chrome 두 참가자의 로비·FIFO·사건·복귀와 조회 오류 복구를 확인한다. 성공한 이전 응답의 DOM 적용은 미검증이다.
+- [x] **CLUSTER-01**: 실제 로컬 HTTPS·WSS 프로세스로 단일 소유·격리·증설·드레이닝·장애·배정기 재시작을 확인한다.
+- [x] **OPS-01**: 임시 호스트에서 세 역할 승격·롤백·설정 보존·archive·토큰·비용 장부 보호를 확인한다.
+- [x] **STRUCT-01**: v1 실행·생성·CI·배포 경로를 제거한다. app·Manager·기능별 패키지 구조를 적용한다.
 
-현재 37개 요구사항 중 M1 Phase 1–5의 23개가 Complete이고 M2 Phase 6–9의 14개가 Pending이다.
+위 실행 명령·실제 출력·소스 연결은 [구조 변경 증거](../docs/evidence/v2/2026-10-23-structure-refactor.md)를 따른다.
 
-## Milestone 1 — Room/Lobby & Quick Match MVP
+## 남은 완료 조건
 
-### Protocol Contract
+- [ ] **ANDROID-01**: 실제 Android와 Chrome이 같은 방에서 상태·사건을 교환한다. 실제 Origin과 WebView 버전을 기록한다.
+- [ ] **ANDROID-02**: 실제 기기에서 화면 잠금·중단·복귀·프로세스 종료·유예 만료를 확인한다.
+- [ ] **NETWORK-01**: 실제 Wi-Fi·이동통신 전환과 무선 망 조건을 확인한다. TCP 프록시 결과로 대체하지 않는다.
+- [ ] **PERF-01**: 저속 실제 장치·대상 호스트에서 뱀 본문·정원·주기·바이트 예산별 지연과 수용량을 확정한다.
+- [ ] **HOST-01**: 대상 Linux에서 systemd·Caddy·공개 TLS·DNS·방화벽·노드 연결·복구를 확인한다.
+- [ ] **CI-01**: 원격 CI와 Linux 도구의 새 다운로드·bootstrap 실행 결과를 확인한다.
+- [ ] **REVIEW-01**: Task 10 독립 리뷰와 전체 브랜치 리뷰를 마친다. 중요한 발견사항을 해결한다.
 
-- [x] **PROT-01**: Go 서버와 C# 클라이언트는 version, packet kind, session, sequence, auth tag와 bounded opaque payload를 표현하는 하나의 Protobuf Relay 계약을 공유한다.
-- [x] **PROT-02**: 고정 도구와 한 명령으로 Go/C# 코드를 재생성하고 breaking-change 및 양방향 fixture를 검사한다.
-
-### Relay Room and Session Kernel
-
-- [x] **ROOM-01**: 인증된 operator는 caller-supplied room ID, 정원, 참가자와 만료로 immutable Relay room을 멱등하게 만들고 endpoint와 참가자별 grant를 받는다.
-- [x] **ROOM-02**: operator는 secret-free room 상태를 조회하고 room을 멱등하게 종료하며, 인증되지 않은 호출자는 room을 열거·변경하지 못한다.
-- [x] **ROOM-03**: 종료·만료·마지막 live grant 뒤 room, grant, binding과 endpoint 자원이 bounded deadline 안에 제거된다.
-- [x] **SESS-01**: 참가자는 room/session 범위의 독립적인 128-bit 이상 CSPRNG grant를 받는다.
-
-### Authenticated UDP Relay
-
-- [x] **SESS-02**: fresh authenticated proof가 관찰된 UDP endpoint를 bind하고 명시적 rebind가 이전 endpoint를 무효화한다.
-- [x] **SESS-03**: 일반 datagram은 grant를 노출하지 않으며 valid binding, HMAC, expiry와 replay 검사를 통과해야 한다.
-- [x] **SESS-04**: pre-auth 입력은 침묵하거나 request보다 작은 response만 만들고 operator credential과 payload를 기록하지 않는다.
-- [x] **RELY-01**: valid opaque payload는 sender를 제외한 같은 room의 active/bound 참가자에게 byte-preserving 전달된다.
-- [x] **RELY-02**: delivery/order/dedup/retry를 보장하지 않고 cross-room·expired·revoked session으로 전달하지 않는다.
-- [x] **RELY-03**: 느리거나 실패한 recipient가 receive loop, queue, goroutine 또는 memory를 unbounded하게 늘리지 못한다.
-- [x] **SAFE-01**: body, ID, room, session, TTL, datagram hard limit이 mutation/fan-out 전에 적용된다.
-- [x] **SAFE-02**: pre-auth source, session, room, process, fan-out packet/byte budget이 다른 room을 보호한다.
-- [x] **SAFE-03**: malformed, oversized, unsupported, replayed, expired, wrong-room, rate-limited와 stale input은 panic/cross-room mutation 없이 고정 원인으로 폐기된다.
-
-### Player Identity and Lobby Lifecycle
-
-- [x] **AUTH-01**: operator가 한 valid `player_id`에 묶인 15분 Player Token을 발급하고, player API는 caller-supplied identity를 신뢰하지 않으며 restart가 기존 token을 무효화한다.
-- [x] **LOBBY-01**: authenticated player가 bounded public/private Lobby를 만들고 public search 또는 authorized exact state를 조회한다.
-- [x] **LOBBY-02**: player는 최대 한 open Lobby 또는 live ticket만 가지며 join/leave는 capacity-safe·atomic하고 owner를 deterministic하게 이전하거나 empty Lobby를 닫는다.
-- [x] **LOBBY-03**: revision-checked ready 상태는 membership 변경 때 reset되고 full/all-ready Lobby만 owner가 시작한다.
-- [x] **LOBBY-04**: exact deadline, hard limit, private visibility, cleanup, redaction과 concurrent mutation이 partial state나 secret leakage를 만들지 않는다.
-
-### Quick Match and Relay Assignment
-
-- [x] **MATCH-01**: one-player FIFO ticket은 동일 `queue_key`와 target capacity끼리만 match되고 cancel·exact expiry를 지원한다.
-- [x] **MATCH-02**: ready Lobby 또는 Quick Match는 기존 immutable Relay room을 만들고 caller에게 자기 assignment/grant만 반환한다.
-- [x] **MATCH-03**: Relay allocation 실패는 ticket selection을 원래 순서로 보존하며 concurrent enqueue/start가 duplicate player, match 또는 room을 만들지 않는다.
-
-## Milestone 2 — Client Integration & Single-Host Operation
-
-### Client Integration
-
-- [ ] **UNITY-01**: 최소 C# client가 Player/Lobby API와 Relay handshake·payload 흐름을 실제 게임 client에 통합할 수 있다.
-- [ ] **UNITY-02**: client lifecycle이 cancellation, pause/resume, expiry와 rebind/reallocation을 정리한다.
-- [ ] **UNITY-03**: 실제 client가 정해진 뒤 승인된 Unity editor/platform/backend/device/network matrix에서 build와 network evidence를 남긴다.
-
-### Runtime Operations
-
-- [ ] **OPS-01**: flag와 environment/file 설정이 listener, endpoint, limits와 secret을 socket open 전에 검증한다.
-- [ ] **OPS-02**: private/authenticated status에서 build/protocol, readiness, drain, Lobby/room/session과 bounded counters를 확인한다.
-- [ ] **OPS-03**: structured log가 lifecycle, authorization, limits와 drops를 기록하되 token/grant/payload/high-cardinality ID를 제외한다.
-- [ ] **OPS-04**: SIGINT/SIGTERM이 신규 mutation/bind를 거부하고 deadline 안에 HTTP/UDP work를 종료한다.
-
-### Packaging and Host Deployment
-
-- [ ] **SHIP-01**: 같은 revision의 CGO-disabled Linux static binary를 재현하고 version/protocol/source revision을 확인한다.
-- [ ] **SHIP-02**: non-root, read-only, exec-form 최소 image가 필요한 TCP/UDP port만 publish한다.
-- [ ] **SHIP-03**: 단일 VM/Docker runbook이 DNS, firewall/NAT, private operator access, secret, restart, limits, logs, upgrade/rollback과 state loss를 설명한다.
-
-### Verification and Performance
-
-- [ ] **VERI-01**: 자동 검사가 Lobby/Match/Relay lifecycle, concurrency, race와 fuzz를 포함한다.
-- [ ] **VERI-02**: port conflict, invalid config, restart, expired-token/grant storm, malformed datagram과 saturation recovery를 재현한다.
-- [ ] **PERF-01**: checked-in load client가 host/OS/Go, Lobby/room/player, payload/rate/fan-out/duration을 고정한 load·soak를 실행한다.
-- [ ] **PERF-02**: report가 p50/p95/p99, throughput/loss/drop, CPU/RSS/allocation/goroutine/startup 목표를 pass/fail 판정한다.
-
-## Phase Ownership
-
-| Phase | Requirements | Count | Status |
-|---|---|---:|---|
-| 1 | PROT-01, PROT-02 | 2 | Complete |
-| 2 | ROOM-01, ROOM-02, SESS-01 | 3 | Complete |
-| 3 | ROOM-03, SESS-02~04, RELY-01~03, SAFE-01~03 | 10 | Complete |
-| 4 | AUTH-01, LOBBY-01~04 | 5 | Complete |
-| 5 | MATCH-01~03 | 3 | Complete |
-| 6 | UNITY-01~03 | 3 | Pending |
-| 7 | OPS-01~04 | 4 | Pending |
-| 8 | SHIP-01~03 | 3 | Pending |
-| 9 | VERI-01~02, PERF-01~02 | 4 | Pending |
-| **Total** | **37 unique requirements** | **37** | **23 Complete / 14 Pending** |
-
-## Contract Interpretation
-
-- Lobby와 Relay room은 다른 객체다. Lobby membership은 mutable하지만 match formation 뒤 생성되는 Relay room participant set은 immutable하다.
-- Player Token은 identity proof이지 Relay grant가 아니다. Relay grant는 match assignment에서 caller 한 명에게만 반환된다.
-- process restart는 모든 in-memory authority를 제거하며 reconnect/persistence를 보장하지 않는다.
-- Quick Match M1은 single-player FIFO만 지원한다. party, skill, region, team과 backfill은 새 requirement 없이 추가하지 않는다.
-- Steamworks는 future identity adapter, FishNet은 future game-client transport adapter, Open Match는 future matchmaking replacement 후보다.
-
-## Definition of Done
-
-- 각 requirement가 정확히 한 Phase와 검증 evidence에 매핑된다.
-- M1은 23개 M1 requirement와 HTTP→UDP end-to-end gate가 모두 통과할 때만 complete다.
-- M2 requirement와 실제 Unity/platform 지원은 별도 evidence 전까지 Pending이다.
+2026-10-22 Android 디버그 빌드와 부하 측정은 [완료 감사](../docs/evidence/v2/completion-audit.md)에 날짜를 유지한다.
+2026-10-23에는 Android·전체 부하를 다시 실행하지 않았다. 빌드·ELF 형식 확인은 실제 기기·Linux 운영 성공을 뜻하지 않는다.

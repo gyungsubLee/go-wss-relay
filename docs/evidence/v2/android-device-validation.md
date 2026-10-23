@@ -11,7 +11,8 @@
 배정 응답의 websocketUrl도 두 클라이언트에서 도달할 수 있어야 한다.
 
 Wi-Fi·이동통신 전환에는 공개 HTTPS·WSS 검증 주소를 사용한다.
-단일 호스트는 infrastructure/v2/Caddyfile.standalone과 standalone.env.example로 API와 WSS를 같은 도메인에 제공한다.
+단일 호스트는 `infrastructure/ops/Caddyfile.standalone`과 `infrastructure/config/standalone.env.example`을 사용한다.
+`infrastructure/config/caddy.env.example`의 도메인을 별도로 설정한다. [운영 절차](../../../infrastructure/docs/operations.md)를 따른다.
 분산 구성은 기존 coordinator·relay 설정을 사용한다. 배정기가 반환한 모든 노드 주소가 두 망에서 도달해야 한다.
 Caddy 공개 인증서와 DNS가 실제로 준비됐는지 먼저 확인한다. 설정 파서 통과는 공개 접속 성공의 증거가 아니다.
 

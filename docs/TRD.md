@@ -1,6 +1,7 @@
 # 웹·Android WSS 기술 계약
 
-갱신일: 2026-10-22. 상태: 단일 노드·공용 TS·분산 경로 구현. 실기기와 운영 검증은 진행 감사로 구분한다.
+갱신일: 2026-10-23. v2 전용 구조와 로컬 검사를 마쳤다. 독립 리뷰와 전체 브랜치 리뷰는 대기 중이다.
+실기기와 운영 검증은 [완료 감사](evidence/v2/completion-audit.md)로 구분한다.
 모듈: github.com/gyungsubLee/go-wss-relay.
 
 ## 소유권
@@ -10,16 +11,26 @@
 | api/relay/v2/relay.proto | WSS 바이너리 계약의 단일 원본 |
 | gen/go/relay/v2 | 생성한 Go 메시지 |
 | client/src/relay/gen | 같은 원본에서 생성한 TypeScript 메시지 |
-| internal/relayv2 | 노드 방·접속권·세대·캐시·전송 예산·계측 |
-| internal/coordv2 | 노드 배정·예약·등록·장애 감지·복원·드레이닝 |
-| internal/controlv2 | 공개 인증·로비·FIFO·개인 배정 응답 |
+| internal/relay | 노드 방·접속권·세대·캐시·전송 예산·계측 |
+| internal/coordinator | 노드 배정·예약·등록·장애 감지·복원·드레이닝 |
+| cmd/wss-relay | 신호와 종료 코드 |
+| internal/app | 설정·의존성·listener·종료 조립 |
+| internal/control | HTTP 입력·인증·응답과 Manager의 로비·FIFO·배정 상태 |
+| internal/operatortoken | 운영자 토큰 파싱과 안전한 파일 읽기 |
+| internal/protocol | relay.v2 codec과 ID 검사 |
+| internal/httpx | HTTP 입력·오류·입장 제한·신뢰 프록시 |
+| internal/playerauth | 현재 플레이어 토큰 발급·검증 |
 | client/src/relay | 게임에 독립적인 연결·제어 API SDK |
 | client/src/demo | 좌표 본문·모션·보간·검증 UI |
 | client/MinbWebKit | 고정한 공용 viewport·SR·빌드 정책 |
 | cmd/relay-load | 별도 TLS 서버의 부하 프로필 측정 |
 | cmd/wire-check | Go→TS→Go 메시지 호환 검사 |
 
-기존 v1·UDP·Unity 코드는 이력과 회귀 범위로 남아 있다. 새 기본 실행 명령은 cmd/wss-relay다.
+`control.Manager`는 로비·티켓·소속·만료·배정 상태와 잠금을 소유한다. HTTP Server는 Manager를 호출하고 응답을 쓴다.
+Manager는 잠금 안에서 응답 슬라이스와 맵을 복사한다. JSON 인코딩과 원격 예약 호출은 잠금 밖에서 실행한다.
+`coordinator`는 기존 `control.Allocator`를 구현한다. 기능 모듈은 `app`을 import하지 않는다.
+v1 서버·UDP·C#·Unity 실행 경로는 제거했다. 이전 구현은 Git 이력에서 확인한다.
+활성 인증의 `tokenVersion=1`·`player-token/v1`과 `snake-demo.v1`·`demo.v1`·`load.v1`은 유지한다.
 
 ## 전송과 권한
 
@@ -70,5 +81,6 @@ Protobuf 바이트는 TLS/TCP 오버헤드를 포함하지 않는다. 히스토�
 
 분산은 같은 코드베이스의 standalone/coordinator/relay 역할로 구성한다.
 실제 프로세스 검사는 방 단일 소유·격리, 드레이닝 중 복귀, 배정기 재시작, 노드 종료·재시작, 증설과 배수 완료 후 종료를 확인한다.
-운영자는 [v2 배포 절차](../../infrastructure/v2/README.md)의 네트워크·키·상한을 환경에 맞게 설정한다.
-기존 UDP 배포 스크립트는 v2 배포 절차가 아니다.
+운영자는 [배포 절차](../infrastructure/README.md)의 네트워크·키·상한을 환경에 맞게 설정한다.
+배포는 flat `infrastructure/{config,ops,scripts,docs}`만 사용한다. 운영 형식과 수동 호스트 준비는 [운영 절차](../infrastructure/docs/operations.md)를 따른다.
+검사 명령·소스 연결·미실행 조건은 [구조 변경 증거](evidence/v2/2026-10-23-structure-refactor.md)에 있다.

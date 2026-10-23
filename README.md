@@ -15,7 +15,8 @@
 - standalone/coordinator/relay 역할, 노드 예약·등록·단일 소유·드레이닝·활성 방 복원.
 - IP·참가자·방·노드 제한, 바이트 예산, 큐·쓰기·자원 계측과 실제 TLS 부하 도구.
 
-전체 목표는 진행 중이다. Android 실기기와 일부 완료 조건은 아직 검증하지 않았다.
+2026-10-23 기준으로 v2 전용 구조와 로컬 검사를 마쳤다. Task 10 독립 리뷰와 전체 브랜치 리뷰는 대기 중이다.
+Android 실기기·무선 망·실제 Linux 배포·원격 CI는 아직 검증하지 않았다.
 현재 증거와 남은 요구사항은 [완료 감사](docs/evidence/v2/completion-audit.md)를 확인한다.
 
 ## 로컬 실행
@@ -47,8 +48,8 @@ Chrome 두 창에서 http://127.0.0.1:5173 에 접속한다.
 기본 수신은 127.0.0.1:8090, 관리 수신은 127.0.0.1:8091이다.
 CLI 기본 상한은 512개 방·200개 참가자 슬롯, 방당 최대 정원은 16명이다.
 이 값은 운영 성능 보장이 아니다. 대상 호스트에서 지연·전송량을 측정해 확정한다.
-운영 HTTPS·WSS·노드 분산은 [v2 배포 절차](infrastructure/v2/README.md)를 따른다.
-기존 infrastructure/ops와 Unity 문서는 원본용이다.
+운영 HTTPS·WSS·노드 분산은 [배포 절차](infrastructure/README.md)와 [운영 절차](infrastructure/docs/operations.md)를 따른다.
+v1 서버·UDP·C#·Unity 실행 경로는 제거했다. 이전 구현은 Git 이력에서 확인한다.
 
 ## SDK와 Android
 
@@ -83,18 +84,21 @@ npm run check
 npm run check는 위 로컬 서버가 필요하다. 분산·호환 검사는 아래 바이너리를 먼저 빌드한다.
 
 ```sh
-go build -o out/wss-relay ./cmd/wss-relay
-go build -o out/wire-check ./cmd/wire-check
-go run ./cmd/dev-tls
-node --experimental-transform-types client/scripts/check-wire.ts
-NODE_EXTRA_CA_CERTS="$PWD/.cache/dev-tls/cert.pem" node --experimental-transform-types client/scripts/check-cluster.ts
+make relay-build
+.tools/go/bin/go build -o out/wire-check ./cmd/wire-check
+.tools/go/bin/go run ./cmd/dev-tls
+node --disable-warning=ExperimentalWarning --experimental-transform-types client/scripts/check-wire.ts
+NODE_EXTRA_CA_CERTS="$PWD/.cache/dev-tls/cert.pem" node --disable-warning=ExperimentalWarning --experimental-transform-types client/scripts/check-cluster.ts
 ```
 
 개발 인증서 생성은 새 디렉터리에서 한 번 실행한다. 기존 키·인증서를 덮어쓰지 않는다.
 17종 메시지의 Go→TS→Go 왕복 검사, 실제 SDK 소켓 검사, 실제 노드 프로세스 검사를 구분한다.
-원래 v1·UDP 회귀 검사와 C# 산출물은 보존하며 새 기본 런타임은 cmd/wss-relay다.
+서버 명령은 `cmd/wss-relay` 하나다. `internal/app`이 실행을 조립하고 `control.Manager`가 로비·FIFO 상태를 소유한다.
+`coordinator`는 노드 배정을, `relay`는 방과 연결을 소유한다. [기술 계약](docs/TRD.md)에 책임 경계를 적었다.
+현재 플레이어 토큰의 `tokenVersion=1`·`player-token/v1`과 게임 계약의 `.v1` 식별자는 유지한다.
+2026-10-23 검사 명령·소스 해시·Chrome 화면·미실행 조건은 [구조 변경 증거](docs/evidence/v2/2026-10-23-structure-refactor.md)에 있다.
 
-- [원래 1~5단계 계획](docs/plans/2026-10-20-web-android-wss-relay-refactor.md)
+- [원래 1-5단계 계획](docs/plans/2026-10-20-web-android-wss-relay-refactor.md)
 - [WSS 메시지 명세](docs/specs/2026-10-20-relay-v2-message-spec.md)
 - [공개 HTTP API](docs/specs/2026-10-22-control-v2-http.md)
 - [실제 스키마](api/relay/v2/relay.proto)

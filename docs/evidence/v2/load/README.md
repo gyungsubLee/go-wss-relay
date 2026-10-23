@@ -46,3 +46,6 @@ NODE_EXTRA_CA_CERTS="$PWD/.cache/dev-tls/cert.pem" node --experimental-transform
 
 재측정 시 실제 뱀 본문 크기·주기·정원과 클라우드 NIC 예산에 맞춰 프로필을 고정한다.
 기기 수용량과 인터넷 지연은 해당 환경에서 별도로 확정한다.
+
+2026-10-23 구조 변경 후에도 위 재현 스크립트 경로는 유지한다. 전체 부하를 다시 실행하지 않았다.
+현재 기능 검사와 남은 조건은 [구조 변경 증거](../2026-10-23-structure-refactor.md)에 있다.

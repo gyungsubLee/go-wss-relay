@@ -1,6 +1,8 @@
 # 공개 제어 API v2
 
-단일 원본은 internal/controlv2의 라우트·검증과 client/src/relay/api.ts다.
+갱신일: 2026-10-23. 단일 원본은 `internal/control`의 라우트·검증과 `client/src/relay/api.ts`다.
+`control.Manager`는 로비·FIFO·배정·만료와 잠금을 소유한다. HTTP Server는 입력·인증·응답을 담당한다.
+응답 값은 내부 맵·슬라이스와 분리한다. JSON 인코딩과 원격 예약은 Manager 잠금 밖에서 실행한다.
 접두사는 `/v2/api`, JSON 키는 camelCase다. 요청 JSON은 정확한 필드 집합을 요구한다.
 게스트 발급 이외에는 `Authorization: Bearer <player-token>`이 필요하다.
 토큰·접속권을 URL·로그·영구 브라우저 저장소에 넣지 않는다.
@@ -60,7 +62,11 @@ GET 응답의 접속권이 이미 소비됐거나 만료됐으면 POST로 다시
 
 MatchTicket은 id, status와 배정 완료 시 assignment를 가진다. status는 queued·matched·ended다.
 같은 applicationProtocol·capacity를 FIFO로 묶는다. 대기표 수명은 2분이다.
-묶인 그룹은 같은 방 ID로 예약을 재시도한다. 그룹 형성 이후 취소는 409다.
+그룹을 형성하면 모든 티켓에 형성 시각부터 2분의 같은 기한을 적용한다. 배정 중에는 그룹과 티켓을 함께 보존한다.
+배정 성공 후에는 배정 만료를 적용한다. 실패 후 재시도는 형성 기한을 늘리지 않는다.
+묶인 그룹은 같은 방 ID와 참가자 구성으로 예약을 재시도한다. 그룹 형성 이후 취소는 409다.
+결과 불명·기존 노드 unhealthy·빈 503은 구성을 고정한다. 노드 JSON의 `allocation_failed`는 확정 거부다.
+확정 거부는 수동 로비 수정을 다시 허용한다. 종료 후 늦은 성공은 그룹을 되살리지 못한다.
 배정 후 재접속권은 Assignment.roomId의 로비 assignment POST로 발급받는다.
 
 ## 오류와 수명
@@ -77,4 +83,4 @@ Origin 허용은 HTTP CORS와 WSS에서 각각 검사한다. 사전 요청은 �
 배정기 재시작은 노드 활성 방을 복원한다. 대기 로비·대기표는 복원하지 않는다.
 
 관리 API는 공개 API와 별도 포트·별도 운영자 토큰을 사용한다.
-예약·노드 등록·드레이닝·키 배치는 [배포 절차](../../infrastructure/v2/README.md)를 따른다.
+예약·노드 등록·드레이닝·키 배치는 [배포 절차](../../infrastructure/README.md)를 따른다.
