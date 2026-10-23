@@ -2,7 +2,7 @@ import { mountGameViewport } from '@minbgames/web-kit/viewport'
 import { Capacitor } from '@capacitor/core'
 import { App } from '@capacitor/app'
 import { RelayClient, type Assignment } from '../relay/client.ts'
-import { LobbyClient, type Lobby, type MatchTicket } from '../relay/api.ts'
+import { ControlError, LobbyClient, type Lobby, type MatchTicket } from '../relay/api.ts'
 import { snakeProtocol, encodeSnakeState, decodeSnakeState, acceptScene, authorityHasLeft, type SnakeState, type SharedScene } from './snake-state.ts'
 import './style.css'
 
@@ -23,6 +23,9 @@ let poll: ReturnType<typeof setTimeout> | undefined
 let ownReady = false
 let joined = false
 let disposed = false
+let participationEpoch = 0
+let waitingLobby: Lobby | undefined
+let waitingTicket: MatchTicket | undefined
 let pulse = 0
 const lifeId = crypto.randomUUID()
 let own: SnakeState = {
@@ -139,68 +142,78 @@ function finishGame(reason: string): void {
   setTimeout(() => relay.leave(), 200)
 }
 
-async function action(operation: () => Promise<void>): Promise<void> {
+async function action(operation: () => Promise<void>, epoch = participationEpoch): Promise<void> {
   try {
     await operation()
   } catch (error) {
-    addLog(error instanceof Error ? error.message : '요청 실패')
+    if (!disposed && epoch === participationEpoch) addLog(error instanceof Error ? error.message : '요청 실패')
   }
 }
 
 button('create').onclick = () => {
+  const epoch = invalidateWaiting()
   void action(async () => {
     const lobby = await api.create({ applicationProtocol: snakeProtocol })
-    enterLobby(lobby)
-  })
+    if (isWaiting(epoch)) enterLobby(lobby, epoch)
+  }, epoch)
 }
 button('join').onclick = () => {
+  const epoch = invalidateWaiting()
   void action(async () => {
     const id = roomInput.value.trim()
     if (!id) throw new Error('방 코드를 입력하세요.')
-    enterLobby(await api.join(id, snakeProtocol))
-  })
+    const lobby = await api.join(id, snakeProtocol)
+    if (isWaiting(epoch)) enterLobby(lobby, epoch)
+  }, epoch)
 }
 button('ready').onclick = () => {
+  const epoch = participationEpoch
   void action(async () => {
-    scheduleLobby(await api.ready(lobbyId, !ownReady))
+    scheduleLobby(await api.ready(lobbyId, !ownReady), epoch)
   })
 }
 button('lobby-leave').onclick = () => {
+  const lobby = waitingLobby
+  const epoch = invalidateWaiting()
   void action(async () => {
-    await api.leaveLobby(lobbyId)
-    clearTimeout(poll)
-    lobbyId = ''
-    roomInput.value = ''
-    for (const id of ['create', 'join', 'match']) button(id).disabled = false
-    for (const id of ['ready', 'start', 'lobby-leave']) button(id).disabled = true
-    element('room-status').textContent = '대기방에서 나왔습니다.'
-  })
+    try {
+      await api.leaveLobby(lobbyId)
+      if (isWaiting(epoch)) endWaiting('대기방에서 나왔습니다.')
+    } catch (error) {
+      if (retryWaiting(error, epoch) && lobby) scheduleLobby(lobby, epoch)
+    }
+  }, epoch)
 }
 button('start').onclick = () => {
+  const epoch = participationEpoch
   void action(async () => {
     await api.start(lobbyId)
-    button('start').disabled = true
+    if (isWaiting(epoch)) button('start').disabled = true
   })
 }
 button('match').onclick = () => {
+  const epoch = invalidateWaiting()
   void action(async () => {
     button('match').disabled = true
     const ticket = await api.queue({ applicationProtocol: snakeProtocol })
+    if (!isWaiting(epoch)) return
     ticketId = ticket.id
     for (const id of ['create', 'join']) button(id).disabled = true
     button('cancel').hidden = false
-    scheduleTicket(ticket)
-  })
+    scheduleTicket(ticket, epoch)
+  }, epoch)
 }
 button('cancel').onclick = () => {
+  const ticket = waitingTicket
+  const epoch = invalidateWaiting()
   void action(async () => {
-    await api.cancel(ticketId)
-    clearTimeout(poll)
-    ticketId = ''
-    button('cancel').hidden = true
-    for (const id of ['create', 'join', 'match']) button(id).disabled = false
-    element('room-status').textContent = '매칭을 취소했습니다.'
-  })
+    try {
+      await api.cancel(ticketId)
+      if (isWaiting(epoch)) endWaiting('매칭을 취소했습니다.')
+    } catch (error) {
+      if (retryWaiting(error, epoch) && ticket) scheduleTicket(ticket, epoch)
+    }
+  }, epoch)
 }
 button('pulse').onclick = () => {
   try {
@@ -213,16 +226,51 @@ button('pulse').onclick = () => {
 button('reconnect').onclick = () => relay.reconnect()
 button('leave').onclick = () => finishGame('방에서 퇴장했습니다.')
 
-function enterLobby(lobby: Lobby): void {
+function invalidateWaiting(): number {
+  clearTimeout(poll)
+  return ++participationEpoch
+}
+function isWaiting(epoch: number): boolean {
+  return !disposed && !joined && epoch === participationEpoch
+}
+function endWaiting(message: string): void {
+  invalidateWaiting()
+  lobbyId = ''
+  ticketId = ''
+  waitingLobby = undefined
+  waitingTicket = undefined
+  roomInput.value = ''
+  button('cancel').hidden = true
+  for (const id of ['create', 'join', 'match']) button(id).disabled = false
+  for (const id of ['ready', 'start', 'lobby-leave']) button(id).disabled = true
+  element('room-status').textContent = message
+}
+function retryWaiting(error: unknown, epoch: number): boolean {
+  if (!isWaiting(epoch)) return false
+  addLog(error instanceof Error ? error.message : '요청 실패')
+  // Allocation conflicts retain membership, so keep observing the current participation.
+  if (error instanceof ControlError && !error.retryable && error.status !== 409) {
+    endWaiting('대기가 종료됐습니다. 다시 참가할 수 있습니다.')
+    return false
+  }
+  return true
+}
+function enterLobby(lobby: Lobby, epoch: number): void {
   lobbyId = lobby.id
   roomInput.value = lobby.id
   button('create').disabled = true
   button('join').disabled = true
   button('match').disabled = true
-  clearTimeout(poll)
-  scheduleLobby(lobby)
+  scheduleLobby(lobby, epoch)
 }
-function scheduleLobby(lobby: Lobby): void {
+function scheduleLobby(lobby: Lobby, epoch: number): void {
+  if (!isWaiting(epoch) || lobby.id !== lobbyId) return
+  waitingLobby = lobby
+  clearTimeout(poll)
+  if (lobby.status === 'ended' || !lobby.participants.includes(api.participantId)) {
+    endWaiting('대기방이 종료됐습니다. 다시 참가할 수 있습니다.')
+    return
+  }
   ownReady = lobby.ready[api.participantId] ?? false
   button('ready').disabled = lobby.status !== 'open' || lobby.allocationPending || lobby.allocating
   button('ready').textContent = ownReady ? '준비 취소' : '준비하기'
@@ -231,29 +279,42 @@ function scheduleLobby(lobby: Lobby): void {
   element('room-status').textContent = `방 ${lobby.id} · ${lobby.participants.length}/${lobby.capacity}명 · 준비 ${Object.values(lobby.ready).filter(Boolean).length}명`
   button('start').disabled = lobby.allocating || lobby.ownerId !== api.participantId || lobby.participants.length !== lobby.capacity || !allReady || lobby.status === 'matched'
   button('start').textContent = lobby.allocationPending ? '배정 다시 시도' : '방 시작'
-  if (disposed || joined) return
-  if (lobby.status === 'matched') {
-    void action(async () => connect(await api.assignment(lobby.id), lobby.ownerId))
-  } else poll = setTimeout(() => {
-    void action(async () => scheduleLobby(await api.get(lobby.id)))
-  }, 750)
+  const update = async () => {
+    if (!isWaiting(epoch)) return
+    try {
+      if (lobby.status === 'matched') {
+        const assignment = await api.assignment(lobby.id)
+        if (isWaiting(epoch)) connect(assignment, lobby.ownerId)
+      } else scheduleLobby(await api.get(lobby.id), epoch)
+    } catch (error) {
+      if (retryWaiting(error, epoch)) poll = setTimeout(() => { void update() }, 750)
+    }
+  }
+  if (lobby.status === 'matched') void update()
+  else poll = setTimeout(() => { void update() }, 750)
 }
-function scheduleTicket(ticket: MatchTicket): void {
+function scheduleTicket(ticket: MatchTicket, epoch: number): void {
+  if (!isWaiting(epoch) || ticket.id !== ticketId) return
+  waitingTicket = ticket
+  clearTimeout(poll)
   element('room-status').textContent = '매칭 상대를 기다리고 있습니다.'
-  if (disposed || joined) return
   if (ticket.status === 'ended') {
-    element('room-status').textContent = '매치가 종료됐습니다. 다시 매칭할 수 있습니다.'
-    button('cancel').hidden = true
-    button('match').disabled = false
+    endWaiting('매치가 종료됐습니다. 다시 매칭할 수 있습니다.')
     return
   }
-  if (ticket.assignment) {
-    button('cancel').hidden = true
-    const assignment = ticket.assignment
-    void action(async () => connect(assignment, (await api.get(assignment.roomId)).ownerId))
-  } else poll = setTimeout(() => {
-    void action(async () => scheduleTicket(await api.ticket(ticketId)))
-  }, 750)
+  const update = async () => {
+    if (!isWaiting(epoch)) return
+    try {
+      if (ticket.assignment) {
+        const lobby = await api.get(ticket.assignment.roomId)
+        if (isWaiting(epoch)) connect(ticket.assignment, lobby.ownerId)
+      } else scheduleTicket(await api.ticket(ticket.id), epoch)
+    } catch (error) {
+      if (retryWaiting(error, epoch)) poll = setTimeout(() => { void update() }, 750)
+    }
+  }
+  if (ticket.assignment) void update()
+  else poll = setTimeout(() => { void update() }, 750)
 }
 function connect(assignment: Assignment, ownerId: string): void {
   authorityId = ownerId
@@ -264,6 +325,8 @@ function connect(assignment: Assignment, ownerId: string): void {
     if (relay.status === 'active' && !authoritySeen) finishGame('상대의 최초 접속 대기 시간이 끝났습니다.')
   }, 31000)
   joined = true
+  invalidateWaiting()
+  button('cancel').hidden = true
   lobbyId = assignment.roomId
   roomInput.value = lobbyId
   for (const id of ['create', 'join', 'match', 'ready', 'start', 'lobby-leave']) button(id).disabled = true
@@ -403,8 +466,8 @@ document.addEventListener('visibilitychange', () => {
 })
 window.addEventListener('pagehide', () => {
   disposed = true
+  invalidateWaiting()
   clearTimeout(authorityTimer)
-  clearTimeout(poll)
   cancelAnimationFrame(frame)
   relay.close()
   api.dispose()
