@@ -18,12 +18,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gyungsubLee/go-wss-relay/internal/controlv2"
-	"github.com/gyungsubLee/go-wss-relay/internal/coordv2"
-	"github.com/gyungsubLee/go-wss-relay/internal/httpapi/httpx"
+	"github.com/gyungsubLee/go-wss-relay/internal/control"
+	"github.com/gyungsubLee/go-wss-relay/internal/coordinator"
+	"github.com/gyungsubLee/go-wss-relay/internal/httpx"
 	"github.com/gyungsubLee/go-wss-relay/internal/operatortoken"
 	"github.com/gyungsubLee/go-wss-relay/internal/playerauth"
-	"github.com/gyungsubLee/go-wss-relay/internal/relayv2"
+	relayserver "github.com/gyungsubLee/go-wss-relay/internal/relay"
 )
 
 func main() {
@@ -92,17 +92,17 @@ func run(ctx context.Context, args []string) error {
 		return err
 	}
 
-	var relay *relayv2.Server
-	var pool *coordv2.Pool
-	var allocator controlv2.Allocator
-	var api *controlv2.Server
+	var relay *relayserver.Server
+	var pool *coordinator.Pool
+	var allocator control.Allocator
+	var api *control.Server
 	var managementHandler http.Handler
 	if *role == "coordinator" {
-		configs, err := coordv2.ReadConfig(*nodesFile)
+		configs, err := coordinator.ReadConfig(*nodesFile)
 		if err != nil {
 			return err
 		}
-		pool, err = coordv2.New(configs)
+		pool, err = coordinator.New(configs)
 		if err != nil {
 			return err
 		}
@@ -111,12 +111,12 @@ func run(ctx context.Context, args []string) error {
 		}
 		allocator = pool
 	} else {
-		relay, err = relayv2.New(relayv2.Config{Traffic: traffic, TrustedProxies: proxies, HandshakesPerIP: *handshakeRate, NodeID: *nodeID, AllowedOrigins: origins, MaxRooms: *roomLimit, MaxConnections: *participantLimit})
+		relay, err = relayserver.New(relayserver.Config{Traffic: traffic, TrustedProxies: proxies, HandshakesPerIP: *handshakeRate, NodeID: *nodeID, AllowedOrigins: origins, MaxRooms: *roomLimit, MaxConnections: *participantLimit})
 		if err != nil {
 			return err
 		}
 		defer relay.Close()
-		allocator = controlv2.LocalAllocator{Relay: relay, NodeID: *nodeID, WebSocketURL: *publicURL}
+		allocator = control.LocalAllocator{Relay: relay, NodeID: *nodeID, WebSocketURL: *publicURL}
 		managementHandler = relay.ManagementHandler(encoded, *publicURL)
 	}
 	if *role != "relay" {
@@ -124,7 +124,7 @@ func run(ctx context.Context, args []string) error {
 		if err != nil {
 			return err
 		}
-		api, err = controlv2.New(controlv2.Config{TrustedProxies: proxies, Auth: auth, Allocator: allocator, AllowedOrigins: origins})
+		api, err = control.New(control.Config{TrustedProxies: proxies, Auth: auth, Allocator: allocator, AllowedOrigins: origins})
 		if err != nil {
 			return err
 		}
@@ -224,8 +224,8 @@ selectLoop:
 	return nil
 }
 
-func readTrafficPolicy(path string) (relayv2.TrafficPolicy, error) {
-	var policy relayv2.TrafficPolicy
+func readTrafficPolicy(path string) (relayserver.TrafficPolicy, error) {
+	var policy relayserver.TrafficPolicy
 	if path == "" {
 		return policy, nil
 	}

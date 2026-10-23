@@ -2,12 +2,6 @@
 .cache/
 .tools
 out/
-test/compat/csharp/obj/
-unity/RelaySample/Library/
-unity/RelaySample/Logs/
-unity/RelaySample/Temp/
-unity/RelaySample/UserSettings/
-unity/RelaySample/obj/
 __pycache__/
 
 client/node_modules/

@@ -16,11 +16,11 @@ import (
 
 	"github.com/gyungsubLee/go-wss-relay/internal/operatortoken"
 	"github.com/gyungsubLee/go-wss-relay/internal/playerauth"
-	"github.com/gyungsubLee/go-wss-relay/internal/relayv2"
+	"github.com/gyungsubLee/go-wss-relay/internal/relay"
 )
 
 func TestAllocationRequiresOperatorAndRejectsDuplicateRoom(t *testing.T) {
-	relay, err := relayv2.New(relayv2.Config{NodeID: "test"})
+	relay, err := relay.New(relay.Config{NodeID: "test"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -78,8 +78,8 @@ func TestTrafficPolicyFile(t *testing.T) {
 			}
 			policy, err := readTrafficPolicy(path)
 			if err == nil {
-				var server *relayv2.Server
-				server, err = relayv2.New(relayv2.Config{NodeID: "test", Traffic: policy})
+				var server *relay.Server
+				server, err = relay.New(relay.Config{NodeID: "test", Traffic: policy})
 				if server != nil {
 					server.Close()
 				}

@@ -28,7 +28,7 @@ import (
 
 	"github.com/coder/websocket"
 	wire "github.com/gyungsubLee/go-wss-relay/gen/go/relay/v2"
-	"github.com/gyungsubLee/go-wss-relay/internal/relayv2"
+	"github.com/gyungsubLee/go-wss-relay/internal/relay"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -55,29 +55,29 @@ type runner struct {
 }
 
 type report struct {
-	RecordedAt            time.Time     `json:"recordedAt"`
-	Runtime               string        `json:"runtime"`
-	Participants          int           `json:"participants"`
-	RoomSize              int           `json:"roomSize"`
-	PublishHz             int           `json:"publishHz"`
-	StatePayloadBytes     int           `json:"statePayloadBytes"`
-	MeasurementSeconds    int           `json:"measurementSeconds"`
-	SlowReadMs            int           `json:"slowReadMs"`
-	Connected             int           `json:"connected"`
-	ReceivedStates        uint64        `json:"receivedStates"`
-	RollingSampleCount    int           `json:"rollingSampleCount"`
-	P95Ms                 float64       `json:"p95Ms"`
-	P99Ms                 float64       `json:"p99Ms"`
-	IngressBytesPerSecond float64       `json:"ingressBytesPerSecond"`
-	EgressBytesPerSecond  float64       `json:"egressBytesPerSecond"`
-	PeakRSSKiB            float64       `json:"peakRssKiB"`
-	PeakCPUPercent        float64       `json:"peakCpuPercent"`
-	PeakHeapBytes         uint64        `json:"peakHeapBytes"`
-	GCCycles              uint32        `json:"gcCycles"`
-	Failures              uint64        `json:"failures"`
-	Errors                []string      `json:"errors,omitempty"`
-	NodeBefore            relayv2.Stats `json:"nodeBefore"`
-	NodeAfter             relayv2.Stats `json:"nodeAfter"`
+	RecordedAt            time.Time   `json:"recordedAt"`
+	Runtime               string      `json:"runtime"`
+	Participants          int         `json:"participants"`
+	RoomSize              int         `json:"roomSize"`
+	PublishHz             int         `json:"publishHz"`
+	StatePayloadBytes     int         `json:"statePayloadBytes"`
+	MeasurementSeconds    int         `json:"measurementSeconds"`
+	SlowReadMs            int         `json:"slowReadMs"`
+	Connected             int         `json:"connected"`
+	ReceivedStates        uint64      `json:"receivedStates"`
+	RollingSampleCount    int         `json:"rollingSampleCount"`
+	P95Ms                 float64     `json:"p95Ms"`
+	P99Ms                 float64     `json:"p99Ms"`
+	IngressBytesPerSecond float64     `json:"ingressBytesPerSecond"`
+	EgressBytesPerSecond  float64     `json:"egressBytesPerSecond"`
+	PeakRSSKiB            float64     `json:"peakRssKiB"`
+	PeakCPUPercent        float64     `json:"peakCpuPercent"`
+	PeakHeapBytes         uint64      `json:"peakHeapBytes"`
+	GCCycles              uint32      `json:"gcCycles"`
+	Failures              uint64      `json:"failures"`
+	Errors                []string    `json:"errors,omitempty"`
+	NodeBefore            relay.Stats `json:"nodeBefore"`
+	NodeAfter             relay.Stats `json:"nodeAfter"`
 }
 
 func main() {
@@ -227,8 +227,8 @@ func (r *runner) control(method, path string, body, target any) error {
 	}
 	return json.NewDecoder(io.LimitReader(response.Body, 1<<20)).Decode(target)
 }
-func (r *runner) stats() (relayv2.Stats, error) {
-	var stats relayv2.Stats
+func (r *runner) stats() (relay.Stats, error) {
+	var stats relay.Stats
 	err := r.control("GET", "/v2/status", nil, &stats)
 	return stats, err
 }
