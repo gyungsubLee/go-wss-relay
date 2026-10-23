@@ -1,4 +1,4 @@
-Selected original stdout/stderr and exit statuses; only tooling regression is excerpted.
+Selected original stdout/stderr and exit statuses; tooling regression and package graph are excerpted.
 Commands with task-only fixture paths identify the recorded run, not retained launchers.
 
 === final-go-race.log ===
