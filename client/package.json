@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",
-    "proto": "../.tools/bin/protoc --plugin=protoc-gen-es=./node_modules/.bin/protoc-gen-es --es_out=src/relay/gen --es_opt=target=ts -I ../api ../api/relay/v2/relay.proto",
-    "check": "node --experimental-transform-types scripts/check-sdk.ts",
+    "proto": "make -C .. proto-generate",
+    "check": "node --disable-warning=ExperimentalWarning --experimental-transform-types scripts/check-sdk.ts",
     "build:app": "MINB_APP_PLATFORM=android npm run build",
     "android:sync": "npm run build:app && cap sync android",
     "check:lifecycle": "node --disable-warning=ExperimentalWarning --experimental-transform-types scripts/check-lifecycle.ts"

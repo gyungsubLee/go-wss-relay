@@ -68,6 +68,12 @@ jobs:
         with:
           node-version: '24'
       - run: npm ci --prefix client
+      - name: Protocol lint, breaking compatibility, and Go/TS generation
+        run: make protocol-check
+      - name: Protocol tooling regression
+        run: python3 scripts/check-protocol-tools.py
+      - name: SDK lifecycle
+        run: npm run check:lifecycle --prefix client
       - run: npm run build --prefix client
       - name: Build protocol and process checks
         run: |
@@ -83,8 +89,8 @@ jobs:
           PYTOKEN
       - name: Binary compatibility and distributed recovery
         run: |
-          node --experimental-transform-types client/scripts/check-wire.ts
-          NODE_EXTRA_CA_CERTS="$PWD/.cache/dev-tls/cert.pem" node --experimental-transform-types client/scripts/check-cluster.ts
+          node --disable-warning=ExperimentalWarning --experimental-transform-types client/scripts/check-wire.ts
+          NODE_EXTRA_CA_CERTS="$PWD/.cache/dev-tls/cert.pem" node --disable-warning=ExperimentalWarning --experimental-transform-types client/scripts/check-cluster.ts
       - name: SDK against the actual public API and WebSocket
         run: |
           out/wss-relay --operator-token-file .cache/wss-demo.token --public-url ws://127.0.0.1:8090/v2/relay > .cache/sdk-server.log 2>&1 &
@@ -101,5 +107,5 @@ jobs:
           else:
               raise SystemExit('SDK server startup timed out')
           PYREADY
-          node --experimental-transform-types client/scripts/check-sdk.ts
-          node --experimental-transform-types client/scripts/check-snake.ts
+          npm run check --prefix client
+          node --disable-warning=ExperimentalWarning --experimental-transform-types client/scripts/check-snake.ts

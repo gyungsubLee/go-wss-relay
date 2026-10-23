@@ -5,5 +5,9 @@ plugins:
     out: gen/go
     opt:
       - paths=source_relative
+  - local: client/node_modules/.bin/protoc-gen-es
+    out: client/src/relay/gen
+    opt:
+      - target=ts
 inputs:
   - directory: api
