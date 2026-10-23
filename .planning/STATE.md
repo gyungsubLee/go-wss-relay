@@ -1,6 +1,6 @@
 # WSS 작업 상태
 
-2026-10-23 기준으로 v2 전용 구조와 로컬 검사를 마쳤다. Task 10 독립 리뷰와 전체 브랜치 리뷰는 대기 중이다.
+2026-10-23 기준으로 v2 전용 구조와 로컬 검사를 마쳤다. Task 10 독립 리뷰와 전체 브랜치 리뷰를 마쳤다. 최종 I1 수정도 재리뷰에서 닫았다.
 저장소는 `go-wss-relay`, 브랜치는 `codex/wss-v2`다. 전체 제품 목표는 진행 중이다.
 
 ## 현재 확인한 범위
@@ -12,7 +12,8 @@
 - Task 8: v2 staging 생성·drift·고정 baseline gate와 CI 정의를 연결했다. Linux 실행 성공은 아직 확인하지 않았다.
 - Task 9: flat 운영 경로·세 역할 배포·토큰·비용 가드를 적용했다. 입력 검사 세 건을 수정하고 개별 재리뷰를 마쳤다.
 - 최종 Go race·vet·fmt·govulncheck, TS 빌드·lifecycle·wire 17종·실제 SDK와 HTTPS·WSS 프로세스 검사의 소스 연결을 확인했다.
-- Task 10: v1 전용 문서 24개를 제거하고 현재 문서와 증거를 정리했다. 최종 리뷰는 대기 중이다.
+- Task 10: v1 전용 문서 24개를 제거하고 현재 문서와 증거를 정리했다. 독립 리뷰와 전체 브랜치 리뷰를 마쳤다.
+- 최종 I1: 공통 entryAction으로 중복 진입을 막았다. 31개 production 핸들러 검사·TS 빌드·실제 Chrome을 확인하고 재리뷰에서 닫았다.
 
 현재 명령·출력·소스 해시·Chrome 화면은 [구조 변경 증거](../docs/evidence/v2/2026-10-23-structure-refactor.md)에 있다.
 MinbWebKit은 고정 서브모듈이다. MinbWebLib는 이전 문서의 참조 이름이다.
@@ -22,6 +23,6 @@ MinbWebKit은 고정 서브모듈이다. MinbWebLib는 이전 문서의 참조 �
 실제 Android·화면 잠금·무선 망·저속 장치·대상 호스트 수용량을 아직 검증하지 않았다.
 실제 Linux systemd·Caddy·공개 DNS·TLS·방화벽과 원격 CI도 실행하지 않았다.
 2026-10-22 Android 빌드·부하 기록은 [완료 감사](../docs/evidence/v2/completion-audit.md)에 보존한다. 전체 부하를 다시 실행하지 않았다.
-Chrome은 오래된 실패 조회의 무효화를 확인했다. 성공한 이전 응답을 데모 DOM이 소비하는 경우는 별도 증거가 없다.
-SDK deferred 성공 검사와 데모 성공 guard의 코드 리뷰는 이 DOM 검사를 대신하지 않는다.
-다음 행동은 Task 10 독립 리뷰와 전체 브랜치 리뷰다.
+Chrome은 오래된 실패 조회의 무효화를 확인했다. 성공한 이전 조회 응답을 퇴장 후 데모 DOM이 소비하는 경우는 별도 증거가 없다.
+새 production 핸들러 검사는 stale query 성공·실패를 확인한다. 이 경계 대체 검사와 SDK 검사는 실제 Chrome DOM 검사를 대신하지 않는다.
+이 구조 변경은 완료했다. 다음 제품 검증은 실제 기기·망·운영 호스트 조건을 준비한 뒤 실행한다.

@@ -15,7 +15,7 @@
 - standalone/coordinator/relay 역할, 노드 예약·등록·단일 소유·드레이닝·활성 방 복원.
 - IP·참가자·방·노드 제한, 바이트 예산, 큐·쓰기·자원 계측과 실제 TLS 부하 도구.
 
-2026-10-23 기준으로 v2 전용 구조와 로컬 검사를 마쳤다. Task 10 독립 리뷰와 전체 브랜치 리뷰는 대기 중이다.
+2026-10-23 기준으로 v2 전용 구조와 로컬 검사를 마쳤다. Task 10 독립 리뷰와 전체 브랜치 리뷰를 마쳤다. 최종 I1 수정도 재리뷰에서 닫았다.
 Android 실기기·무선 망·실제 Linux 배포·원격 CI는 아직 검증하지 않았다.
 현재 증거와 남은 요구사항은 [완료 감사](docs/evidence/v2/completion-audit.md)를 확인한다.
 
@@ -78,9 +78,12 @@ make protocol-check
 make relay-build
 cd client
 npm run build
+node --disable-warning=ExperimentalWarning --experimental-transform-types scripts/check-demo-entry.mjs
 npm run check
 ```
 
+[데모 진입 검사](client/scripts/check-demo-entry.mjs)는 실제 production 핸들러의 중복 진입·실패·퇴장·pagehide를 확인한다.
+외부 API·타이머·DOM 경계는 대체한다. 실제 Chrome 검사는 [구조 변경 증거](docs/evidence/v2/2026-10-23-structure-refactor.md)의 최종 I1 절을 따른다.
 npm run check는 위 로컬 서버가 필요하다. 분산·호환 검사는 아래 바이너리를 먼저 빌드한다.
 
 ```sh

@@ -1,0 +1,182 @@
+{
+  "head": "d182e70e1fc1ec94d6a1417b53ad99febd32dc15",
+  "fix_base": "790fec4c59c18d13bc63549d815b0c74932affb9",
+  "runtime": {
+    "node": "v24.3.0",
+    "environment": "Darwin arm64; recorded frontend build and local Chrome HTTP/WS"
+  },
+  "automated": {
+    "fix_base": "790fec4c59c18d13bc63549d815b0c74932affb9",
+    "head": "d182e70e1fc1ec94d6a1417b53ad99febd32dc15",
+    "branch": "codex/wss-v2",
+    "node": "v24.3.0",
+    "files": {
+      "client/src/demo/main.ts": {
+        "sha256": "d04b51b7c7a6f5685ef81ed0cbd410e306d8f422243a165b4bf825840894d644",
+        "base_sha256": "fbd837376b95fecd26060afa7062d4a6714cc29c3c258c5288969df425be098c",
+        "unchanged_from_fix_base": false
+      },
+      "client/scripts/check-demo-entry.mjs": {
+        "sha256": "d39ea203b0f4ce4f5c06f0f2528b5482e345822c6ad309128acea7744f6bdd2e",
+        "base_sha256": null,
+        "unchanged_from_fix_base": false
+      },
+      "client/package.json": {
+        "sha256": "c75fc687b2a6fb4036792bf4e6e39e830adf31f3fd85799eca1f2d1a4a721113",
+        "base_sha256": "c75fc687b2a6fb4036792bf4e6e39e830adf31f3fd85799eca1f2d1a4a721113",
+        "unchanged_from_fix_base": true
+      },
+      "client/package-lock.json": {
+        "sha256": "b6166e541ccfc9c8f733465f319ad03af168150f23a5ef0fa1d9d225e846706b",
+        "base_sha256": "b6166e541ccfc9c8f733465f319ad03af168150f23a5ef0fa1d9d225e846706b",
+        "unchanged_from_fix_base": true
+      },
+      "client/tsconfig.json": {
+        "sha256": "c77edd9c49cbfdf947d4f50eed573a63124de3fb84028a6ca80b22d874926757",
+        "base_sha256": "c77edd9c49cbfdf947d4f50eed573a63124de3fb84028a6ca80b22d874926757",
+        "unchanged_from_fix_base": true
+      },
+      "client/vite.config.ts": {
+        "sha256": "442512d456cc640edcc947c47678e9ae6ead8048d98f6a94a56c1febe1cd5e35",
+        "base_sha256": "442512d456cc640edcc947c47678e9ae6ead8048d98f6a94a56c1febe1cd5e35",
+        "unchanged_from_fix_base": true
+      },
+      "client/scripts/check-lifecycle.ts": {
+        "sha256": "1d575440d09ae5b27da5d3892c023823efa771abe0d61cf8c49d280438b88112",
+        "base_sha256": "1d575440d09ae5b27da5d3892c023823efa771abe0d61cf8c49d280438b88112",
+        "unchanged_from_fix_base": true
+      },
+      "client/src/relay/api.ts": {
+        "sha256": "69b2d29239b0cb987cc2d184da1f849aa9db01ecf6dc7ef851ce842e1ee4567c",
+        "base_sha256": "69b2d29239b0cb987cc2d184da1f849aa9db01ecf6dc7ef851ce842e1ee4567c",
+        "unchanged_from_fix_base": true
+      },
+      "client/src/relay/client.ts": {
+        "sha256": "bd4b99b8eb537f25aedbbcb31df84bf6fd2603d41269352382e3ed69010a3649",
+        "base_sha256": "bd4b99b8eb537f25aedbbcb31df84bf6fd2603d41269352382e3ed69010a3649",
+        "unchanged_from_fix_base": true
+      }
+    },
+    "runs": {
+      "final-fix-red.log": {
+        "exit_status": 1,
+        "sha256": "cb9c9da02a8823ffd734f671ddb56059794a49e45a378c3378d19a19a629e8ba"
+      },
+      "final-fix-green-attempt-1.log": {
+        "exit_status": 1,
+        "sha256": "c8ec6dd98d7ed9c4fc0bdd23522397e7a7e40ebbdd51283ed94c3705f684331f"
+      },
+      "final-fix-green.log": {
+        "exit_status": 0,
+        "sha256": "9d3b5123fe9a375d75cfb1724ab5a94e0323caf55514da136d22d7d448329410"
+      },
+      "final-fix-build.log": {
+        "exit_status": 0,
+        "sha256": "c687a74e30466a0464f45c1997ac7cbd113f879498a17207330c44cc79d375cc"
+      }
+    }
+  },
+  "browser": {
+    "source": {
+      "client/src/demo/main.ts": "d04b51b7c7a6f5685ef81ed0cbd410e306d8f422243a165b4bf825840894d644",
+      "out/wss-relay": "87077c967d1c97fea3ff0c729358ebdcc5dd67e777a05333518ef57de7d6a6ec",
+      "fixture": "0d24230d15c9f0095dba1312fae897e39f36c50be4997e249394689d96c74ae5"
+    },
+    "fixture_path": "final-browser-proxy.py",
+    "tabs": [
+      "1490580648",
+      "1490580653"
+    ],
+    "url": "http://127.0.0.1:38173/",
+    "transport": "actual local Go HTTP/WS via held-response proxy; not Linux or public TLS deployment"
+  },
+  "historical_binding_comparison": {
+    "final-go-source-hashes.json": {
+      "unchanged": 47,
+      "changed": [],
+      "missing": []
+    },
+    "final-process-source-hashes.json": {
+      "unchanged": 61,
+      "changed": [
+        "client/src/demo/main.ts"
+      ],
+      "missing": []
+    },
+    "task-8-source-hashes.json": {
+      "unchanged": 128,
+      "changed": [
+        "client/src/demo/main.ts"
+      ],
+      "missing": []
+    },
+    "task-9-final-bindings.json": {
+      "unchanged": 70,
+      "changed": [],
+      "missing": []
+    },
+    "task-7-source.sha256": {
+      "unchanged": 8,
+      "changed": [
+        "client/src/demo/main.ts",
+        "client/package.json",
+        "out/wss-relay"
+      ],
+      "missing": []
+    },
+    "task-5-browser-backend-Go": {
+      "unchanged": 46,
+      "changed": [],
+      "missing": []
+    }
+  },
+  "historical_source_bindings_sha256": "8b274fb65a8f06682764cda3a6ebbb92851fbbec27636e596a2de836f21a36ef",
+  "original_evidence_sha256": {
+    "final-fix-red.log": "cb9c9da02a8823ffd734f671ddb56059794a49e45a378c3378d19a19a629e8ba",
+    "final-fix-green-attempt-1.log": "c8ec6dd98d7ed9c4fc0bdd23522397e7a7e40ebbdd51283ed94c3705f684331f",
+    "final-fix-green.log": "9d3b5123fe9a375d75cfb1724ab5a94e0323caf55514da136d22d7d448329410",
+    "final-fix-build.log": "c687a74e30466a0464f45c1997ac7cbd113f879498a17207330c44cc79d375cc",
+    "final-entry-browser-check.log": "12497e522106e8710d032ea51a8eb7e468c72502bc6589e7ebecba1b55b74ba7",
+    "final-browser-cleanup.log": "ef7b9f439ee0c1a47b274af26a3a4bc2e22d7e821dc62428f9ff97cf915871fb",
+    "final-entry-cancel-green.ax.txt": "8d15854247c7253cc61a114c3ff97078ef0f85d357655da9a1726a8452a13ffd",
+    "final-entry-create-green.ax.txt": "49994ed5816e0bf85757bf6b151649c8c6d7f8f5d53a7b091273c94b7bb25a0f",
+    "final-entry-create-green.json": "613776e63950582b8873222ded85b784c37eea1a2cb62d0713ffa38003bc6f5a",
+    "final-entry-failure.ax.txt": "a7d14886fb010188ae160e2b435d871aa2192288045f66140a0ff97b92d4f578",
+    "final-entry-invalid-join.ax.txt": "3d6e3cdcad577d89e35bbea860e89197d388e780c4a96760061f967d02df160b",
+    "final-entry-join-green.ax.txt": "9e377ffdbc8985eee055a5b09124526414f7d921f35ce6a4786594e8c03008ef",
+    "final-entry-join-green.json": "aacbe877bb6a100883b35afecf719c9b0fd72c64e8f22c5d09065f3a4c0c75cb",
+    "final-entry-live-green.json": "b71c107aaec6bb1d64d512d927b2e24edff301e23e97dfd3055bd70bc5b7b82b",
+    "final-entry-live-owner.ax.txt": "ec93310dcffc6264fab77f19d90e5101576f41057a6cd720a2d69b55a60972a3",
+    "final-entry-live-peer.ax.txt": "851e2d0d6cf455688bae8955b492c4f0d67c2af5a589ac8970d3857a8631b84c",
+    "final-entry-queue-failure.ax.txt": "49e026e180d137b2077251349183c81db74403f81d1c55a5bc3b29811d41f734",
+    "final-entry-queue-green.ax.txt": "ba366e13d2b40551a0a8243570943fc15008f5f5f9a2420f6adc4e78375c8f2b",
+    "final-entry-queue-green.json": "4e6e6cde8ec6c3c0c816a33d420fe7f5a0a0b0b8f98b7fe97fd97c6a141dbe18",
+    "final-entry-red.ax.txt": "00f0323807798da983e57ef144ea0ecfa0dbe60dda91cce6303e570e7274110f",
+    "final-entry-red.json": "5d1055ba77c7f1e3f7a209a4a8a995f09607ab745dbad2bf7f11d8285ffbdb80",
+    "final-entry-retry-green.ax.txt": "70607029565f09ad8d424eeb2ab3cd34fb17be9ddbbfcc56341d6d45957301a2",
+    "final-entry-retry-green.json": "9e7b6258eedfc7f134479c0657d4f57e950f9d215b61fa7092bebbfbbb84da26",
+    "final-review.md": "bf6a23be20dddd2e1ca1ac26f41494c7abdd8644273cc927e2c1ef80a0144829",
+    "final-rereview.md": "f341bfbf9ee887e5b21896b098c627c724e06a6ff495441718e74a64c03bc208",
+    "final-fix-report.md": "00706e577d2873639c48541a2fc6fdb2de69394be449cd9cb4bbd47c40c6ebfe",
+    "final-entry-browser.md": "95ca3e9ca9fe126f1844c167431358ff5875f777c340980ab3580d9ceb9228a8",
+    "final-fix-bindings.json": "c618e7ccf61a755ccdb68d81290770f893b04a5a18f6f9c4286ff671aab3f915",
+    "final-entry-browser-source.json": "9ade2281e6e8f235e4cae0bb44fe81047134c3f6cb673410b2726eb0a3f7aa43",
+    "final-current-binding-comparison.json": "44323a1073affc3934418ca6b3f27e40121200ae8fc89c5754bc259ee3965514",
+    "final-entry-red.jpg": "466f483a7d18d6fe6f58ec0f95f710049b68abdc3e5b2e44fac303e83db74d02",
+    "final-entry-live-green.jpg": "a42b9863e7a3a6a616d05abc5a8d95e5d6d00f47a17bcce2cc86d9be268bebce",
+    "task-10-review.md": "277cdec5628306e34758ca79f86746ba648be6b113fff7c0823b82f6b39ea5d5",
+    "final-entry-assert.py": "9e72472c330392609864c653a582d84ed241a7c399a80e0755a5f3d1f14217fd"
+  },
+  "review": {
+    "whole_branch_base": "ba3db51",
+    "whole_branch_head": "790fec4c59c18d13bc63549d815b0c74932affb9",
+    "original_verdict": "With fixes: 0 Critical, 1 Important, 0 Minor",
+    "fix_head": "d182e70e1fc1ec94d6a1417b53ad99febd32dc15",
+    "scoped_verdict": "I1 ADDRESSED; no new Critical, Important or Minor finding"
+  },
+  "limitations": [
+    "Successful entry mutation after a 3-second hold is established; successful old query consumption after exit in actual Chrome DOM is still unproven.",
+    "31 checks execute actual production helpers with substituted DOM/timers/API boundaries; they do not establish native device or real browser DOM behavior.",
+    "Original source-bindings.json remains the dd91 snapshot. Process/Task8 manifests include changed main.ts broadly, while their actual process/SDK checker dependencies are unchanged."
+  ]
+}
