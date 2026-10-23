@@ -1,14 +1,21 @@
 package main
 
 import (
+	"context"
+	"encoding/base64"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/gyungsubLee/go-wss-relay/internal/operatortoken"
+	"github.com/gyungsubLee/go-wss-relay/internal/playerauth"
 	"github.com/gyungsubLee/go-wss-relay/internal/relayv2"
 )
 
@@ -81,5 +88,98 @@ func TestTrafficPolicyFile(t *testing.T) {
 				t.Fatalf("valid=%v, error=%v", tc.valid, err)
 			}
 		})
+	}
+}
+
+// Missing permission and symlink checks must fail before either listener starts.
+func TestRunRejectsUnsafeOperatorTokenFiles(t *testing.T) {
+	secret := [32]byte{1}
+	encoded := base64.RawURLEncoding.EncodeToString(secret[:])
+	for _, name := range []string{"mode 0644", "symlink", "trailing space", "oversized whitespace"} {
+		t.Run(name, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "operator.token")
+			body := encoded
+			if name == "trailing space" {
+				body += " "
+			}
+			if name == "oversized whitespace" {
+				body += strings.Repeat("\n", 1<<20)
+			}
+			if err := os.WriteFile(path, []byte(body), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			if name == "mode 0644" {
+				if err := os.Chmod(path, 0o644); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if name == "symlink" {
+				link := filepath.Join(t.TempDir(), "token-link")
+				if err := os.Symlink(path, link); err != nil {
+					t.Fatal(err)
+				}
+				path = link
+			}
+			ctx, cancel := context.WithCancel(t.Context())
+			cancel()
+			err := run(ctx, []string{"--operator-token-file", path, "--public-url", "ws://127.0.0.1/v2/relay", "--listen", "127.0.0.1:0", "--management-listen", "127.0.0.1:0"})
+			if err == nil {
+				t.Fatal("unsafe operator token file was accepted")
+			}
+			if strings.Contains(err.Error(), encoded) {
+				t.Fatal("startup error disclosed the operator token")
+			}
+		})
+	}
+}
+
+func TestRunAcceptsCanonicalOperatorTokenFiles(t *testing.T) {
+	for _, suffix := range []string{"", "\n", "\r\n"} {
+		t.Run(fmt.Sprintf("suffix %q", suffix), func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "operator.token")
+			if err := os.WriteFile(path, []byte("QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE"+suffix), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			ctx, cancel := context.WithCancel(t.Context())
+			cancel()
+			if err := run(ctx, []string{"--operator-token-file", path, "--public-url", "ws://127.0.0.1/v2/relay", "--listen", "127.0.0.1:0", "--management-listen", "127.0.0.1:0"}); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}
+
+func TestOperatorTokenPreservesStablePlayerToken(t *testing.T) {
+	// Frozen from the existing v2 issuer: 32 ASCII A bytes, player-a, 15-minute TTL.
+	const token = "ARjhAFbsMSgACHBsYXllci1hAuqVORlY-LBk1dfW1xzFYkoVqiefSstP4X5U-1j8F3w"
+	path := filepath.Join(t.TempDir(), "operator.token")
+	if err := os.WriteFile(path, []byte("QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE\r\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	secret, err := operatortoken.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	now := time.Date(2026, 10, 23, 0, 0, 0, 0, time.UTC)
+	config := playerauth.Config{OperatorSecret: secret, StableKey: true, TokenTTL: playerauth.HardTokenTTL, Now: func() time.Time { return now }}
+	issuer, err := playerauth.New(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	issued, claims, err := issuer.Issue("player-a")
+	if err != nil || issued != token || claims.PlayerID != "player-a" || !claims.ExpiresAt.Equal(now.Add(15*time.Minute)) {
+		t.Fatalf("existing v2 token contract changed: %v", err)
+	}
+	restarted, err := playerauth.New(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	verified, err := restarted.Verify(token)
+	if err != nil || verified != claims {
+		t.Fatalf("restart rejected existing v2 player token: %v", err)
+	}
+	now = claims.ExpiresAt
+	if _, err := restarted.Verify(token); !errors.Is(err, playerauth.ErrExpired) {
+		t.Fatalf("token remained valid at expiry: %v", err)
 	}
 }

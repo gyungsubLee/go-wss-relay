@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -294,5 +295,63 @@ func TestConflictingOwnershipBlocksPlacementUntilResolved(t *testing.T) {
 	}
 	if !pool.Ready() {
 		t.Fatal("resolved registry did not recover")
+	}
+}
+
+func TestRegisterRejectsUnsafeNodeTokenFiles(t *testing.T) {
+	secret := [32]byte{1}
+	encoded := base64.RawURLEncoding.EncodeToString(secret[:])
+	for _, name := range []string{"mode 0644", "symlink", "trailing space", "oversized whitespace"} {
+		t.Run(name, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "operator.token")
+			body := encoded
+			if name == "trailing space" {
+				body += " "
+			}
+			if name == "oversized whitespace" {
+				body += strings.Repeat("\n", 1<<20)
+			}
+			if err := os.WriteFile(path, []byte(body), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			if name == "mode 0644" {
+				if err := os.Chmod(path, 0o644); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if name == "symlink" {
+				link := filepath.Join(t.TempDir(), "token-link")
+				if err := os.Symlink(path, link); err != nil {
+					t.Fatal(err)
+				}
+				path = link
+			}
+			_, err := New([]NodeConfig{{ID: "node-a", ControlURL: "http://127.0.0.1:8091", WebSocketURL: "ws://127.0.0.1:8090/v2/relay", TokenFile: path}})
+			if err == nil {
+				t.Fatal("unsafe node token file was accepted")
+			}
+			if strings.Contains(err.Error(), encoded) {
+				t.Fatal("registration error disclosed the node token")
+			}
+		})
+	}
+}
+
+func TestRegisterAcceptsCanonicalNodeTokenFiles(t *testing.T) {
+	const encoded = "QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUE"
+	for _, suffix := range []string{"", "\n", "\r\n"} {
+		t.Run(fmt.Sprintf("suffix %q", suffix), func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "operator.token")
+			if err := os.WriteFile(path, []byte(encoded+suffix), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			pool, err := New([]NodeConfig{{ID: "node-a", ControlURL: "http://127.0.0.1:8091", WebSocketURL: "ws://127.0.0.1:8090/v2/relay", TokenFile: path}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if pool.nodes["node-a"].token != encoded {
+				t.Fatal("node credential retained its file terminator")
+			}
+		})
 	}
 }

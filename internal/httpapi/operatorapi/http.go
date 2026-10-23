@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gyungsubLee/go-wss-relay/internal/httpapi/httpx"
+	"github.com/gyungsubLee/go-wss-relay/internal/operatortoken"
 	"github.com/gyungsubLee/go-wss-relay/internal/playerauth"
 	"github.com/gyungsubLee/go-wss-relay/internal/protocol"
 	"github.com/gyungsubLee/go-wss-relay/internal/relayroom"
@@ -23,8 +24,6 @@ const (
 )
 
 var errInvalidConfig = errors.New("invalid operator API config")
-
-var errInvalidOperatorToken = errors.New("invalid operator token")
 
 type Config struct {
 	OperatorToken  [32]byte
@@ -70,20 +69,9 @@ func NewServer(addr string, handler http.Handler) *http.Server {
 	return httpx.NewServer(addr, handler)
 }
 
+// ponytail: keep the legacy entry point only until v1 callers are removed.
 func ParseOperatorToken(encoded string) ([32]byte, error) {
-	if len(encoded) != 43 {
-		return [32]byte{}, errInvalidOperatorToken
-	}
-	decoded, err := base64.RawURLEncoding.Strict().DecodeString(encoded)
-	if err != nil || len(decoded) != 32 {
-		return [32]byte{}, errInvalidOperatorToken
-	}
-	var token [32]byte
-	copy(token[:], decoded)
-	if token == ([32]byte{}) {
-		return [32]byte{}, errInvalidOperatorToken
-	}
-	return token, nil
+	return operatortoken.Parse(encoded)
 }
 
 func (handler *handler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {

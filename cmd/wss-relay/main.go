@@ -3,6 +3,7 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -14,14 +15,13 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 	"time"
 
 	"github.com/gyungsubLee/go-wss-relay/internal/controlv2"
 	"github.com/gyungsubLee/go-wss-relay/internal/coordv2"
 	"github.com/gyungsubLee/go-wss-relay/internal/httpapi/httpx"
-	"github.com/gyungsubLee/go-wss-relay/internal/httpapi/operatorapi"
+	"github.com/gyungsubLee/go-wss-relay/internal/operatortoken"
 	"github.com/gyungsubLee/go-wss-relay/internal/playerauth"
 	"github.com/gyungsubLee/go-wss-relay/internal/relayv2"
 )
@@ -81,15 +81,11 @@ func run(ctx context.Context, args []string) error {
 		}
 	}
 
-	data, err := os.ReadFile(*tokenFile)
-	if err != nil {
-		return errors.New("cannot read operator token file")
-	}
-	encoded := strings.TrimSpace(string(data))
-	secret, err := operatorapi.ParseOperatorToken(encoded)
+	secret, err := operatortoken.ReadFile(*tokenFile)
 	if err != nil {
 		return errors.New("invalid operator token file")
 	}
+	encoded := base64.RawURLEncoding.EncodeToString(secret[:])
 
 	traffic, err := readTrafficPolicy(*trafficFile)
 	if err != nil {

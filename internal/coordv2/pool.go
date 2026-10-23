@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -21,7 +22,7 @@ import (
 	"time"
 
 	"github.com/gyungsubLee/go-wss-relay/internal/controlv2"
-	"github.com/gyungsubLee/go-wss-relay/internal/httpapi/operatorapi"
+	"github.com/gyungsubLee/go-wss-relay/internal/operatortoken"
 	"github.com/gyungsubLee/go-wss-relay/internal/protocol"
 	"github.com/gyungsubLee/go-wss-relay/internal/relayv2"
 )
@@ -110,14 +111,12 @@ func (pool *Pool) Register(config NodeConfig) error {
 	if !protocol.ValidID(config.ID) || !safeURL(config.ControlURL, false) || !safeURL(config.WebSocketURL, true) {
 		return errors.New("invalid node identity or secure URL")
 	}
-	data, err := os.ReadFile(config.TokenFile)
+	secret, err := operatortoken.ReadFile(config.TokenFile)
 	if err != nil {
-		return errors.New("cannot read node token file")
-	}
-	token := strings.TrimSpace(string(data))
-	if _, err := operatorapi.ParseOperatorToken(token); err != nil {
 		return errors.New("invalid node token file")
 	}
+	token := base64.RawURLEncoding.EncodeToString(secret[:])
+
 	roots, err := x509.SystemCertPool()
 	if err != nil {
 		roots = x509.NewCertPool()
