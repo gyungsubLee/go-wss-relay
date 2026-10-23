@@ -178,8 +178,19 @@ func (n *node) call(ctx context.Context, method, path string, body, target any) 
 	if response.StatusCode == 410 {
 		return relay.ErrGone
 	}
-	if response.StatusCode == 503 {
-		return relay.ErrCapacity
+	if response.StatusCode == http.StatusServiceUnavailable {
+		// Only the node's bounded structured refusal proves no reservation remains.
+		var refusal struct {
+			Error struct {
+				Code    string `json:"code"`
+				Message string `json:"message"`
+			} `json:"error"`
+		}
+		body, err := io.ReadAll(io.LimitReader(response.Body, 4097))
+		if err == nil && len(body) <= 4096 && json.Unmarshal(body, &refusal) == nil && refusal.Error.Code == "allocation_failed" {
+			return relay.ErrCapacity
+		}
+		return fmt.Errorf("node HTTP %d: reservation outcome unknown", response.StatusCode)
 	}
 	if response.StatusCode == 409 {
 		return relay.ErrConflict
@@ -385,7 +396,7 @@ func (pool *Pool) reserve(ctx context.Context, owner *ownedRoom, id, application
 	}
 	if !n.healthy {
 		pool.mu.Unlock()
-		return control.Allocation{}, relay.ErrCapacity
+		return control.Allocation{}, errors.New("reservation owner is unhealthy; outcome unknown")
 	}
 	expectedInstance := owner.instanceID
 	pool.mu.Unlock()

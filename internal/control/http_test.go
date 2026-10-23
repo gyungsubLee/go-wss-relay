@@ -4,9 +4,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/gyungsubLee/go-wss-relay/internal/playerauth"
 	"github.com/gyungsubLee/go-wss-relay/internal/relay"
@@ -269,4 +272,142 @@ func TestLostReservationReplyFreezesRosterAndRetriesSameRoom(t *testing.T) {
 	f.request("GET", base+"/assignment", alice, nil, 410, nil)
 	f.request("POST", "/lobbies", alice, create, 201, nil)
 	f.request("POST", "/lobbies", bob, create, 201, nil)
+}
+
+// allocationHook runs deterministic lifecycle changes while allocation is outside the lock.
+type allocationHook struct {
+	Allocator
+	allocate func(context.Context, string, string, []string) (Allocation, error)
+}
+
+func (a allocationHook) Allocate(ctx context.Context, id, application string, participants []string) (Allocation, error) {
+	return a.allocate(ctx, id, application, participants)
+}
+
+func TestFormedQueueRetainsNearExpiryTicket(t *testing.T) {
+	f := newFixture(t)
+	var elapsed atomic.Int64
+	now := time.Now()
+	f.control.now = func() time.Time { return now.Add(time.Duration(elapsed.Load()) * time.Second) }
+	alice, aliceID := f.guest()
+	bob, bobID := f.guest()
+	request := groupRequest{Capacity: 2, ApplicationProtocol: "demo.v1"}
+	var a, b matchTicket
+	f.request("POST", "/matchmaking", alice, request, 201, &a)
+	elapsed.Store(119)
+	local := f.control.allocator
+	f.control.allocator = allocationHook{Allocator: local, allocate: func(ctx context.Context, id, application string, participants []string) (Allocation, error) {
+		elapsed.CompareAndSwap(119, 121)
+		f.control.Expire()
+		return local.Allocate(ctx, id, application, participants)
+	}}
+	f.request("POST", "/matchmaking", bob, request, 201, &b)
+	f.request("GET", "/matchmaking/"+a.ID, alice, nil, 200, &a)
+	if a.Assignment == nil || b.Assignment == nil || a.Assignment.ParticipantID != aliceID || b.Assignment.ParticipantID != bobID || a.Assignment.ConnectTicket == b.Assignment.ConnectTicket {
+		t.Fatal("formed queue lost a private participant assignment")
+	}
+}
+
+func TestFormedQueueExpiryReleasesAllParticipants(t *testing.T) {
+	f := newFixture(t)
+	var elapsed atomic.Int64
+	now := time.Now()
+	f.control.now = func() time.Time { return now.Add(time.Duration(elapsed.Load()) * time.Second) }
+	alice, _ := f.guest()
+	bob, _ := f.guest()
+	request := groupRequest{Capacity: 2, ApplicationProtocol: "demo.v1"}
+	var a, b matchTicket
+	f.request("POST", "/matchmaking", alice, request, 201, &a)
+	elapsed.Store(119)
+	f.control.allocator = allocationHook{Allocator: f.control.allocator, allocate: func(context.Context, string, string, []string) (Allocation, error) {
+		elapsed.CompareAndSwap(119, 121)
+		f.control.Expire()
+		return Allocation{}, relay.ErrCapacity
+	}}
+	f.request("POST", "/matchmaking", bob, request, 201, &b)
+	elapsed.Store(238)
+	f.request("GET", "/matchmaking/"+a.ID, alice, nil, 200, nil)
+	elapsed.Store(239)
+	f.control.Expire()
+	f.request("GET", "/matchmaking/"+a.ID, alice, nil, 404, nil)
+	f.request("GET", "/matchmaking/"+b.ID, bob, nil, 404, nil)
+	f.request("POST", "/matchmaking", alice, request, 201, nil)
+	f.request("POST", "/matchmaking", bob, request, 201, nil)
+}
+
+func TestAllocationCompletionDoesNotReviveEndedMatch(t *testing.T) {
+	for _, queue := range []bool{false, true} {
+		t.Run(fmt.Sprintf("queue=%t", queue), func(t *testing.T) {
+			f := newFixture(t)
+			local := f.control.allocator
+			f.control.allocator = allocationHook{Allocator: local, allocate: func(ctx context.Context, id, application string, participants []string) (Allocation, error) {
+				allocation, err := local.Allocate(ctx, id, application, participants)
+				if err == nil {
+					f.control.EndMatch(id, allocation.RoomInstanceID)
+				}
+				return allocation, err
+			}}
+			alice, aliceID := f.guest()
+			bob, bobID := f.guest()
+			var id string
+			if queue {
+				var a, b matchTicket
+				request := groupRequest{Capacity: 2, ApplicationProtocol: "demo.v1"}
+				f.request("POST", "/matchmaking", alice, request, 201, &a)
+				f.request("POST", "/matchmaking", bob, request, 201, &b)
+				f.control.mu.Lock()
+				id = f.control.tickets[a.ID].roomID
+				f.control.mu.Unlock()
+			} else {
+				var room lobby
+				f.request("POST", "/lobbies", alice, map[string]any{"capacity": 2, "applicationProtocol": "demo.v1", "visibility": "private"}, 201, &room)
+				id = room.ID
+				base := "/lobbies/" + id
+				f.request("POST", base+"/join", bob, revisionRequest{Revision: 1}, 200, nil)
+				f.request("POST", base+"/ready", alice, map[string]any{"revision": 2, "ready": true}, 200, nil)
+				f.request("POST", base+"/ready", bob, map[string]any{"revision": 3, "ready": true}, 200, nil)
+				// Ending the authority during the RPC must win over its late success.
+				f.request("POST", base+"/start", alice, revisionRequest{Revision: 4}, 503, nil)
+			}
+			f.control.mu.Lock()
+			defer f.control.mu.Unlock()
+			if f.control.lobbies[id].Status != "ended" || f.control.byPlayer[aliceID] != "" || f.control.byPlayer[bobID] != "" {
+				t.Fatal("late allocation success revived an ended match or membership")
+			}
+			for _, ticket := range f.control.tickets {
+				if ticket.roomID == id && (ticket.Status != "ended" || ticket.Assignment != nil) {
+					t.Fatal("late success revived queue assignment")
+				}
+			}
+		})
+	}
+}
+
+func TestQueueFailureAfterFormedDeadlineExpiresTogether(t *testing.T) {
+	f := newFixture(t)
+	var elapsed atomic.Int64
+	now := time.Now()
+	f.control.now = func() time.Time { return now.Add(time.Duration(elapsed.Load()) * time.Second) }
+	alice, aliceID := f.guest()
+	bob, bobID := f.guest()
+	var a, b matchTicket
+	request := groupRequest{Capacity: 2, ApplicationProtocol: "demo.v1"}
+	f.request("POST", "/matchmaking", alice, request, 201, &a)
+	f.control.allocator = allocationHook{Allocator: f.control.allocator, allocate: func(context.Context, string, string, []string) (Allocation, error) {
+		elapsed.Store(120)
+		f.control.Expire()
+		f.control.mu.Lock()
+		retained := len(f.control.tickets) == 2 && len(f.control.lobbies) == 1
+		f.control.mu.Unlock()
+		if !retained {
+			t.Error("in-flight allocation lost its group or tickets")
+		}
+		return Allocation{}, context.DeadlineExceeded
+	}}
+	f.request("POST", "/matchmaking", bob, request, 201, &b)
+	f.control.mu.Lock()
+	defer f.control.mu.Unlock()
+	if len(f.control.tickets) != 0 || len(f.control.lobbies) != 0 || f.control.byPlayer[aliceID] != "" || f.control.byPlayer[bobID] != "" {
+		t.Fatal("failed allocation retained an expired group, ticket or membership")
+	}
 }

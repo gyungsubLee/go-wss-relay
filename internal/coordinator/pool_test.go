@@ -1,8 +1,10 @@
 package coordinator
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net"
@@ -18,6 +20,7 @@ import (
 	"github.com/coder/websocket"
 	wire "github.com/gyungsubLee/go-wss-relay/gen/go/relay/v2"
 	"github.com/gyungsubLee/go-wss-relay/internal/control"
+	"github.com/gyungsubLee/go-wss-relay/internal/playerauth"
 	"github.com/gyungsubLee/go-wss-relay/internal/relay"
 	"google.golang.org/protobuf/proto"
 )
@@ -27,6 +30,8 @@ type testNode struct {
 	relay                         *relay.Server
 	http                          *httptest.Server
 	dropNext                      atomic.Bool
+	failHeartbeat                 atomic.Bool
+	proxy503                      atomic.Bool
 }
 
 func newTestNode(t *testing.T, id string) *testNode {
@@ -64,6 +69,15 @@ func (n *testNode) start(t *testing.T) {
 	handler := n.relay.ManagementHandler(n.token, "ws"+strings.TrimPrefix(n.http.URL, "http")+"/v2/relay")
 	mux.Handle("/v2/relay", n.relay)
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/v2/node" && n.failHeartbeat.Load() {
+			w.WriteHeader(502)
+			return
+		}
+		if r.URL.Path == "/v2/reservations" && n.proxy503.CompareAndSwap(true, false) {
+			handler.ServeHTTP(httptest.NewRecorder(), r)
+			w.WriteHeader(503)
+			return
+		}
 		if r.URL.Path == "/v2/reservations" && n.dropNext.CompareAndSwap(true, false) {
 			recorder := httptest.NewRecorder()
 			handler.ServeHTTP(recorder, r)
@@ -351,6 +365,145 @@ func TestRegisterAcceptsCanonicalNodeTokenFiles(t *testing.T) {
 			}
 			if pool.nodes["node-a"].token != encoded {
 				t.Fatal("node credential retained its file terminator")
+			}
+		})
+	}
+}
+
+func controlRequest(t *testing.T, api *control.Server, method, path, token string, body any, status int, target any) {
+	t.Helper()
+	data, err := json.Marshal(body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := httptest.NewRequest(method, "/v2/api"+path, bytes.NewReader(data))
+	request.Header.Set("Authorization", "Bearer "+token)
+	request.Header.Set("Content-Type", "application/json")
+	recorder := httptest.NewRecorder()
+	api.ServeHTTP(recorder, request)
+	if recorder.Code != status {
+		t.Fatalf("%s %s: status %d, want %d: %s", method, path, recorder.Code, status, recorder.Body)
+	}
+	if target != nil {
+		if err := json.Unmarshal(recorder.Body.Bytes(), target); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func readyControlLobby(t *testing.T, pool *Pool) (*control.Server, string, string, string) {
+	t.Helper()
+	auth, err := playerauth.New(playerauth.Config{OperatorSecret: [32]byte{1}, TokenTTL: playerauth.HardTokenTTL, StableKey: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	api, err := control.New(control.Config{Auth: auth, Allocator: pool})
+	if err != nil {
+		t.Fatal(err)
+	}
+	alice, _, err := auth.Issue("alice")
+	if err != nil {
+		t.Fatal(err)
+	}
+	bob, _, err := auth.Issue("bob")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var room struct{ ID string }
+	controlRequest(t, api, "POST", "/lobbies", alice, map[string]any{"capacity": 2, "applicationProtocol": "demo.v1", "visibility": "private"}, 201, &room)
+	base := "/lobbies/" + room.ID
+	controlRequest(t, api, "POST", base+"/join", bob, map[string]any{"revision": 1}, 200, nil)
+	controlRequest(t, api, "POST", base+"/ready", alice, map[string]any{"revision": 2, "ready": true}, 200, nil)
+	controlRequest(t, api, "POST", base+"/ready", bob, map[string]any{"revision": 3, "ready": true}, 200, nil)
+	return api, base, alice, bob
+}
+
+func TestLostReplyThenUnhealthyNodeKeepsRosterFrozen(t *testing.T) {
+	a, b := newTestNode(t, "a"), newTestNode(t, "b")
+	pool := newPool(t, a, b)
+	api, base, alice, bob := readyControlLobby(t, pool)
+	a.dropNext.Store(true)
+	controlRequest(t, api, "POST", base+"/start", alice, map[string]any{"revision": 4}, 503, nil)
+	original := a.relay.Inventory().Rooms[0].RoomInstanceID
+	a.failHeartbeat.Store(true)
+	if err := pool.Reconcile(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	controlRequest(t, api, "POST", base+"/start", alice, map[string]any{"revision": 4}, 503, nil)
+	controlRequest(t, api, "POST", base+"/leave", bob, map[string]any{"revision": 4}, 409, nil)
+	controlRequest(t, api, "POST", base+"/ready", bob, map[string]any{"revision": 4, "ready": false}, 409, nil)
+	a.failHeartbeat.Store(false)
+	if err := pool.Reconcile(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	controlRequest(t, api, "POST", base+"/start", alice, map[string]any{"revision": 4}, 204, nil)
+	var assignment control.Assignment
+	controlRequest(t, api, "GET", base+"/assignment", alice, nil, 200, &assignment)
+	if assignment.RoomInstanceID != original || assignment.NodeID != "a" || len(b.relay.Inventory().Rooms) != 0 {
+		t.Fatal("recovery changed reservation owner")
+	}
+}
+
+func TestProxy503KeepsReservationOwner(t *testing.T) {
+	a, b := newTestNode(t, "a"), newTestNode(t, "b")
+	pool := newPool(t, a, b)
+	a.proxy503.Store(true)
+	participants := []string{"alice", "bob"}
+	if _, err := pool.Allocate(t.Context(), "proxy-room", "demo.v1", participants); err == nil || errors.Is(err, relay.ErrCapacity) {
+		t.Fatalf("empty proxy 503 treated as definitive capacity refusal: %v", err)
+	}
+	// Make another node preferable if the ambiguous owner was incorrectly discarded.
+	if _, err := a.relay.CreateRoom("other", "demo.v1", []string{"eve"}, time.Minute); err != nil {
+		t.Fatal(err)
+	}
+	if err := pool.Reconcile(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	result, err := pool.Allocate(t.Context(), "proxy-room", "demo.v1", participants)
+	if err != nil || result.NodeID != "a" || len(b.relay.Inventory().Rooms) != 0 {
+		t.Fatalf("proxy response moved reservation: %+v %v", result, err)
+	}
+}
+
+func TestDefinitiveCapacityRefusalUnlocksLobby(t *testing.T) {
+	n := newTestNode(t, "a")
+	pool := newPool(t, n)
+	api, base, alice, bob := readyControlLobby(t, pool)
+	participants := make([]string, 16)
+	for i := range participants {
+		participants[i] = fmt.Sprintf("occupied-%d", i)
+	}
+	if _, err := n.relay.CreateRoom("occupied", "demo.v1", participants, time.Minute); err != nil {
+		t.Fatal(err)
+	}
+	// Pool telemetry predates this reservation, so the refusal comes from the real node.
+	controlRequest(t, api, "POST", base+"/start", alice, map[string]any{"revision": 4}, 503, nil)
+	controlRequest(t, api, "POST", base+"/ready", bob, map[string]any{"revision": 4, "ready": false}, 200, nil)
+	controlRequest(t, api, "POST", base+"/leave", bob, map[string]any{"revision": 5}, 200, nil)
+	if len(pool.owners) != 0 {
+		t.Fatal("definitive refusal retained a reservation owner")
+	}
+}
+
+func TestNode503RequiresBoundedAllocationRefusal(t *testing.T) {
+	for _, tc := range []struct {
+		name, body string
+		definitive bool
+	}{
+		{"node refusal", `{"error":{"code":"allocation_failed","message":"full"}}`, true},
+		{"empty proxy", "", false},
+		{"other error", `{"error":{"code":"overloaded"}}`, false},
+		{"malformed", `{"error":{"code":"allocation_failed"}`, false},
+		{"trailing JSON", `{"error":{"code":"allocation_failed"}} {}`, false},
+		{"oversized", `{"error":{"code":"allocation_failed","message":"` + strings.Repeat("x", 4096) + `"}}`, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) { w.WriteHeader(503); _, _ = w.Write([]byte(tc.body)) }))
+			defer server.Close()
+			n := node{config: NodeConfig{ControlURL: server.URL}, http: server.Client()}
+			err := n.call(t.Context(), "POST", "/v2/reservations", nil, nil)
+			if err == nil || errors.Is(err, relay.ErrCapacity) != tc.definitive {
+				t.Fatalf("definitive=%t, error=%v", tc.definitive, err)
 			}
 		})
 	}

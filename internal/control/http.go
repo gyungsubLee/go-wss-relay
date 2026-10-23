@@ -336,26 +336,12 @@ func (server *Server) start(w http.ResponseWriter, r *http.Request) {
 		problem(w, 409, "lobby not ready")
 		return
 	}
-	lobby.Allocating = true
-	lobby.AllocationPending = true
-	participants := slices.Clone(lobby.Participants)
+	participants := server.prepareAllocationLocked(lobby)
 	server.mu.Unlock()
-	allocation, err := server.allocator.Allocate(r.Context(), lobby.ID, lobby.application, participants)
-	server.mu.Lock()
-	defer server.mu.Unlock()
-	lobby.Allocating = false
-	if err != nil {
-		if errors.Is(err, relay.ErrCapacity) || errors.Is(err, relay.ErrInvalid) || errors.Is(err, relay.ErrClosed) {
-			lobby.AllocationPending = false
-		}
+	if err := server.allocate(r.Context(), lobby, participants); err != nil {
 		problem(w, 503, "allocation unavailable; retry the same lobby")
 		return
 	}
-	lobby.AllocationPending = false
-	lobby.allocation = &allocation
-	lobby.expires = allocation.ExpiresAt
-	lobby.Status = "matched"
-	lobby.Revision++
 	w.WriteHeader(204)
 }
 func (server *Server) assignment(w http.ResponseWriter, r *http.Request) {
@@ -416,6 +402,16 @@ func (server *Server) expireLocked() {
 		}
 	}
 	for id, ticket := range server.tickets {
+		if ticket.roomID != "" {
+			group := server.lobbies[ticket.roomID]
+			if group != nil && group.Allocating {
+				continue
+			}
+			if group == nil {
+				delete(server.tickets, id)
+				continue
+			}
+		}
 		if !now.Before(ticket.expires) {
 			if server.byPlayer[ticket.player] == id {
 				delete(server.byPlayer, ticket.player)
@@ -423,6 +419,7 @@ func (server *Server) expireLocked() {
 			delete(server.tickets, id)
 		}
 	}
+
 	server.queue = slices.DeleteFunc(server.queue, func(id string) bool { return server.tickets[id] == nil || server.tickets[id].Status != "queued" })
 }
 
@@ -471,6 +468,10 @@ func (server *Server) renewSession(w http.ResponseWriter, r *http.Request) {
 func (server *Server) EndMatch(id, instance string) {
 	server.mu.Lock()
 	defer server.mu.Unlock()
+	server.endMatchLocked(id, instance)
+}
+
+func (server *Server) endMatchLocked(id, instance string) {
 	lobby := server.lobbies[id]
 	if lobby == nil || lobby.Status == "ended" {
 		return

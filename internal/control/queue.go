@@ -52,13 +52,15 @@ func (server *Server) enqueue(w http.ResponseWriter, r *http.Request) {
 			problem(w, 503, "random source failed")
 			return
 		}
+		expires := server.now().Add(2 * time.Minute)
 		participants := make([]string, 0, len(candidates))
 		for _, candidate := range candidates {
 			candidate.roomID = roomID
+			candidate.expires = expires
 			server.byPlayer[candidate.player] = roomID
 			participants = append(participants, candidate.player)
 		}
-		grouped = &lobby{Revision: 1, Visibility: "private", Ready: map[string]bool{}, ID: roomID, OwnerID: participants[0], Participants: participants, Capacity: ticket.capacity, Status: "open", application: ticket.application, expires: server.now().Add(2 * time.Minute)}
+		grouped = &lobby{Revision: 1, Visibility: "private", Ready: map[string]bool{}, ID: roomID, OwnerID: participants[0], Participants: participants, Capacity: ticket.capacity, Status: "open", application: ticket.application, expires: expires}
 		server.lobbies[roomID] = grouped
 	}
 	server.mu.Unlock()
@@ -74,32 +76,13 @@ func (server *Server) enqueue(w http.ResponseWriter, r *http.Request) {
 func (server *Server) allocateQueue(ctx context.Context, id string) {
 	server.mu.Lock()
 	group := server.lobbies[id]
-	if group == nil || group.Allocating || group.Status == "matched" {
+	if group == nil || group.Allocating || group.Status != "open" {
 		server.mu.Unlock()
 		return
 	}
-	group.Allocating = true
-	participants := slices.Clone(group.Participants)
-	application := group.application
+	participants := server.prepareAllocationLocked(group)
 	server.mu.Unlock()
-	allocation, err := server.allocator.Allocate(ctx, id, application, participants)
-	server.mu.Lock()
-	defer server.mu.Unlock()
-	group.Allocating = false
-	if err != nil {
-		return
-	}
-	group.allocation = &allocation
-	group.expires = allocation.ExpiresAt
-	group.Status = "matched"
-	for _, ticket := range server.tickets {
-		if ticket.roomID == id {
-			assignment := allocation.Assignment(ticket.player)
-			ticket.Assignment = &assignment
-			ticket.Status = "matched"
-			ticket.expires = allocation.ExpiresAt
-		}
-	}
+	_ = server.allocate(ctx, group, participants)
 }
 
 func (server *Server) ticket(w http.ResponseWriter, r *http.Request) {
@@ -123,6 +106,10 @@ func (server *Server) ticket(w http.ResponseWriter, r *http.Request) {
 	}
 	server.mu.Lock()
 	defer server.mu.Unlock()
+	if server.tickets[ticket.ID] != ticket {
+		problem(w, 404, "ticket not found")
+		return
+	}
 	reply(w, 200, ticket)
 }
 func (server *Server) cancel(w http.ResponseWriter, r *http.Request) {
