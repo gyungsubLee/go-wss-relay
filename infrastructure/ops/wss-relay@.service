@@ -2,14 +2,17 @@
 Description=WSS relay v2 (%i)
 After=network-online.target
 Wants=network-online.target
+ConditionPathExists=!/var/lib/wss-relay/traffic-stopped
 
 [Service]
 Type=simple
 User=wss-relay
 Group=wss-relay
 EnvironmentFile=/etc/wss-relay/%i.env
+EnvironmentFile=/etc/wss-relay/traffic.env
+ExecStartPre=+/opt/wss-relay/ops/check-traffic-budget.sh --check-start
 # RELAY_ARGS is intentionally split into arguments by systemd. Do not use spaces in paths.
-ExecStart=/usr/local/bin/wss-relay $RELAY_ARGS
+ExecStart=/opt/wss-relay/current/wss-relay $RELAY_ARGS
 Restart=on-failure
 RestartSec=3
 TimeoutStopSec=15
@@ -20,6 +23,7 @@ NoNewPrivileges=true
 PrivateTmp=true
 ProtectHome=true
 ProtectSystem=strict
+ReadWritePaths=/var/lib/wss-relay
 ProtectKernelTunables=true
 ProtectControlGroups=true
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX

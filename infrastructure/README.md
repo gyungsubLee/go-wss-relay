@@ -1,33 +1,17 @@
-# Infrastructure
+# WSS 운영 도구
 
-단일 Go Lobby & Relay 프로세스를 **호스팅 업체와 무관하게** Ubuntu 24.04 VM 한 대에 배포하기 위한 systemd 설정, 호스트 준비·배포·비용 관리 스크립트를 모은다. 특정 클라우드 API나 계정에 의존하지 않는다. 아래 명령은 저장소 루트에서 실행한다.
+현재 배포 경로는 `config`, `ops`, `scripts`, `docs`다. 호스트 하나에서 `standalone`, `coordinator`, `relay` 중 한 인스턴스를 실행한다.
 
-```text
-infrastructure/
-├── ops/             # systemd 유닛·타이머, Caddy 설정과 drop-in, 환경 변수 예시
-├── scripts/         # 호스트 준비·패키징·배포·operator 토큰·트래픽 가드와 테스트
-└── docs/operations.md
-```
-
-| 경로 | 외부 노출 | 수신 위치 |
-|---|---|---|
-| Player HTTP API | HTTPS 443 (Caddy가 Let's Encrypt 인증서 자동 발급·갱신) | `127.0.0.1:8080` |
-| WebSocket Relay (`/v1/relay`) | WSS 443 (같은 Caddy 사이트) | `127.0.0.1:8082` |
-| UDP Relay | 공개 UDP 한 포트 | `0.0.0.0:<RELAY_UDP_PORT>` |
-| Operator HTTP API | 없음 | `127.0.0.1:8081` |
-| SSH | 관리자 IPv4 `/32`만 | `:22` |
-| ACME HTTP-01 / HTTPS 리다이렉트 | 80 | Caddy |
-
-호스트에 필요한 것은 Ubuntu 24.04, 고정 공인 IPv4, 해당 IP를 가리키는 DNS A 레코드, 그리고 업체 방화벽(있다면)에서 위 포트를 여는 것뿐이다. 절차는 [운영 가이드](docs/operations.md)를 따른다.
+- `config`: 운영자가 복사하고 수정하는 설정 예제다. 배포 스크립트는 live 설정을 덮어쓰지 않는다.
+- `ops`: 역할별 Caddy 설정, systemd 유닛, 비용 가드다.
+- `scripts`: 패키징, 배포, 상태 검사, 토큰 설치, 월별 NIC 전송량 검사다.
+- [운영 절차](docs/operations.md): 수동 준비 조건과 배포·복구 절차다.
 
 ```sh
-python3 infrastructure/scripts/tests/traffic-budget.py
-python3 infrastructure/scripts/tests/operator-token.py
-python3 infrastructure/scripts/tests/deploy-backend.py
-python3 infrastructure/scripts/tests/setup-host.py
-infrastructure/scripts/package-release.sh /tmp/lobby-relay-release.tar.gz
+infrastructure/scripts/package-release.sh /tmp/wss-release.tar.gz
+sudo infrastructure/scripts/deploy-backend.sh /tmp/wss-release.tar.gz FULL_40_CHARACTER_COMMIT_SHA standalone
 ```
 
-CI(`.github/workflows/ci.yml`)는 모든 push·PR에서 Go 검사와 위 스크립트 테스트를 실행한다. 배포는 관리자 워크스테이션에서 SSH로 수행하며 CI에 서버 자격 증명을 두지 않는다. 특정 업체의 VM·방화벽·DNS를 코드로 관리하려면 이 절차 앞단에 얇은 IaC 계층만 추가하면 된다.
-
-실제 서버 준비와 공개 배포는 아직 실행하지 않았다.
+Go 1.26.10으로 Linux amd64 바이너리를 만든다. 대상 호스트는 Ubuntu 24.04, Python 3.12 이상, systemd, Caddy가 필요하다.
+배포가 성공해도 재시작 전의 메모리 매치는 복구하지 못한다.
+로컬 검사는 임시 디렉터리와 서비스 명령 대체를 사용한다. 실제 Linux 기동·공개 TLS·방화벽 검사를 대신하지 않는다.

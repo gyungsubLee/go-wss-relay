@@ -46,11 +46,10 @@ jobs:
       - name: Deployment and traffic safety checks
         run: |
           sh -n infrastructure/scripts/check-traffic-budget.sh
-          bash -n infrastructure/scripts/check-deployment.sh infrastructure/scripts/deploy-backend.sh infrastructure/scripts/package-release.sh infrastructure/scripts/setup-host.sh
+          bash -n infrastructure/scripts/check-deployment.sh infrastructure/scripts/deploy-backend.sh infrastructure/scripts/package-release.sh
           python3 infrastructure/scripts/tests/traffic-budget.py
           python3 infrastructure/scripts/tests/deploy-backend.py
           python3 infrastructure/scripts/tests/operator-token.py
-          python3 infrastructure/scripts/tests/setup-host.py
 
   web-client:
     runs-on: ubuntu-24.04

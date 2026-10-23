@@ -1,99 +1,140 @@
 #!/usr/bin/env bash
-# Run via sudo on the VM: deploy-backend.sh RELEASE_ARCHIVE COMMIT_SHA
-# All lobby, ticket, token and relay state is in memory: every restart ends it.
+# Run as root on the prepared host. Restarts discard in-memory matches.
 set -euo pipefail
 umask 077
-[[ $(id -u) == 0 && $# == 2 && $2 =~ ^[a-f0-9]{40}$ ]] || { echo 'root, archive and full commit SHA required' >&2; exit 2; }
-archive=$(realpath "$1")
-release="/opt/lobby-relay/releases/$2"
-[[ ! -e /var/lib/lobby-relay/traffic-stopped ]] || { echo 'reconcile cost guard before deployment' >&2; exit 1; }
-exec 9>/var/lock/lobby-relay-deploy.lock
+[[ $(id -u) == 0 && $# == 3 && $2 =~ ^[a-f0-9]{40}$ && $3 =~ ^(standalone|coordinator|relay)$ ]] || { echo 'usage (root): deploy-backend.sh ARCHIVE FULL_COMMIT_SHA INSTANCE' >&2; exit 2; }
+archive=$(python3 -c 'import pathlib,sys; print(pathlib.Path(sys.argv[1]).resolve(strict=True))' "$1")
+release="/opt/wss-relay/releases/$2"
+instance=$3
+unit="wss-relay@$instance.service"
+script_dir=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
+exec 9>/var/lock/wss-relay-deploy.lock
 flock -n 9 || { echo 'another deployment is running' >&2; exit 1; }
-stage=$(mktemp -d /opt/lobby-relay/releases/.stage.XXXXXX)
-old=$(readlink -e /opt/lobby-relay/current || true)
+[[ ! -e /var/lib/wss-relay/traffic-stopped ]] || { echo 'reconcile cost guard before deployment' >&2; exit 1; }
+[[ -f /var/lib/wss-relay/traffic.json ]] || { echo 'explicit accounting initialization required' >&2; exit 1; }
+if [[ -e /etc/wss-relay/instance ]]; then
+  [[ $(cat /etc/wss-relay/instance) == "$instance" ]] || { echo 'only one instance per host; role changes require manual migration' >&2; exit 1; }
+fi
+for other in standalone coordinator relay; do
+  if [[ $other != "$instance" ]] && { systemctl is-active --quiet "wss-relay@$other.service" || systemctl is-enabled --quiet "wss-relay@$other.service"; }; then
+    echo 'another instance is active or enabled; manual migration required' >&2
+    exit 1
+  fi
+done
+old=$(python3 -c 'import pathlib; p=pathlib.Path("/opt/wss-relay/current"); print(p.resolve(strict=True) if p.is_symlink() else "")')
+stage=$(mktemp -d /opt/wss-relay/releases/.stage.XXXXXX)
+mkdir "$stage/payload" "$stage/prepared" "$stage/backup"
 changed=false
+owned=(/opt/wss-relay/ops/check-traffic-budget.sh /opt/wss-relay/ops/traffic_budget.py
+  /etc/systemd/system/wss-relay@.service /etc/systemd/system/traffic-guard.service
+  /etc/systemd/system/traffic-guard.timer /etc/systemd/system/caddy.service.d/wss-relay.conf
+  /etc/caddy/Caddyfile /etc/wss-relay/instance)
+healthy() {
+  local target=$1
+  for _ in {1..15}; do
+    if "$target/scripts/check-deployment.sh" "$instance" >/dev/null 2>&1; then return 0; fi
+    sleep 1
+  done
+  return 1
+}
+switch_current() {
+  ln -sfn "$1" /opt/wss-relay/current.next
+  python3 -c 'import os; os.replace("/opt/wss-relay/current.next", "/opt/wss-relay/current")'
+}
 cleanup() {
   code=$?
   trap - EXIT
   if [[ $code != 0 && $changed == true ]]; then
-    if [[ -n $old && -x $old/lobby-relay ]]; then
-      activate "$old"
-      systemctl try-reload-or-restart caddy.service || true
-      restored=false
-      if systemctl restart lobby-relay.service; then
-        for _ in {1..15}; do
-          if "$old/scripts/check-deployment.sh" health >/dev/null 2>&1; then restored=true;break;fi
-          sleep 1
-        done
+    systemctl stop "$unit" caddy.service || true
+    restored=true
+    for index in "${!owned[@]}"; do
+      if [[ -e $stage/backup/$index ]]; then
+        cp -p "$stage/backup/$index" "${owned[$index]}" || restored=false
+      else
+        rm -f -- "${owned[$index]}" || restored=false
       fi
-      if [[ $restored == true ]]; then echo 'deployment failed; previous release restored (in-memory state cannot be restored)' >&2
-      else echo 'rollback health check failed; direct administrator recovery required' >&2; fi
+    done
+    if [[ -n $old && -x $old/wss-relay ]]; then
+      switch_current "$old" || restored=false
+      systemctl daemon-reload || restored=false
+      if [[ $restored == true && ! -e /var/lib/wss-relay/traffic-stopped ]] && systemctl restart "$unit" && healthy "$old" && systemctl reload-or-restart caddy.service; then
+        echo 'deployment failed; previous release restored (in-memory matches cannot be restored)' >&2
+      else
+        systemctl stop "$unit" caddy.service || true
+        echo 'rollback unavailable or unhealthy; services stopped, administrator recovery required' >&2
+      fi
     else
-      systemctl stop lobby-relay.service || true
-      echo 'first deployment failed; relay stopped' >&2
+      rm -f /opt/wss-relay/current /opt/wss-relay/current.next
+      systemctl daemon-reload || true
+      echo 'first deployment failed; instance and Caddy stopped' >&2
     fi
   fi
   rm -rf -- "$stage"
   exit "$code"
 }
 trap cleanup EXIT
-# The protected CI archive is still constrained: no links/traversal/devices/oversize.
-python3 - "$archive" "$stage" <<'PY'
-import tarfile,sys
-from pathlib import PurePosixPath
+# Validate the complete archive and manifest before executing any packaged tool.
+python3 - "$archive" "$stage/payload" <<'PY'
+import hashlib
+from pathlib import Path, PurePosixPath
+import re
+import sys
+import tarfile
+root = Path(sys.argv[2])
 with tarfile.open(sys.argv[1]) as tar:
-    members=tar.getmembers()
-    if len(members)>30 or sum(m.size for m in members)>150*1024*1024: raise SystemExit('invalid release size')
-    for m in members:
-        p=PurePosixPath(m.name)
-        if p.is_absolute() or '..' in p.parts or not (m.isfile() or m.isdir()) or m.mode&0o7000: raise SystemExit('invalid archive entry')
-    tar.extractall(sys.argv[2],filter='data')
+    members = tar.getmembers()
+    if len(members) > 30 or sum(m.size for m in members) > 150 * 1024 * 1024:
+        raise SystemExit('invalid release size')
+    names = set()
+    for member in members:
+        path = PurePosixPath(member.name)
+        if (path.is_absolute() or '..' in path.parts or not (member.isfile() or member.isdir())
+                or member.mode & 0o7000 or not re.fullmatch(r'[A-Za-z0-9_@./-]+', member.name)
+                or str(path) in names):
+            raise SystemExit('invalid archive entry')
+        names.add(str(path))
+    tar.extractall(root, filter='data')
+files = {p.relative_to(root).as_posix() for p in root.rglob('*') if p.is_file()} - {'SHA256SUMS'}
+verified = set()
+for line in (root / 'SHA256SUMS').read_text().splitlines():
+    match = re.fullmatch(r'([a-f0-9]{64})  ([A-Za-z0-9_@./-]+)', line)
+    if not match or match[2] not in files or match[2] in verified:
+        raise SystemExit('invalid checksum manifest')
+    if hashlib.sha256((root / match[2]).read_bytes()).hexdigest() != match[1]:
+        raise SystemExit('checksum mismatch')
+    verified.add(match[2])
+if verified != files:
+    raise SystemExit('unchecksummed archive payload')
 PY
-(cd "$stage" && sha256sum --check SHA256SUMS)
-# The binary has no dry-run mode; validate the non-secret settings it will receive.
-python3 - /etc/lobby-relay/server.env <<'PY'
-import re,sys
-values=dict(line.split('=',1) for line in open(sys.argv[1]).read().splitlines() if line and not line.startswith('#'))
-name=r'[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?'
-port=values.get('RELAY_UDP_PORT','')
-if not all(re.fullmatch(name,values.get(key,'')) for key in ('API_HOSTNAME','RELAY_ADVERTISED_HOST')) or not re.fullmatch(r'[1-9][0-9]{3,4}',port) or not 1024<=int(port)<=65535:
-    raise SystemExit('server.env requires API_HOSTNAME, RELAY_ADVERTISED_HOST and an unprivileged RELAY_UDP_PORT')
-PY
-chmod 0755 "$stage" "$stage/lobby-relay"
-if [[ -e $release ]]; then
-  cmp "$stage/SHA256SUMS" "$release/SHA256SUMS" || { echo 'release ID already has different content' >&2; exit 1; }
+python3 "$script_dir/deploy-preflight.py" "$stage/payload" "$instance" "$stage/prepared"
+chmod 0755 "$stage/payload" "$stage/payload/wss-relay" "$stage/payload/scripts"
+if [[ -e $release || -L $release ]]; then
+  [[ -d $release && ! -L $release ]] || { echo 'invalid existing release' >&2; exit 1; }
+  diff -r "$stage/payload" "$release" >/dev/null || { echo 'release ID already has different content' >&2; exit 1; }
 else
-  mv "$stage" "$release"
-  stage=$(mktemp -d /opt/lobby-relay/releases/.stage.XXXXXX)
+  mv "$stage/payload" "$release"
 fi
-activate() {
-  local target=$1
-  install -d -m 0755 /opt/lobby-relay/ops
-  install -m 0755 "$target/scripts/check-traffic-budget.sh" "$target/scripts/traffic_budget.py" /opt/lobby-relay/ops/
-  install -m 0644 "$target/ops/lobby-relay.service" "$target/ops/traffic-guard.service" "$target/ops/traffic-guard.timer" /etc/systemd/system/
-  install -d -m 0755 /etc/systemd/system/caddy.service.d
-  install -m 0644 "$target/ops/caddy-lobby-relay.conf" /etc/systemd/system/caddy.service.d/lobby-relay.conf
-  install -m 0644 "$target/ops/Caddyfile" /etc/caddy/Caddyfile
-  ln -sfn "$target" /opt/lobby-relay/current.next
-  mv -Tf /opt/lobby-relay/current.next /opt/lobby-relay/current
-  systemctl daemon-reload
-}
-[[ -e /var/lib/lobby-relay/traffic.json ]] || { echo 'run setup-host.sh before the first deployment' >&2; exit 1; }
-changed=true
-activate "$release"
-systemctl enable lobby-relay.service >/dev/null
-systemctl restart lobby-relay.service
-healthy=false
-for _ in {1..15}; do
-  if "$release/scripts/check-deployment.sh" health >/dev/null 2>&1; then healthy=true;break;fi
-  sleep 1
+for index in "${!owned[@]}"; do
+  if [[ -e ${owned[$index]} || -L ${owned[$index]} ]]; then
+    [[ -f ${owned[$index]} && ! -L ${owned[$index]} ]] || { echo 'release-owned destination must be a regular file' >&2; exit 1; }
+    cp -p "${owned[$index]}" "$stage/backup/$index"
+  fi
 done
-[[ $healthy == true ]] || { echo 'new server health check failed' >&2; exit 1; }
-# Reconcile now: a timer alone leaves a window with stale/corrupt accounting.
+changed=true
+install -d -m 0755 /opt/wss-relay/ops /etc/systemd/system/caddy.service.d
+install -m 0755 "$release/scripts/check-traffic-budget.sh" "$release/scripts/traffic_budget.py" /opt/wss-relay/ops/
+install -m 0644 "$release/ops/wss-relay@.service" "$release/ops/traffic-guard.service" "$release/ops/traffic-guard.timer" /etc/systemd/system/
+install -m 0644 "$release/ops/caddy-wss-relay.conf" /etc/systemd/system/caddy.service.d/wss-relay.conf
+install -m 0644 "$stage/prepared/Caddyfile" /etc/caddy/Caddyfile
+printf '%s\n' "$instance" > /etc/wss-relay/instance
+switch_current "$release"
+systemctl daemon-reload
+systemctl enable "$unit" >/dev/null
+systemctl restart "$unit"
+healthy "$release" || { echo 'new server health/readiness check failed' >&2; exit 1; }
 systemctl start traffic-guard.service
-[[ ! -e /var/lib/lobby-relay/traffic-stopped ]] || { echo 'cost guard stopped deployment' >&2; exit 1; }
+[[ ! -e /var/lib/wss-relay/traffic-stopped ]] || { echo 'cost guard stopped deployment' >&2; exit 1; }
 systemctl enable --now traffic-guard.timer >/dev/null
-# Reload applies a changed Caddyfile without dropping TLS; it starts Caddy on first deploy.
 systemctl enable caddy.service >/dev/null
 systemctl reload-or-restart caddy.service
-echo "deployed $2; previous=${old:-none}"
+echo "deployed $2 instance=$instance; previous=${old:-none}"

@@ -9,10 +9,10 @@ from pathlib import Path
 import re
 import subprocess
 import tempfile
+import stat
 
-# Every public path: UDP to the relay itself and HTTPS through Caddy. The relay
-# holds no durable state to drain.
-GUARDED_UNITS = ("lobby-relay.service", "caddy.service")
+INSTANCES = ("standalone", "coordinator", "relay")
+INSTANCE_FILE = Path("/etc/wss-relay/instance")
 
 
 class Uncertain(ValueError):
@@ -48,10 +48,27 @@ def durable_write(path, content, mode=0o600):
             os.unlink(name)
 
 
+def selected_instance():
+    instance = os.environ.get("WSS_INSTANCE")
+    try:
+        installed = INSTANCE_FILE.read_text().strip()
+    except FileNotFoundError:
+        installed = instance  # First initialization precedes the first deployment.
+    except (OSError, UnicodeError):
+        return None
+    return instance if instance in INSTANCES and installed == instance else None
+
+
 def stop_public_services():
     # Stop running units; the durable marker and runtime mask also prevent restart.
-    subprocess.run(["systemctl", "stop", *GUARDED_UNITS], check=True, timeout=30)
-    subprocess.run(["systemctl", "mask", "--runtime", *GUARDED_UNITS], check=True, timeout=20)
+    instance = selected_instance()
+    # Malformed configuration still stops every supported instance fail-closed.
+    instances = (instance,) if instance in INSTANCES else INSTANCES
+    units = tuple(f"wss-relay@{name}.service" for name in instances) + ("caddy.service",)
+    try:
+        subprocess.run(["systemctl", "stop", *units], check=True, timeout=30)
+    finally:
+        subprocess.run(["systemctl", "mask", "--runtime", *units], check=True, timeout=20)
 
 
 class Guard:
@@ -116,10 +133,14 @@ def main():
     # The unit is not running yet; stopping its pending start job here would
     # deadlock ExecStartPre. The marker and a failing exit status prevent that start.
     stop = (lambda: None) if args.check_start else stop_public_services
-    root = Path("/var/lib/lobby-relay")
+    root = Path("/var/lib/wss-relay")
     try:
-        info = root.stat()
-        if os.geteuid() != 0 or info.st_uid != 0 or info.st_mode & 0o022:
+        if args.initialize and Path("/var/lib/lobby-relay").exists():
+            raise ValueError("legacy accounting requires operator reconciliation before initialization")
+        if selected_instance() is None:
+            raise ValueError("WSS_INSTANCE must select one supported instance")
+        info = root.lstat()
+        if os.geteuid() != 0 or info.st_uid != 0 or info.st_mode & 0o022 or not stat.S_ISDIR(info.st_mode):
             raise ValueError("state directory must be root-owned and not group/world writable")
         with (root / "traffic.lock").open("a") as lock:
             os.fchmod(lock.fileno(), 0o600)
@@ -135,7 +156,7 @@ def main():
             boot = Path("/proc/sys/kernel/random/boot_id").read_text().strip()
             month = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m")
             guard.sample(month, boot, rx, tx, initialize=args.initialize)
-            if args.check_start and (root / "traffic-stopped").exists():
+            if (root / "traffic-stopped").exists():
                 return 1
     except BlockingIOError:
         print("traffic guard: another sample owns the lock", flush=True)
