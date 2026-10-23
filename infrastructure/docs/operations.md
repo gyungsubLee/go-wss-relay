@@ -43,7 +43,11 @@ CA 검증을 끄지 않는다. CA 파일 파싱 성공은 실제 인증서의 �
 - `standalone`과 `relay`의 `--public-url`은 Caddy 도메인의 `wss://DOMAIN/v2/relay`와 같아야 한다.
 - 신뢰 프록시는 루프백 IP/CIDR만 지원한다. `/0`은 거부한다.
 - 노드 목록은 중복 ID 없는 HTTPS/WSS 노드 1-64개다. JSON의 중복 키, null, 알 수 없는 필드는 거부한다.
+- 노드 URL은 공백·제어 문자 없는 ASCII 형식이며 DNS 이름이나 IP 주소를 사용한다. IPv6는 대괄호로 감싼다.
+- URL 포트는 선행 0 없는 1-65535를 허용한다. 빈 포트와 IPv6 zone ID는 지원하지 않는다.
+- `caFile`은 생략하거나 빈 문자열로 지정할 수 있다. 지정한 값은 문자열이어야 하며, 비어 있지 않으면 읽을 수 있는 CA PEM이어야 한다.
 - 초당 예산 JSON은 정확한 필드명과 정수만 허용한다. 0은 앱 기본값을 사용한다.
+- 수용량 값은 `0` 또는 선행 0 없는 양의 10진수다. `08`·`010`·다른 진법 표기는 지원하지 않는다.
 - 수용량 플래그는 모든 배포 역할에서 중계 서버의 유효 범위를 적용한다. 앱 coordinator CLI보다 좁은 조건이다.
 
 Caddy 값은 `/etc/wss-relay/caddy.env`에서 읽는다. `standalone`은 `STANDALONE_DOMAIN`, coordinator는 `COORDINATOR_DOMAIN`을 요구한다.

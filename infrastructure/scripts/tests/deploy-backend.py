@@ -13,6 +13,19 @@ import tempfile
 INFRA = Path(__file__).resolve().parents[2]
 SHA = 'a' * 40
 ROLES = ('standalone', 'coordinator', 'relay')
+CA_CERTIFICATE = """-----BEGIN CERTIFICATE-----
+MIIBzzCCAXWgAwIBAgIQZgw/6Rvp7j7I3geGcx+qJzAKBggqhkjOPQQDAjAlMSMw
+IQYDVQQDExpSZWxheSBMYWIgbG9vcGJhY2sgdGVzdCBDQTAeFw0yNjEwMjExNTQy
+MzFaFw0yNjEwMjIxNTQzMzFaMCUxIzAhBgNVBAMTGlJlbGF5IExhYiBsb29wYmFj
+ayB0ZXN0IENBMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE57H8c22ILFqZl5Ax
+CgIItVsSYq2P9v3HrzAlRT87IYs5SvpU94kxBEIzXBUqqndLECi+PE1tEo1LL0FH
+TTpKcqOBhjCBgzAOBgNVHQ8BAf8EBAMCAoQwEwYDVR0lBAwwCgYIKwYBBQUHAwEw
+DwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUFVZkT/lqAAv0zJd33JpHGW3GMXYw
+LAYDVR0RBCUwI4IJbG9jYWxob3N0hwR/AAABhxAAAAAAAAAAAAAAAAAAAAABMAoG
+CCqGSM49BAMCA0gAMEUCIBW4wxnpP78VQOwzKPcvFw2R9ORtZ+eDNbsUw/K/TxO2
+AiEA/MNrnzjO1UifIg2CVgPxstcesuUZbBN7Gd98ZNlXvYw=
+-----END CERTIFICATE-----
+"""
 
 
 def executable(path, body):
@@ -21,7 +34,7 @@ def executable(path, body):
     path.chmod(0o755)
 
 
-def scenario(role, failure=None, first=False):
+def scenario(role, failure=None, first=False, node_fields=None, extra_args=""):
     with tempfile.TemporaryDirectory(prefix='wss-deploy-') as tmp:
         root = Path(tmp).resolve()
         opt = root / 'opt/wss-relay'
@@ -36,6 +49,8 @@ def scenario(role, failure=None, first=False):
         else:
             args += f' --nodes-config {etc}/nodes.json'
         args += f' --traffic-config {etc}/traffic.json'
+        if extra_args:
+            args += ' ' + extra_args
         (etc / f'{role}.env').write_text('RELAY_ARGS=' + args + '\n')
         (etc / 'secrets/operator.token').write_text('AQ' + 'A' * 41)
         (etc / 'secrets/operator.token').chmod(0o600)
@@ -80,6 +95,13 @@ def scenario(role, failure=None, first=False):
         if failure == 'invalid-ca':
             config = json.loads((etc / 'nodes.json').read_text())
             config['nodes'][0]['caFile'] = str(etc / 'control-root.pem')
+            (etc / 'nodes.json').write_text(json.dumps(config))
+        if node_fields is not None:
+            config = json.loads((etc / 'nodes.json').read_text())
+            config['nodes'][0].update(node_fields)
+            if node_fields.get('caFile') == 'fixture.pem':
+                (etc / 'control-root.pem').write_text(CA_CERTIFICATE)
+                config['nodes'][0]['caFile'] = str(etc / 'control-root.pem')
             (etc / 'nodes.json').write_text(json.dumps(config))
         if failure == 'caddy-env':
             (etc / 'caddy.env').write_text('RELAY_DOMAIN=$(bad)\n')
@@ -201,6 +223,27 @@ sys.exit(''' + ('1' if failure == 'unit' else '0') + ')\n')
             assert '{$' not in (root / 'etc/caddy/Caddyfile').read_text()
         print('PASS', role, failure or 'promotion', 'first' if first else 'upgrade')
 
+
+# Configuration boundary regressions.
+for field, scheme, suffix in (('controlUrl', 'https', ''), ('websocketUrl', 'wss', '/v2/relay')):
+    for host in ('control.example.com\n', 'control.example.com\t', 'control host.example.com',
+                 'control.example.com\x00', '-control.example.com', '[fd00::2]junk'):
+        scenario('coordinator', 'node-url', node_fields={field: f'{scheme}://{host}{suffix}'})
+scenario('coordinator', node_fields={
+    'controlUrl': 'https://10.0.0.2', 'websocketUrl': 'wss://[fd00::2]:443/v2/relay',
+})
+
+for flag in ('max-rooms', 'max-participants', 'handshakes-per-ip'):
+    for value in ('08', '010'):
+        scenario('standalone', 'capacity-spelling', extra_args=f'--{flag} {value}')
+for value in ('0', '10'):
+    args = ' '.join(f'--{flag} {value}' for flag in ('max-rooms', 'max-participants', 'handshakes-per-ip'))
+    scenario('standalone', extra_args=args)
+
+for value in (False, 0, [], {}, None):
+    scenario('coordinator', 'ca-type', node_fields={'caFile': value})
+scenario('coordinator', node_fields={'caFile': ''})
+scenario('coordinator', node_fields={'caFile': 'fixture.pem'})
 
 for role in ROLES:
     for failure, first in ((None, False), (None, True), ('health', False), ('health', True), ('guard-latch', False), ('guard-latch', True)):

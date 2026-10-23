@@ -79,14 +79,30 @@ def read_json(path, owner, maximum):
     return value
 
 
+def dns_name(value):
+    return len(value) <= 253 and all(
+        re.fullmatch(r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?', label)
+        for label in value.split('.')
+    )
+
+
 def safe_url(value, websocket=False):
     require(type(value) is str, 'URL must be a string')
+    require(all(33 <= ord(character) <= 126 for character in value), 'URL must use visible ASCII characters')
     url = urlsplit(value)
     require(url.scheme == ('wss' if websocket else 'https') and url.hostname and url.username is None
             and url.password is None and not url.query and not url.fragment and '?' not in value and '#' not in value
             and url.path in (('/v2/relay',) if websocket else ('', '/')), 'invalid deployment URL')
+    require('%' not in url.hostname, 'scoped or encoded URL hosts are unsupported')
+    try:
+        ipaddress.ip_address(url.hostname)
+    except ValueError:
+        require(dns_name(url.hostname), 'invalid URL hostname')
+    authority = f'[{url.hostname}]' if ':' in url.hostname else url.hostname
     if url.port is not None:
         require(1 <= url.port <= 65535, 'invalid URL port')
+        authority += f':{url.port}'
+    require(url.netloc.lower() == authority, 'noncanonical URL authority')
     return url
 
 
@@ -112,7 +128,7 @@ def validate(stage, instance, prepared):
         if key == 'allowed-origin':
             require(value != '*' and not any(c.isspace() for c in value), 'invalid origin')
         if key in limits:
-            require(re.fullmatch(r'[0-9]+', value) and 0 <= int(value) <= limits[key], 'invalid relay limit')
+            require(re.fullmatch(r'0|[1-9][0-9]*', value) and 0 <= int(value) <= limits[key], 'invalid relay limit')
         args[key] = value
     require(args.get('role') == instance, 'instance and role must match')
     require(args.get('listen', '127.0.0.1:8090') == '127.0.0.1:8090'
@@ -134,7 +150,8 @@ def validate(stage, instance, prepared):
         ids = set()
         for node in config['nodes']:
             require(type(node) is dict and node.keys() <= {'id', 'controlUrl', 'websocketUrl', 'tokenFile', 'caFile'}, 'invalid node fields')
-            require(all(type(node.get(key)) is str for key in ('id', 'controlUrl', 'websocketUrl', 'tokenFile')), 'node strings required')
+            require({'id', 'controlUrl', 'websocketUrl', 'tokenFile'} <= node.keys()
+                    and all(type(value) is str for value in node.values()), 'node strings required')
             require(re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,63}', node['id']) and node['id'] not in ids, 'invalid or duplicate node ID')
             ids.add(node['id'])
             safe_url(node['controlUrl'])
@@ -154,7 +171,7 @@ def validate(stage, instance, prepared):
             address = ipaddress.IPv4Address(caddy[key])
             require(any(address in ipaddress.ip_network(network) for network in ('10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16')), 'RFC1918 private IPv4 required')
         else:
-            require(len(caddy[key]) <= 253 and all(re.fullmatch(r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?', label) for label in caddy[key].split('.')), 'invalid Caddy domain')
+            require(dns_name(caddy[key]), 'invalid Caddy domain')
     if instance != 'coordinator':
         require(args.get('public-url') == f"wss://{caddy[domain_key]}/v2/relay", 'public URL must match Caddy domain')
         safe_url(args['public-url'], True)
