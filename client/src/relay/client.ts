@@ -53,6 +53,7 @@ export class RelayClient {
   private stopped = true
   private suspended = false
   private refreshing = false
+  private sessionEpoch = 0
   private refreshNeeded = false
   private peerRevisions = new Map<string, bigint>()
   private snapshotRevision = 0n
@@ -69,6 +70,7 @@ export class RelayClient {
     this.assignment = { ...assignment }
     this.stopped = false
     this.suspended = false
+    this.refreshNeeded = false
     this.resumeToken = ''
     this.welcome = undefined
     this.latestState = undefined
@@ -110,6 +112,8 @@ export class RelayClient {
 
   suspend(): void {
     if (this.stopped || this.suspended) return
+    ++this.sessionEpoch
+    this.refreshing = false
     this.suspended = true
     this.stopTimers()
     // Keep resume authority in memory; background sockets and timers are not trusted.
@@ -132,6 +136,8 @@ export class RelayClient {
 
   leave(): void {
     if (this.status === 'active') this.send({ case: 'leave', value: {} })
+    ++this.sessionEpoch
+    this.refreshing = false
     this.stopped = true
     this.stopTimers()
     const socket = this.socket
@@ -142,6 +148,8 @@ export class RelayClient {
   }
 
   close(): void {
+    ++this.sessionEpoch
+    this.refreshing = false
     this.stopped = true
     this.stopTimers()
     const socket = this.socket
@@ -345,9 +353,11 @@ export class RelayClient {
   private async retryConnection(): Promise<void> {
     if (this.stopped || this.suspended || this.refreshing) return
     if (this.refreshNeeded && this.options.refreshAssignment) {
+      const epoch = this.sessionEpoch
       this.refreshing = true
       try {
         const assignment = await this.options.refreshAssignment()
+        if (epoch !== this.sessionEpoch) return
         validateAssignment(assignment)
         if (this.stopped || this.suspended) return
         if (assignment.roomInstanceId !== this.assignment?.roomInstanceId || assignment.participantId !== this.assignment.participantId ||
@@ -356,12 +366,14 @@ export class RelayClient {
         this.assignment = assignment
         this.refreshNeeded = false
       } catch (error) {
+        if (epoch !== this.sessionEpoch) return
         this.options.onError?.(error instanceof Error ? error : new Error('Reauthorization failed'))
+        if (epoch !== this.sessionEpoch) return
         if (error instanceof Error && 'retryable' in error && error.retryable === false) { this.close(); return }
         this.scheduleRetry()
         return
       } finally {
-        this.refreshing = false
+        if (epoch === this.sessionEpoch) this.refreshing = false
       }
     }
     this.open()

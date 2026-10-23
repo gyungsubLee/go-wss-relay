@@ -104,19 +104,18 @@ export class LobbyClient {
   private async request<T>(path: string, method = 'GET', data?: unknown): Promise<T> {
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 5000)
-    let response: Response
     try {
-      response = await fetch(this.baseUrl + path, {
-      method, cache: 'no-store', credentials: 'omit', signal: controller.signal,
-      headers: { ...(data === undefined ? {} : { 'Content-Type': 'application/json' }), ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}) },
-      ...(data === undefined ? {} : { body: JSON.stringify(data) }),
+      const response = await fetch(this.baseUrl + path, {
+        method, cache: 'no-store', credentials: 'omit', signal: controller.signal,
+        headers: { ...(data === undefined ? {} : { 'Content-Type': 'application/json' }), ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}) },
+        ...(data === undefined ? {} : { body: JSON.stringify(data) }),
       })
+      if (!response.ok) {
+        const problem = await response.json().catch(() => ({ error: 'request failed' }))
+        throw new ControlError(response.status, `${response.status}: ${JSON.stringify(problem)}`)
+      }
+      if (response.status === 204) return undefined as T
+      return await response.json() as T
     } finally { clearTimeout(timeout) }
-    if (!response.ok) {
-      const problem = await response.json().catch(() => ({ error: 'request failed' }))
-      throw new ControlError(response.status,`${response.status}: ${JSON.stringify(problem)}`)
-    }
-    if (response.status === 204) return undefined as T
-    return await response.json() as T
   }
 }
