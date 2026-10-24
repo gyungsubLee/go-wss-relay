@@ -1,0 +1,26 @@
+{
+  "cluster": {
+    "sameRoomSingleOwnerAndIsolation": true,
+    "drainPreservesExistingRoomAndResume": true,
+    "coordinatorRestartKeepsWssAndRecoversAssignments": true,
+    "nodeCrashAndRestartDoNotResurrectOldRoom": true,
+    "scaleOutRegistrationAffectsOnlyNewRooms": true,
+    "drainedNodeExitsAfterLastRoom": true,
+    "transport": "actual coordinator and relay child processes; HTTPS + WSS; explicit CA trust"
+  },
+  "snake": {
+    "protocol": "snake-demo.v1",
+    "bodyPoints": 32,
+    "fullStateBytes": 679,
+    "maxBodyPoints": 64,
+    "maxFullStateBytes": 1127,
+    "snapshot16Bytes": 11337,
+    "maxSnapshot16Bytes": 18507,
+    "fullBodyReceived": true,
+    "ownerMayConnectAfterPeer": true,
+    "unauthorizedSceneIgnored": true,
+    "temporaryDisconnectKeepsAuthority": true,
+    "authorityEndStateReceived": true,
+    "permanentAuthorityDepartureObserved": true
+  }
+}

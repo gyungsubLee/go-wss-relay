@@ -1,0 +1,48 @@
+[
+  {
+    "name": "server-leave-red",
+    "expectedExitCode": 1,
+    "observedExitCode": 1,
+    "assertion": "following frame canceled Leave acknowledgement before pending write finished",
+    "log": "server-leave-red.log"
+  },
+  {
+    "name": "server-leave-green",
+    "expectedExitCode": 0,
+    "observedExitCode": 0,
+    "race": true,
+    "count": 3,
+    "tests": [
+      "TestLeaveWaitsForPendingWriteBeforeClosing",
+      "TestBlockedSocketWriteDoesNotStallHealthyPeer"
+    ],
+    "log": "server-leave-green.log"
+  },
+  {
+    "name": "load-shutdown-red",
+    "expectedExitCode": 1,
+    "observedExitCode": 1,
+    "tests": [
+      "healthy",
+      "missing-left",
+      "wrong-left-sequence",
+      "abnormal-close",
+      "timeout"
+    ],
+    "log": "load-shutdown-red.log"
+  },
+  {
+    "name": "load-shutdown-green",
+    "expectedExitCode": 0,
+    "observedExitCode": 0,
+    "race": true,
+    "tests": [
+      "healthy",
+      "missing-left",
+      "wrong-left-sequence",
+      "abnormal-close",
+      "timeout"
+    ],
+    "log": "load-shutdown-green.log"
+  }
+]

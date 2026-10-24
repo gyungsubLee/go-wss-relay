@@ -1,0 +1,83 @@
+{
+  "missingBearer": {
+    "status": 401,
+    "passed": true
+  },
+  "forgedBearer": {
+    "status": 401,
+    "passed": true
+  },
+  "badOriginHTTP": {
+    "status": 403,
+    "passed": true
+  },
+  "credentialQuery": {
+    "status": 400,
+    "passed": true
+  },
+  "duplicateJSON": {
+    "status": 400,
+    "passed": true
+  },
+  "oversizedJSON": {
+    "status": 413,
+    "passed": true
+  },
+  "managementOnPublic": {
+    "status": 404,
+    "passed": true
+  },
+  "managementUnauthorized": {
+    "status": 401,
+    "passed": true
+  },
+  "badOriginWSS": {
+    "status": 403,
+    "passed": true
+  },
+  "singleUseTicket": {
+    "errorCode": 4,
+    "passed": true
+  },
+  "applicationIsolation": {
+    "errorCode": 3,
+    "correctProtocolStillWorks": true
+  },
+  "textFrame": {
+    "closeCode": 1003,
+    "passed": true
+  },
+  "oversizedFrame": {
+    "closeCode": 1009,
+    "passed": true
+  },
+  "authenticatedOverRate": {
+    "durationMs": 1102.359292,
+    "sent": 92,
+    "errorsReceived": 71,
+    "stillOpen": true,
+    "rateRejectedDelta": 71,
+    "ingressBytesDelta": 95128
+  },
+  "silentAuthStarvation": {
+    "silentConnections": 128,
+    "holdMs": 112.95745800000009,
+    "legitimateUpgradeStatus": 429,
+    "reproduced": true
+  },
+  "silentAuthRecovery": {
+    "status": 101,
+    "passed": true
+  },
+  "guestRateAndUntrustedXFF": {
+    "attempted": 64,
+    "accepted": 40,
+    "rejected429": 24,
+    "passed": true
+  },
+  "cleanup": {
+    "rooms": 0,
+    "connections": 0,
+    "reservedParticipants": 0
+  }
+}

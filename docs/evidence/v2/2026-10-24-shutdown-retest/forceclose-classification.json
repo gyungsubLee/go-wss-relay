@@ -1,0 +1,1588 @@
+{
+  "metricWriteErrors": 40,
+  "traceWriteErrors": 40,
+  "countsMatch": true,
+  "classifications": {
+    "explicit_CloseNow_before_write_error": 13,
+    "Read_context_cancel_closes_transport": 27
+  },
+  "errors": [
+    {
+      "participant": "p-8",
+      "classification": "explicit_CloseNow_before_write_error",
+      "serverWrite": {
+        "atNs": 1792781883405256000,
+        "body": "*relayv2.ServerEnvelope_StateBatch",
+        "closeStatus": -1,
+        "connection": "0x72a992e28e60",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781883497684000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64162: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-8",
+        "readEnd": {
+          "atNs": 1792781883405255000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-elBp8FEjRwyaY2ke2SGX-E5ehMnEpU2wDUxKDpW2odo",
+        "sequence": 174,
+        "startedNs": 1792781882497685000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": null,
+      "forceClose": {
+        "atNs": 1792781883405069000,
+        "event": "force_close",
+        "participant": "p-8"
+      }
+    },
+    {
+      "participant": "p-0",
+      "classification": "explicit_CloseNow_before_write_error",
+      "serverWrite": {
+        "atNs": 1792781883404984000,
+        "body": "*relayv2.ServerEnvelope_StateBatch",
+        "closeStatus": -1,
+        "connection": "0x72a992e28500",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781883776662000,
+        "error": "failed to write msg: failed to write frame: failed to write frame payload: write tcp 127.0.0.1:19443->127.0.0.1:64154: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-0",
+        "readEnd": {
+          "atNs": 1792781883404954000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-e2QyTF4xmfN-v9jUWJ7DgyrFNNEgmWkj-iytnuUF3dU",
+        "sequence": 175,
+        "startedNs": 1792781882776666000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": null,
+      "forceClose": {
+        "atNs": 1792781883404676000,
+        "event": "force_close",
+        "participant": "p-0"
+      }
+    },
+    {
+      "participant": "p-30",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883405361000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a993120640",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884405309000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64184: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-30",
+        "readEnd": {
+          "atNs": 1792781883404656000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-wQfbQiu5H2cL1v-R9Sq2Znk9g3thG8bajKZzsUG7kU0",
+        "sequence": 245,
+        "startedNs": 1792781883405315000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883402871000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-30"
+      },
+      "forceClose": {
+        "atNs": 1792781883405932000,
+        "event": "force_close",
+        "participant": "p-30"
+      }
+    },
+    {
+      "participant": "p-46",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883405406000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a992e297c0",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884405346000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64200: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-46",
+        "readEnd": {
+          "atNs": 1792781883404575000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-2FSBYIvOA1T6Di-ks7PkYzAObtZwLyGHTva4JRzYD4Y",
+        "sequence": 210,
+        "startedNs": 1792781883405350000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883402735000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-46"
+      },
+      "forceClose": {
+        "atNs": 1792781883406614000,
+        "event": "force_close",
+        "participant": "p-46"
+      }
+    },
+    {
+      "participant": "p-3",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883406554000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a992e28be0",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884406520000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64157: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-3",
+        "readEnd": {
+          "atNs": 1792781883404575000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-e2QyTF4xmfN-v9jUWJ7DgyrFNNEgmWkj-iytnuUF3dU",
+        "sequence": 229,
+        "startedNs": 1792781883406522000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883402791000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-3"
+      },
+      "forceClose": {
+        "atNs": 1792781883404948000,
+        "event": "force_close",
+        "participant": "p-3"
+      }
+    },
+    {
+      "participant": "p-19",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883406589000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a99355c140",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884406534000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64173: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-19",
+        "readEnd": {
+          "atNs": 1792781883404762000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-V-LTsdPzrmLNgYW0YCDsGX_Jzsag_qbQJ4D8LYWeAUM",
+        "sequence": 228,
+        "startedNs": 1792781883406541000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883402704000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-19"
+      },
+      "forceClose": {
+        "atNs": 1792781883405581000,
+        "event": "force_close",
+        "participant": "p-19"
+      }
+    },
+    {
+      "participant": "p-14",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883405813000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a993010780",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884405782000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64168: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-14",
+        "readEnd": {
+          "atNs": 1792781883404008000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-elBp8FEjRwyaY2ke2SGX-E5ehMnEpU2wDUxKDpW2odo",
+        "sequence": 222,
+        "startedNs": 1792781883405783000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883400479000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-14"
+      },
+      "forceClose": {
+        "atNs": 1792781883405352000,
+        "event": "force_close",
+        "participant": "p-14"
+      }
+    },
+    {
+      "participant": "p-77",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883406700000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a993431860",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884406661000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64231: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-77",
+        "readEnd": {
+          "atNs": 1792781883404737000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-jZhFtMnmQw0n9s3BUhioABESXfRqRR-OXjqexFbjkC0",
+        "sequence": 223,
+        "startedNs": 1792781883406666000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883402983000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-77"
+      },
+      "forceClose": {
+        "atNs": 1792781883407728000,
+        "event": "force_close",
+        "participant": "p-77"
+      }
+    },
+    {
+      "participant": "p-16",
+      "classification": "explicit_CloseNow_before_write_error",
+      "serverWrite": {
+        "atNs": 1792781883405619000,
+        "body": "*relayv2.ServerEnvelope_StateBatch",
+        "closeStatus": -1,
+        "connection": "0x72a993010dc0",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781883677872000,
+        "error": "failed to write msg: failed to write frame: failed to write frame payload: write tcp 127.0.0.1:19443->127.0.0.1:64170: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-16",
+        "readEnd": null,
+        "roomInstance": "ri-V-LTsdPzrmLNgYW0YCDsGX_Jzsag_qbQJ4D8LYWeAUM",
+        "sequence": 173,
+        "startedNs": 1792781882677873000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": null,
+      "forceClose": {
+        "atNs": 1792781883405379000,
+        "event": "force_close",
+        "participant": "p-16"
+      }
+    },
+    {
+      "participant": "p-22",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883406850000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a993010e60",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884406811000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64176: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-22",
+        "readEnd": {
+          "atNs": 1792781883404779000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-V-LTsdPzrmLNgYW0YCDsGX_Jzsag_qbQJ4D8LYWeAUM",
+        "sequence": 176,
+        "startedNs": 1792781883406814000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883402912000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-22"
+      },
+      "forceClose": {
+        "atNs": 1792781883405644000,
+        "event": "force_close",
+        "participant": "p-22"
+      }
+    },
+    {
+      "participant": "p-23",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883406900000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a993010f00",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884406855000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64177: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-23",
+        "readEnd": {
+          "atNs": 1792781883404656000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-V-LTsdPzrmLNgYW0YCDsGX_Jzsag_qbQJ4D8LYWeAUM",
+        "sequence": 175,
+        "startedNs": 1792781883406860000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883401809000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-23"
+      },
+      "forceClose": {
+        "atNs": 1792781883405660000,
+        "event": "force_close",
+        "participant": "p-23"
+      }
+    },
+    {
+      "participant": "p-21",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883406959000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a993430820",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884406882000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64175: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-21",
+        "readEnd": {
+          "atNs": 1792781883404623000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-V-LTsdPzrmLNgYW0YCDsGX_Jzsag_qbQJ4D8LYWeAUM",
+        "sequence": 177,
+        "startedNs": 1792781883406886000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883401632000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-21"
+      },
+      "forceClose": {
+        "atNs": 1792781883405619000,
+        "event": "force_close",
+        "participant": "p-21"
+      }
+    },
+    {
+      "participant": "p-24",
+      "classification": "explicit_CloseNow_before_write_error",
+      "serverWrite": {
+        "atNs": 1792781883405852000,
+        "body": "*relayv2.ServerEnvelope_StateBatch",
+        "closeStatus": -1,
+        "connection": "0x72a9930115e0",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781883596633000,
+        "error": "failed to write msg: failed to write frame: failed to write frame payload: write tcp 127.0.0.1:19443->127.0.0.1:64178: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-24",
+        "readEnd": {
+          "atNs": 1792781883405775000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-wQfbQiu5H2cL1v-R9Sq2Znk9g3thG8bajKZzsUG7kU0",
+        "sequence": 175,
+        "startedNs": 1792781882596634000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": null,
+      "forceClose": {
+        "atNs": 1792781883405686000,
+        "event": "force_close",
+        "participant": "p-24"
+      }
+    },
+    {
+      "participant": "p-83",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883407312000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a99328a000",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884407274000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64238: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-83",
+        "readEnd": {
+          "atNs": 1792781883404641000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-18OryOnSdSi8fU3n2YFjjRRBe4b-u-W0BaxHkbeZ07E",
+        "sequence": 203,
+        "startedNs": 1792781883407276000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883401760000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-83"
+      },
+      "forceClose": {
+        "atNs": 1792781883407937000,
+        "event": "force_close",
+        "participant": "p-83"
+      }
+    },
+    {
+      "participant": "p-56",
+      "classification": "explicit_CloseNow_before_write_error",
+      "serverWrite": {
+        "atNs": 1792781883407334000,
+        "body": "*relayv2.ServerEnvelope_StateBatch",
+        "closeStatus": -1,
+        "connection": "0x72a993430e60",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781883690426000,
+        "error": "failed to write msg: failed to write frame: failed to write frame payload: write tcp 127.0.0.1:19443->127.0.0.1:64210: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-56",
+        "readEnd": null,
+        "roomInstance": "ri-BYcWn1dm-GZTsZquAvvYB-Y7aa5GGDkoJPcWkwrP8fw",
+        "sequence": 173,
+        "startedNs": 1792781882690429000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": null,
+      "forceClose": {
+        "atNs": 1792781883407000000,
+        "event": "force_close",
+        "participant": "p-56"
+      }
+    },
+    {
+      "participant": "p-51",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883407383000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a992e29900",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884407349000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64205: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-51",
+        "readEnd": {
+          "atNs": 1792781883407224000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-2720GqqqR_iIP3p7l_iboUjBm7v-pwpV1kyy_nEE0Vs",
+        "sequence": 189,
+        "startedNs": 1792781883407355000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883400449000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to read: failed to acquire lock: context canceled",
+        "event": "read_end",
+        "participant": "p-51"
+      },
+      "forceClose": {
+        "atNs": 1792781883406861000,
+        "event": "force_close",
+        "participant": "p-51"
+      }
+    },
+    {
+      "participant": "p-53",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883407454000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a99355c500",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884407356000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64207: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-53",
+        "readEnd": {
+          "atNs": 1792781883404760000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-2720GqqqR_iIP3p7l_iboUjBm7v-pwpV1kyy_nEE0Vs",
+        "sequence": 177,
+        "startedNs": 1792781883407359000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883401228000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-53"
+      },
+      "forceClose": {
+        "atNs": 1792781883406952000,
+        "event": "force_close",
+        "participant": "p-53"
+      }
+    },
+    {
+      "participant": "p-15",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883407318000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a992e29040",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884407186000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64169: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-15",
+        "readEnd": {
+          "atNs": 1792781883404708000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-elBp8FEjRwyaY2ke2SGX-E5ehMnEpU2wDUxKDpW2odo",
+        "sequence": 175,
+        "startedNs": 1792781883407190000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883401865000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-15"
+      },
+      "forceClose": {
+        "atNs": 1792781883405366000,
+        "event": "force_close",
+        "participant": "p-15"
+      }
+    },
+    {
+      "participant": "p-94",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883406024000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a99328aaa0",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884405991000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64249: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-94",
+        "readEnd": {
+          "atNs": 1792781883404690000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-z7BnvDPghLtBLuNx9k9mQnnvQpDsw5Z3qzoQCKesijc",
+        "sequence": 201,
+        "startedNs": 1792781883405992000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883401367000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-94"
+      },
+      "forceClose": {
+        "atNs": 1792781883408269000,
+        "event": "force_close",
+        "participant": "p-94"
+      }
+    },
+    {
+      "participant": "p-32",
+      "classification": "explicit_CloseNow_before_write_error",
+      "serverWrite": {
+        "atNs": 1792781883406172000,
+        "body": "*relayv2.ServerEnvelope_StateBatch",
+        "closeStatus": -1,
+        "connection": "0x72a993120a00",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781883673130000,
+        "error": "failed to write msg: failed to write frame: failed to write frame payload: write tcp 127.0.0.1:19443->127.0.0.1:64186: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-32",
+        "readEnd": {
+          "atNs": 1792781883406104000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-A0SkI4_4Wrf7LWxdWsX22EFXK3OwQlNO5dBjNtNyv5c",
+        "sequence": 172,
+        "startedNs": 1792781882673132000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": null,
+      "forceClose": {
+        "atNs": 1792781883405957000,
+        "event": "force_close",
+        "participant": "p-32"
+      }
+    },
+    {
+      "participant": "p-76",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883407948000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a99355c820",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884407900000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64230: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-76",
+        "readEnd": {
+          "atNs": 1792781883404779000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-jZhFtMnmQw0n9s3BUhioABESXfRqRR-OXjqexFbjkC0",
+        "sequence": 180,
+        "startedNs": 1792781883407904000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883401415000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-76"
+      },
+      "forceClose": {
+        "atNs": 1792781883407715000,
+        "event": "force_close",
+        "participant": "p-76"
+      }
+    },
+    {
+      "participant": "p-80",
+      "classification": "explicit_CloseNow_before_write_error",
+      "serverWrite": {
+        "atNs": 1792781883407982000,
+        "body": "*relayv2.ServerEnvelope_StateBatch",
+        "closeStatus": -1,
+        "connection": "0x72a99355c8c0",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781883579679000,
+        "error": "failed to write msg: failed to write frame: failed to write frame payload: write tcp 127.0.0.1:19443->127.0.0.1:64234: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-80",
+        "readEnd": {
+          "atNs": 1792781883407882000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-18OryOnSdSi8fU3n2YFjjRRBe4b-u-W0BaxHkbeZ07E",
+        "sequence": 173,
+        "startedNs": 1792781882579680000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": null,
+      "forceClose": {
+        "atNs": 1792781883407769000,
+        "event": "force_close",
+        "participant": "p-80"
+      }
+    },
+    {
+      "participant": "p-40",
+      "classification": "explicit_CloseNow_before_write_error",
+      "serverWrite": {
+        "atNs": 1792781883406523000,
+        "body": "*relayv2.ServerEnvelope_StateBatch",
+        "closeStatus": -1,
+        "connection": "0x72a992e29720",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781883654848000,
+        "error": "failed to write msg: failed to write frame: failed to write frame payload: write tcp 127.0.0.1:19443->127.0.0.1:64194: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-40",
+        "readEnd": {
+          "atNs": 1792781883406514000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-2FSBYIvOA1T6Di-ks7PkYzAObtZwLyGHTva4JRzYD4Y",
+        "sequence": 206,
+        "startedNs": 1792781882654849000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": null,
+      "forceClose": {
+        "atNs": 1792781883406322000,
+        "event": "force_close",
+        "participant": "p-40"
+      }
+    },
+    {
+      "participant": "p-42",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883406631000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a99355c320",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884406589000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64196: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-42",
+        "readEnd": {
+          "atNs": 1792781883404635000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-2FSBYIvOA1T6Di-ks7PkYzAObtZwLyGHTva4JRzYD4Y",
+        "sequence": 180,
+        "startedNs": 1792781883406591000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883402680000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-42"
+      },
+      "forceClose": {
+        "atNs": 1792781883406524000,
+        "event": "force_close",
+        "participant": "p-42"
+      }
+    },
+    {
+      "participant": "p-43",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883406693000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a993120d20",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884406663000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64197: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-43",
+        "readEnd": {
+          "atNs": 1792781883404552000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-2FSBYIvOA1T6Di-ks7PkYzAObtZwLyGHTva4JRzYD4Y",
+        "sequence": 181,
+        "startedNs": 1792781883406665000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883402647000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-43"
+      },
+      "forceClose": {
+        "atNs": 1792781883406558000,
+        "event": "force_close",
+        "participant": "p-43"
+      }
+    },
+    {
+      "participant": "p-41",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883406736000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a99355c280",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884406684000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64195: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-41",
+        "readEnd": {
+          "atNs": 1792781883404632000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-2FSBYIvOA1T6Di-ks7PkYzAObtZwLyGHTva4JRzYD4Y",
+        "sequence": 181,
+        "startedNs": 1792781883406686000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883401792000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-41"
+      },
+      "forceClose": {
+        "atNs": 1792781883406492000,
+        "event": "force_close",
+        "participant": "p-41"
+      }
+    },
+    {
+      "participant": "p-18",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883406891000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a993430780",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884406860000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64172: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-18",
+        "readEnd": {
+          "atNs": 1792781883404596000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-V-LTsdPzrmLNgYW0YCDsGX_Jzsag_qbQJ4D8LYWeAUM",
+        "sequence": 182,
+        "startedNs": 1792781883406863000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883402666000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-18"
+      },
+      "forceClose": {
+        "atNs": 1792781883405538000,
+        "event": "force_close",
+        "participant": "p-18"
+      }
+    },
+    {
+      "participant": "p-48",
+      "classification": "explicit_CloseNow_before_write_error",
+      "serverWrite": {
+        "atNs": 1792781883407059000,
+        "body": "*relayv2.ServerEnvelope_StateBatch",
+        "closeStatus": -1,
+        "connection": "0x72a993121360",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781883673433000,
+        "error": "failed to write msg: failed to write frame: failed to write frame payload: write tcp 127.0.0.1:19443->127.0.0.1:64202: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-48",
+        "readEnd": {
+          "atNs": 1792781883406912000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-2720GqqqR_iIP3p7l_iboUjBm7v-pwpV1kyy_nEE0Vs",
+        "sequence": 172,
+        "startedNs": 1792781882673434000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": null,
+      "forceClose": {
+        "atNs": 1792781883406652000,
+        "event": "force_close",
+        "participant": "p-48"
+      }
+    },
+    {
+      "participant": "p-58",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883407152000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a993430f00",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884406833000,
+        "error": "failed to write msg: failed to write frame: context canceled",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": true,
+        "isDeadline": false,
+        "parentContextError": "context canceled",
+        "participant": "p-58",
+        "readEnd": {
+          "atNs": 1792781883404597000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-BYcWn1dm-GZTsZquAvvYB-Y7aa5GGDkoJPcWkwrP8fw",
+        "sequence": 209,
+        "startedNs": 1792781883406835000,
+        "terminal": null,
+        "writeContextError": "context canceled"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883402681000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-58"
+      },
+      "forceClose": {
+        "atNs": 1792781883407145000,
+        "event": "force_close",
+        "participant": "p-58"
+      }
+    },
+    {
+      "participant": "p-13",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883407178000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a992e28fa0",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884407151000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64167: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-13",
+        "readEnd": {
+          "atNs": 1792781883404663000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-elBp8FEjRwyaY2ke2SGX-E5ehMnEpU2wDUxKDpW2odo",
+        "sequence": 179,
+        "startedNs": 1792781883407154000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883401362000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-13"
+      },
+      "forceClose": {
+        "atNs": 1792781883405338000,
+        "event": "force_close",
+        "participant": "p-13"
+      }
+    },
+    {
+      "participant": "p-10",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883407222000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a99355c0a0",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884407187000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64164: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-10",
+        "readEnd": {
+          "atNs": 1792781883404746000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-elBp8FEjRwyaY2ke2SGX-E5ehMnEpU2wDUxKDpW2odo",
+        "sequence": 179,
+        "startedNs": 1792781883407188000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883401257000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-10"
+      },
+      "forceClose": {
+        "atNs": 1792781883405271000,
+        "event": "force_close",
+        "participant": "p-10"
+      }
+    },
+    {
+      "participant": "p-55",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883407365000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a99355c640",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884407322000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64209: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-55",
+        "readEnd": {
+          "atNs": 1792781883404723000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-2720GqqqR_iIP3p7l_iboUjBm7v-pwpV1kyy_nEE0Vs",
+        "sequence": 175,
+        "startedNs": 1792781883407327000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883402780000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-55"
+      },
+      "forceClose": {
+        "atNs": 1792781883406976000,
+        "event": "force_close",
+        "participant": "p-55"
+      }
+    },
+    {
+      "participant": "p-52",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883407394000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a992e299a0",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884407355000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64206: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-52",
+        "readEnd": {
+          "atNs": 1792781883404785000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-2720GqqqR_iIP3p7l_iboUjBm7v-pwpV1kyy_nEE0Vs",
+        "sequence": 191,
+        "startedNs": 1792781883407361000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883401747000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-52"
+      },
+      "forceClose": {
+        "atNs": 1792781883406938000,
+        "event": "force_close",
+        "participant": "p-52"
+      }
+    },
+    {
+      "participant": "p-64",
+      "classification": "explicit_CloseNow_before_write_error",
+      "serverWrite": {
+        "atNs": 1792781883407433000,
+        "body": "*relayv2.ServerEnvelope_StateBatch",
+        "closeStatus": -1,
+        "connection": "0x72a9931214a0",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781883599265000,
+        "error": "failed to write msg: failed to write frame: failed to write frame payload: write tcp 127.0.0.1:19443->127.0.0.1:64218: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-64",
+        "readEnd": {
+          "atNs": 1792781883407390000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-aO3fUdiEQ6mT8DuqSoDKmKtfMnH-zOInux7xFBkGRQM",
+        "sequence": 178,
+        "startedNs": 1792781882599266000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": null,
+      "forceClose": {
+        "atNs": 1792781883407239000,
+        "event": "force_close",
+        "participant": "p-64"
+      }
+    },
+    {
+      "participant": "p-72",
+      "classification": "explicit_CloseNow_before_write_error",
+      "serverWrite": {
+        "atNs": 1792781883407641000,
+        "body": "*relayv2.ServerEnvelope_StateBatch",
+        "closeStatus": -1,
+        "connection": "0x72a993121cc0",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781883564058000,
+        "error": "failed to write msg: failed to write frame: failed to write frame payload: write tcp 127.0.0.1:19443->127.0.0.1:64226: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-72",
+        "readEnd": null,
+        "roomInstance": "ri-jZhFtMnmQw0n9s3BUhioABESXfRqRR-OXjqexFbjkC0",
+        "sequence": 172,
+        "startedNs": 1792781882564059000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": null,
+      "forceClose": {
+        "atNs": 1792781883407539000,
+        "event": "force_close",
+        "participant": "p-72"
+      }
+    },
+    {
+      "participant": "p-63",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883408164000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a993431180",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884408102000,
+        "error": "failed to write msg: failed to write frame: context canceled",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": true,
+        "isDeadline": false,
+        "parentContextError": "context canceled",
+        "participant": "p-63",
+        "readEnd": {
+          "atNs": 1792781883404769000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-BYcWn1dm-GZTsZquAvvYB-Y7aa5GGDkoJPcWkwrP8fw",
+        "sequence": 177,
+        "startedNs": 1792781883408105000,
+        "terminal": null,
+        "writeContextError": "context canceled"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883401603000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-63"
+      },
+      "forceClose": {
+        "atNs": 1792781883407226000,
+        "event": "force_close",
+        "participant": "p-63"
+      }
+    },
+    {
+      "participant": "p-88",
+      "classification": "explicit_CloseNow_before_write_error",
+      "serverWrite": {
+        "atNs": 1792781883408212000,
+        "body": "*relayv2.ServerEnvelope_StateBatch",
+        "closeStatus": -1,
+        "connection": "0x72a99355ca00",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781883653980000,
+        "error": "failed to write msg: failed to write frame: failed to write frame payload: write tcp 127.0.0.1:19443->127.0.0.1:64243: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-88",
+        "readEnd": {
+          "atNs": 1792781883408206000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-z7BnvDPghLtBLuNx9k9mQnnvQpDsw5Z3qzoQCKesijc",
+        "sequence": 220,
+        "startedNs": 1792781882653982000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": null,
+      "forceClose": {
+        "atNs": 1792781883408075000,
+        "event": "force_close",
+        "participant": "p-88"
+      }
+    },
+    {
+      "participant": "p-7",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883408392000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a992e28dc0",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884408280000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64161: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-7",
+        "readEnd": {
+          "atNs": 1792781883404670000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-e2QyTF4xmfN-v9jUWJ7DgyrFNNEgmWkj-iytnuUF3dU",
+        "sequence": 175,
+        "startedNs": 1792781883408282000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883401427000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-7"
+      },
+      "forceClose": {
+        "atNs": 1792781883405043000,
+        "event": "force_close",
+        "participant": "p-7"
+      }
+    },
+    {
+      "participant": "p-5",
+      "classification": "Read_context_cancel_closes_transport",
+      "serverWrite": {
+        "atNs": 1792781883408833000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a992e28d20",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884408279000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64159: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-5",
+        "readEnd": {
+          "atNs": 1792781883404763000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-e2QyTF4xmfN-v9jUWJ7DgyrFNNEgmWkj-iytnuUF3dU",
+        "sequence": 176,
+        "startedNs": 1792781883408282000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": {
+        "atNs": 1792781883402938000,
+        "closeStatus": -1,
+        "contextError": "context canceled",
+        "error": "failed to get reader: context canceled",
+        "event": "read_end",
+        "participant": "p-5"
+      },
+      "forceClose": {
+        "atNs": 1792781883404996000,
+        "event": "force_close",
+        "participant": "p-5"
+      }
+    },
+    {
+      "participant": "p-96",
+      "classification": "explicit_CloseNow_before_write_error",
+      "serverWrite": {
+        "atNs": 1792781883409484000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x72a99355cb40",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792781884409438000,
+        "error": "failed to write msg: failed to write frame: failed to flush: write tcp 127.0.0.1:19443->127.0.0.1:64251: write: broken pipe",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-96",
+        "readEnd": {
+          "atNs": 1792781883408838000,
+          "error": "failed to get reader: failed to read frame header: EOF",
+          "closeStatus": -1
+        },
+        "roomInstance": "ri-wcAAEnMW4Zs9bo1hYjogCn5hL4HPaQ-vhXXHnfjmJbQ",
+        "sequence": 178,
+        "startedNs": 1792781883409442000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      },
+      "clientReadEnd": null,
+      "forceClose": {
+        "atNs": 1792781883408297000,
+        "event": "force_close",
+        "participant": "p-96"
+      }
+    }
+  ]
+}

@@ -1,0 +1,1471 @@
+{
+  "recordedAt": "2026-10-23T14:50:02.365Z",
+  "passed": false,
+  "transport": "public HTTPS matchmaking + real TypeScript RelayClient WSS; explicit Node CA trust; local host",
+  "profile": {
+    "base": "https://localhost:19443",
+    "participants": 200,
+    "roomSize": 16,
+    "payloadBytes": 679,
+    "publishHz": 20,
+    "measurementSeconds": 30
+  },
+  "setupMs": 13788.894,
+  "steadyMs": 29999.465166,
+  "totalMs": 55163.090334,
+  "rooms": [
+    {
+      "participants": 16,
+      "setupMs": 1148.086417
+    },
+    {
+      "participants": 16,
+      "setupMs": 1063.0985
+    },
+    {
+      "participants": 16,
+      "setupMs": 1195.6649589999997
+    },
+    {
+      "participants": 16,
+      "setupMs": 1071.5487909999997
+    },
+    {
+      "participants": 16,
+      "setupMs": 1067.3237909999998
+    },
+    {
+      "participants": 16,
+      "setupMs": 1073.3136249999998
+    },
+    {
+      "participants": 16,
+      "setupMs": 1345.9657500000003
+    },
+    {
+      "participants": 16,
+      "setupMs": 1081.6223339999997
+    },
+    {
+      "participants": 16,
+      "setupMs": 1058.8842499999992
+    },
+    {
+      "participants": 16,
+      "setupMs": 1052.6732909999992
+    },
+    {
+      "participants": 16,
+      "setupMs": 1045.2458750000005
+    },
+    {
+      "participants": 16,
+      "setupMs": 1046.1628750000018
+    },
+    {
+      "participants": 8,
+      "setupMs": 538.094083
+    }
+  ],
+  "activeTotal": 200,
+  "activeMinimum": {
+    "warmup": 200,
+    "steady": 200,
+    "capacity": 200,
+    "reconnect": 0,
+    "afterReconnect": 200
+  },
+  "statusTransitions": {
+    "closed": 400,
+    "connecting": 200,
+    "active": 400,
+    "reconnecting": 200
+  },
+  "httpStatuses": {
+    "200": 210,
+    "201": 404,
+    "409": 2
+  },
+  "receivedStates": 2292492,
+  "stateCounts": {
+    "warmup": 172237,
+    "steady": 1740287,
+    "capacity": 67790,
+    "reconnect": 18388,
+    "afterReconnect": 293790
+  },
+  "stateLatency": {
+    "sampling": "one in sixteen states; latest 65536 bounded samples per window",
+    "steady": {
+      "observations": 108767,
+      "sampleCount": 65536,
+      "p95Ms": 86.08949999999822,
+      "p99Ms": 95.2757500000007,
+      "maxMs": 205.5616250000021
+    },
+    "afterReconnect": {
+      "observations": 18362,
+      "sampleCount": 18362,
+      "p95Ms": 73.62554200000159,
+      "p99Ms": 87.25983400000405,
+      "maxMs": 99.55225000000064
+    }
+  },
+  "participantTraffic": [
+    {
+      "index": 0,
+      "receivedStates": 11759,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 1,
+      "receivedStates": 11773,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 2,
+      "receivedStates": 11753,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 3,
+      "receivedStates": 11763,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 4,
+      "receivedStates": 11741,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 5,
+      "receivedStates": 11747,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 6,
+      "receivedStates": 11744,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 7,
+      "receivedStates": 11737,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 8,
+      "receivedStates": 11731,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 9,
+      "receivedStates": 11752,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 10,
+      "receivedStates": 11614,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 11,
+      "receivedStates": 11746,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 12,
+      "receivedStates": 11748,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 13,
+      "receivedStates": 11760,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 14,
+      "receivedStates": 11746,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 15,
+      "receivedStates": 11746,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 16,
+      "receivedStates": 11746,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 17,
+      "receivedStates": 11769,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 18,
+      "receivedStates": 11712,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 19,
+      "receivedStates": 11763,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 20,
+      "receivedStates": 11770,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 21,
+      "receivedStates": 11696,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 22,
+      "receivedStates": 11753,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 23,
+      "receivedStates": 11753,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 24,
+      "receivedStates": 11765,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 25,
+      "receivedStates": 11751,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 26,
+      "receivedStates": 11751,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 27,
+      "receivedStates": 11776,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 28,
+      "receivedStates": 11750,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 29,
+      "receivedStates": 11763,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 30,
+      "receivedStates": 11761,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 31,
+      "receivedStates": 11760,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 32,
+      "receivedStates": 11717,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 33,
+      "receivedStates": 11780,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 34,
+      "receivedStates": 11781,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 35,
+      "receivedStates": 11783,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 36,
+      "receivedStates": 11775,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 37,
+      "receivedStates": 11749,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 38,
+      "receivedStates": 11725,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 39,
+      "receivedStates": 11725,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 40,
+      "receivedStates": 11763,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 41,
+      "receivedStates": 11750,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 42,
+      "receivedStates": 11749,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 43,
+      "receivedStates": 11750,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 44,
+      "receivedStates": 11743,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 45,
+      "receivedStates": 11765,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 46,
+      "receivedStates": 11770,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 47,
+      "receivedStates": 11763,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 48,
+      "receivedStates": 11743,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 49,
+      "receivedStates": 11759,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 50,
+      "receivedStates": 11762,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 51,
+      "receivedStates": 11756,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 52,
+      "receivedStates": 11761,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 53,
+      "receivedStates": 11760,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 54,
+      "receivedStates": 11773,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 55,
+      "receivedStates": 11763,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 56,
+      "receivedStates": 11769,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 57,
+      "receivedStates": 11718,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 58,
+      "receivedStates": 11714,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 59,
+      "receivedStates": 11730,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 60,
+      "receivedStates": 11664,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 61,
+      "receivedStates": 11735,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 62,
+      "receivedStates": 11715,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 63,
+      "receivedStates": 11743,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 64,
+      "receivedStates": 11779,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 65,
+      "receivedStates": 11778,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 66,
+      "receivedStates": 11754,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 67,
+      "receivedStates": 11760,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 68,
+      "receivedStates": 11741,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 69,
+      "receivedStates": 11755,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 70,
+      "receivedStates": 11720,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 71,
+      "receivedStates": 11655,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 72,
+      "receivedStates": 11749,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 73,
+      "receivedStates": 11723,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 74,
+      "receivedStates": 11729,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 75,
+      "receivedStates": 11727,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 76,
+      "receivedStates": 11685,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 77,
+      "receivedStates": 11648,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 78,
+      "receivedStates": 11729,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 79,
+      "receivedStates": 11730,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 80,
+      "receivedStates": 11740,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 81,
+      "receivedStates": 11678,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 82,
+      "receivedStates": 11735,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 83,
+      "receivedStates": 11745,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 84,
+      "receivedStates": 11733,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 85,
+      "receivedStates": 11746,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 86,
+      "receivedStates": 11749,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 87,
+      "receivedStates": 11723,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 88,
+      "receivedStates": 11741,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 89,
+      "receivedStates": 11746,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 90,
+      "receivedStates": 11723,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 91,
+      "receivedStates": 11671,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 92,
+      "receivedStates": 11743,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 93,
+      "receivedStates": 11710,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 94,
+      "receivedStates": 11719,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 95,
+      "receivedStates": 11709,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 96,
+      "receivedStates": 11750,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 97,
+      "receivedStates": 11754,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 98,
+      "receivedStates": 11732,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 99,
+      "receivedStates": 11725,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 100,
+      "receivedStates": 11729,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 101,
+      "receivedStates": 11731,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 102,
+      "receivedStates": 11743,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 103,
+      "receivedStates": 11727,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 104,
+      "receivedStates": 11705,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 105,
+      "receivedStates": 11745,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 106,
+      "receivedStates": 11750,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 107,
+      "receivedStates": 11719,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 108,
+      "receivedStates": 11738,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 109,
+      "receivedStates": 11747,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 110,
+      "receivedStates": 11736,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 111,
+      "receivedStates": 11722,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 112,
+      "receivedStates": 11726,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 113,
+      "receivedStates": 11752,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 114,
+      "receivedStates": 11742,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 115,
+      "receivedStates": 11721,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 116,
+      "receivedStates": 11739,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 117,
+      "receivedStates": 11571,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 118,
+      "receivedStates": 11738,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 119,
+      "receivedStates": 11744,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 120,
+      "receivedStates": 11754,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 121,
+      "receivedStates": 11741,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 122,
+      "receivedStates": 11749,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 123,
+      "receivedStates": 11748,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 124,
+      "receivedStates": 11722,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 125,
+      "receivedStates": 11742,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 126,
+      "receivedStates": 11736,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 127,
+      "receivedStates": 11721,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 128,
+      "receivedStates": 11691,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 129,
+      "receivedStates": 11694,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 130,
+      "receivedStates": 11678,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 131,
+      "receivedStates": 11689,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 132,
+      "receivedStates": 11680,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 133,
+      "receivedStates": 11671,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 134,
+      "receivedStates": 11673,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 135,
+      "receivedStates": 11675,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 136,
+      "receivedStates": 11683,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 137,
+      "receivedStates": 11666,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 138,
+      "receivedStates": 11666,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 139,
+      "receivedStates": 11646,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 140,
+      "receivedStates": 11651,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 141,
+      "receivedStates": 11646,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 142,
+      "receivedStates": 11655,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 143,
+      "receivedStates": 11679,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 144,
+      "receivedStates": 11672,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 145,
+      "receivedStates": 11683,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 146,
+      "receivedStates": 11679,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 147,
+      "receivedStates": 11689,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 148,
+      "receivedStates": 11650,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 149,
+      "receivedStates": 11662,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 150,
+      "receivedStates": 11650,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 151,
+      "receivedStates": 11663,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 152,
+      "receivedStates": 11666,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 153,
+      "receivedStates": 11667,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 154,
+      "receivedStates": 11663,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 155,
+      "receivedStates": 11669,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 156,
+      "receivedStates": 11661,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 157,
+      "receivedStates": 11670,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 158,
+      "receivedStates": 11572,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 159,
+      "receivedStates": 11647,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 160,
+      "receivedStates": 11685,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 161,
+      "receivedStates": 11699,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 162,
+      "receivedStates": 11654,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 163,
+      "receivedStates": 11652,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 164,
+      "receivedStates": 11674,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 165,
+      "receivedStates": 11662,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 166,
+      "receivedStates": 11656,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 167,
+      "receivedStates": 11659,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 168,
+      "receivedStates": 11672,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 169,
+      "receivedStates": 11670,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 170,
+      "receivedStates": 11613,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 171,
+      "receivedStates": 11651,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 172,
+      "receivedStates": 11637,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 173,
+      "receivedStates": 11558,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 174,
+      "receivedStates": 11631,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 175,
+      "receivedStates": 11641,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 176,
+      "receivedStates": 11690,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 177,
+      "receivedStates": 11683,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 178,
+      "receivedStates": 11677,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 179,
+      "receivedStates": 11683,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 180,
+      "receivedStates": 11675,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 181,
+      "receivedStates": 11673,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 182,
+      "receivedStates": 11665,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 183,
+      "receivedStates": 11663,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 184,
+      "receivedStates": 11662,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 185,
+      "receivedStates": 11650,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 186,
+      "receivedStates": 11683,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 187,
+      "receivedStates": 11674,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 188,
+      "receivedStates": 11641,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 189,
+      "receivedStates": 11631,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 190,
+      "receivedStates": 11625,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 191,
+      "receivedStates": 11618,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 192,
+      "receivedStates": 5463,
+      "peerSenders": 7,
+      "pongs": 2
+    },
+    {
+      "index": 193,
+      "receivedStates": 5463,
+      "peerSenders": 7,
+      "pongs": 2
+    },
+    {
+      "index": 194,
+      "receivedStates": 5457,
+      "peerSenders": 7,
+      "pongs": 2
+    },
+    {
+      "index": 195,
+      "receivedStates": 5454,
+      "peerSenders": 7,
+      "pongs": 2
+    },
+    {
+      "index": 196,
+      "receivedStates": 5459,
+      "peerSenders": 7,
+      "pongs": 2
+    },
+    {
+      "index": 197,
+      "receivedStates": 5456,
+      "peerSenders": 7,
+      "pongs": 2
+    },
+    {
+      "index": 198,
+      "receivedStates": 5447,
+      "peerSenders": 7,
+      "pongs": 2
+    },
+    {
+      "index": 199,
+      "receivedStates": 5456,
+      "peerSenders": 7,
+      "pongs": 2
+    }
+  ],
+  "events": {
+    "sent": 507,
+    "accepted": 507,
+    "received": 7293,
+    "expectedDeliveries": 7293,
+    "pending": 0,
+    "latency": {
+      "observations": 7293,
+      "sampleCount": 7293,
+      "p95Ms": 14.743249999999534,
+      "p99Ms": 29.218124999999418,
+      "maxMs": 41.7398749999993
+    }
+  },
+  "reconnect": {
+    "windowMs": 646.2175419999985,
+    "recovered": 200,
+    "observations": 200,
+    "sampleCount": 200,
+    "p95Ms": 511.6820000000007,
+    "p99Ms": 518.3557920000021,
+    "maxMs": 523.8660420000015
+  },
+  "capacityProbe": {
+    "additionalPlayers": 2,
+    "responses": [
+      {
+        "method": "POST",
+        "path": "/v2/api/sessions",
+        "httpStatus": 201
+      },
+      {
+        "method": "POST",
+        "path": "/v2/api/matchmaking",
+        "httpStatus": 201,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "POST",
+        "path": "/v2/api/sessions",
+        "httpStatus": 201
+      },
+      {
+        "method": "POST",
+        "path": "/v2/api/matchmaking",
+        "httpStatus": 201,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      }
+    ],
+    "cleanup": [
+      {
+        "status": "formed group expires after its existing two-minute TTL",
+        "httpStatus": 409
+      },
+      {
+        "status": "formed group expires after its existing two-minute TTL",
+        "httpStatus": 409
+      }
+    ]
+  },
+  "errorCount": 20,
+  "errors": [
+    "Relay 9: rate limited",
+    "Relay 9: rate limited",
+    "Relay 9: rate limited",
+    "Relay 9: rate limited",
+    "Relay 9: rate limited",
+    "Relay 9: rate limited",
+    "Relay 9: rate limited",
+    "Relay 9: rate limited",
+    "Relay 9: rate limited",
+    "Relay 9: rate limited",
+    "Relay 9: rate limited",
+    "Relay 9: rate limited",
+    "Relay 9: rate limited",
+    "Relay 9: rate limited",
+    "Relay 9: rate limited",
+    "Relay 9: rate limited",
+    "Relay 9: rate limited",
+    "Relay 9: rate limited",
+    "Relay 9: rate limited",
+    "Relay 9: rate limited; Relay 9: rate limited; Relay 9: rate limited; Relay 9: rate limited; Relay 9: rate limited\n\n19 !== 0\n"
+  ]
+}

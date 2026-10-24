@@ -1,0 +1,37 @@
+{
+  "name": "local-tls-2026-10-22",
+  "hardware": "MacBookPro18,1",
+  "cpus": 10,
+  "memoryBytes": 17179869184,
+  "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "transport": "TLS WebSocket on loopback; separate Go node and generator processes; explicit test CA verification",
+  "participants": [
+    100,
+    500,
+    1000
+  ],
+  "roomSizes": [
+    2,
+    8,
+    16
+  ],
+  "publishHz": [
+    10,
+    20
+  ],
+  "payloadBytes": 100,
+  "warmupSeconds": 2,
+  "measurementSeconds": 10,
+  "gates": {
+    "unexpectedFailures": 0,
+    "p95Ms": 100,
+    "p99Ms": 200,
+    "rssMiB": 512,
+    "cpuPercentOfAllLogicalCores": 70
+  },
+  "limits": "Local host capacity only; not Internet/mobile device latency. Stop increasing concurrency after a gate fails. Socket framing and TLS bytes are not included in Protobuf byte counters.",
+  "goToolchain": "go1.26.10",
+  "sourceCommit": "ffd744a01dd67353ac993f8e26127cc803098e81",
+  "nodeBinarySha256": "4c02e8b683b276c51eb8857ace7d672e81c6cb238c8974d7fdd36ea5cd452816",
+  "generatorBinarySha256": "ce2f3ed5620b683bb78a459bc10b8f515f3db7ba0dfd5c0564d507589e33a4e7"
+}

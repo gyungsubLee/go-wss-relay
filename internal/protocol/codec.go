@@ -1,176 +1,73 @@
+// Package protocol validates the browser-compatible relay wire contract.
 package protocol
 
 import (
-	"errors"
+	"unicode/utf8"
 
-	relayv1 "github.com/gyungsubLee/go-lobby-relay/gen/go/relay/v1"
+	relayv2 "github.com/gyungsubLee/go-wss-relay/gen/go/relay/v2"
 	"google.golang.org/protobuf/proto"
 )
 
 const (
-	Revision         uint32 = 1
-	MaxDatagramBytes        = 1200
-	MaxPayloadBytes         = 900
-	MaxIDBytes              = 64
-	MinHelloBytes           = 256
+	Revision              = 2
+	MaxClientMessageBytes = 16 << 10
+	MaxServerMessageBytes = 128 << 10
+	MaxStatePayloadBytes  = 4 << 10
+	MaxEventPayloadBytes  = 8 << 10
 )
 
-type Reason string
-
-const (
-	ReasonMalformed          Reason = "malformed"
-	ReasonOversized          Reason = "oversized"
-	ReasonUnsupportedVersion Reason = "unsupported_version"
-)
-
-var (
-	errMalformed          = errors.New(string(ReasonMalformed))
-	errOversized          = errors.New(string(ReasonOversized))
-	errUnsupportedVersion = errors.New(string(ReasonUnsupportedVersion))
-)
-
-func ReasonOf(err error) Reason {
-	switch {
-	case errors.Is(err, errOversized):
-		return ReasonOversized
-	case errors.Is(err, errUnsupportedVersion):
-		return ReasonUnsupportedVersion
-	default:
-		return ReasonMalformed
+func DecodeClient(data []byte, authenticated bool, previous uint32) (*relayv2.ClientEnvelope, relayv2.ErrorCode) {
+	if len(data) > MaxClientMessageBytes {
+		return nil, relayv2.ErrorCode_ERROR_CODE_PAYLOAD_TOO_LARGE
 	}
-}
-
-func DecodeClient(datagram []byte) (*relayv1.Envelope, error) {
-	if len(datagram) == 0 {
-		return nil, errMalformed
-	}
-	if len(datagram) > MaxDatagramBytes {
-		return nil, errOversized
-	}
-
-	envelope := new(relayv1.Envelope)
-	if err := (proto.UnmarshalOptions{DiscardUnknown: false}).Unmarshal(datagram, envelope); err != nil {
-		return nil, errMalformed
-	}
-	if err := validateEnvelope(envelope); err != nil {
-		return nil, err
-	}
-	if err := validateClient(envelope, len(datagram)); err != nil {
-		return nil, err
-	}
-	return envelope, nil
-}
-
-func EncodeServer(envelope *relayv1.Envelope) ([]byte, error) {
-	if err := validateEnvelope(envelope); err != nil {
-		return nil, err
-	}
-	if err := validateServer(envelope); err != nil {
-		return nil, err
-	}
-
-	wire, err := (proto.MarshalOptions{Deterministic: true}).Marshal(envelope)
-	if err != nil {
-		return nil, errMalformed
-	}
-	if len(wire) > MaxDatagramBytes {
-		return nil, errOversized
-	}
-	return wire, nil
-}
-
-func validateEnvelope(envelope *relayv1.Envelope) error {
-	if envelope == nil || len(envelope.ProtoReflect().GetUnknown()) != 0 {
-		return errMalformed
+	var envelope relayv2.ClientEnvelope
+	if len(data) == 0 || (proto.UnmarshalOptions{RecursionLimit: 16}).Unmarshal(data, &envelope) != nil {
+		return nil, relayv2.ErrorCode_ERROR_CODE_INVALID_MESSAGE
 	}
 	if envelope.ProtocolRevision != Revision {
-		return errUnsupportedVersion
+		return nil, relayv2.ErrorCode_ERROR_CODE_PROTOCOL_MISMATCH
 	}
-	if !ValidID(envelope.RoomId) || !ValidID(envelope.SessionId) {
-		return errMalformed
+	if envelope.Body == nil {
+		return nil, relayv2.ErrorCode_ERROR_CODE_INVALID_MESSAGE
 	}
-	return nil
-}
-
-func validateClient(envelope *relayv1.Envelope, datagramBytes int) error {
+	if !authenticated {
+		connect := envelope.GetConnect()
+		if connect == nil {
+			return nil, relayv2.ErrorCode_ERROR_CODE_UNAUTHENTICATED
+		}
+		credential := connect.GetConnectTicket()
+		if credential == "" {
+			credential = connect.GetResumeToken()
+		}
+		if envelope.Sequence != 0 || !ValidID(connect.ApplicationProtocol) || credential == "" || len(credential) > 2048 || !utf8.ValidString(credential) {
+			return nil, relayv2.ErrorCode_ERROR_CODE_INVALID_MESSAGE
+		}
+		return &envelope, 0
+	}
+	if envelope.GetConnect() != nil {
+		return nil, relayv2.ErrorCode_ERROR_CODE_INVALID_MESSAGE
+	}
+	if envelope.Sequence <= previous {
+		return nil, relayv2.ErrorCode_ERROR_CODE_STALE_SEQUENCE
+	}
 	switch body := envelope.Body.(type) {
-	case *relayv1.Envelope_Hello:
-		if body == nil || body.Hello == nil || len(body.Hello.ProtoReflect().GetUnknown()) != 0 ||
-			envelope.Sequence != 0 || len(envelope.AuthTag) != 0 ||
-			len(body.Hello.GrantId) != 16 || len(body.Hello.ClientNonce) != 16 ||
-			datagramBytes < MinHelloBytes {
-			return errMalformed
+	case *relayv2.ClientEnvelope_StateUpdate:
+		if len(body.StateUpdate.Payload) == 0 {
+			return nil, relayv2.ErrorCode_ERROR_CODE_INVALID_MESSAGE
 		}
-	case *relayv1.Envelope_Auth:
-		if body == nil || body.Auth == nil || len(body.Auth.ProtoReflect().GetUnknown()) != 0 ||
-			envelope.Sequence != 0 || len(envelope.AuthTag) != 32 ||
-			len(body.Auth.CandidateId) != 16 {
-			return errMalformed
+		if len(body.StateUpdate.Payload) > MaxStatePayloadBytes {
+			return nil, relayv2.ErrorCode_ERROR_CODE_PAYLOAD_TOO_LARGE
 		}
-	case *relayv1.Envelope_ClientData:
-		if body == nil || body.ClientData == nil || len(body.ClientData.ProtoReflect().GetUnknown()) != 0 ||
-			envelope.Sequence == 0 || len(envelope.AuthTag) != 32 ||
-			len(body.ClientData.BindingId) != 16 {
-			return errMalformed
+	case *relayv2.ClientEnvelope_Event:
+		if body.Event.Kind == 0 || body.Event.Kind > 65535 {
+			return nil, relayv2.ErrorCode_ERROR_CODE_INVALID_MESSAGE
 		}
-		if len(body.ClientData.Payload) > MaxPayloadBytes {
-			return errOversized
+		if len(body.Event.Payload) > MaxEventPayloadBytes {
+			return nil, relayv2.ErrorCode_ERROR_CODE_PAYLOAD_TOO_LARGE
 		}
-	case *relayv1.Envelope_Ping:
-		if body == nil || body.Ping == nil || len(body.Ping.ProtoReflect().GetUnknown()) != 0 ||
-			envelope.Sequence == 0 || len(envelope.AuthTag) != 32 ||
-			len(body.Ping.BindingId) != 16 {
-			return errMalformed
-		}
+	case *relayv2.ClientEnvelope_Ping, *relayv2.ClientEnvelope_Resync, *relayv2.ClientEnvelope_Leave:
 	default:
-		return errMalformed
+		return nil, relayv2.ErrorCode_ERROR_CODE_INVALID_MESSAGE
 	}
-	return nil
-}
-
-func validateServer(envelope *relayv1.Envelope) error {
-	switch body := envelope.Body.(type) {
-	case *relayv1.Envelope_Challenge:
-		if body == nil || body.Challenge == nil || len(body.Challenge.ProtoReflect().GetUnknown()) != 0 ||
-			envelope.Sequence != 0 || len(envelope.AuthTag) != 0 ||
-			len(body.Challenge.CandidateId) != 16 || len(body.Challenge.ServerNonce) != 32 ||
-			body.Challenge.ExpiresUnixMs <= 0 {
-			return errMalformed
-		}
-	case *relayv1.Envelope_Bound:
-		if body == nil || body.Bound == nil || len(body.Bound.ProtoReflect().GetUnknown()) != 0 ||
-			envelope.Sequence != 0 || len(envelope.AuthTag) != 32 ||
-			len(body.Bound.BindingId) != 16 || body.Bound.ExpiresUnixMs <= 0 {
-			return errMalformed
-		}
-	case *relayv1.Envelope_ServerData:
-		if body == nil || body.ServerData == nil || len(body.ServerData.ProtoReflect().GetUnknown()) != 0 ||
-			envelope.Sequence == 0 || len(envelope.AuthTag) != 0 ||
-			!ValidID(body.ServerData.SenderParticipantId) {
-			return errMalformed
-		}
-		if len(body.ServerData.Payload) > MaxPayloadBytes {
-			return errOversized
-		}
-	default:
-		return errMalformed
-	}
-	return nil
-}
-
-func ValidID(id string) bool {
-	if len(id) == 0 || len(id) > MaxIDBytes {
-		return false
-	}
-	for index := 0; index < len(id); index++ {
-		char := id[index]
-		if char >= 'A' && char <= 'Z' || char >= 'a' && char <= 'z' || char >= '0' && char <= '9' {
-			continue
-		}
-		if index > 0 && (char == '.' || char == '_' || char == '-') {
-			continue
-		}
-		return false
-	}
-	return true
+	return &envelope, 0
 }

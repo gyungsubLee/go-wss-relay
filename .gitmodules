@@ -1,0 +1,3 @@
+[submodule "client/MinbWebKit"]
+	path = client/MinbWebKit
+	url = https://github.com/minbgames/MinbWebKit.git

@@ -1,0 +1,32 @@
+{
+  "recordedAt": "2026-10-21T17:19:25.813410+00:00",
+  "sourceCommit": "ffd744a01dd67353ac993f8e26127cc803098e81",
+  "go": "1.26.10",
+  "goArchiveSha256": "0b5183492292ada170f9b561a834863808dd02edba599e4ad0e89899330020b3",
+  "goRace": "passed",
+  "goVet": "passed",
+  "protocolLintBreakingGeneratedDiff": "passed",
+  "wireVariants": 17,
+  "govulncheck": "No vulnerabilities found.",
+  "nativeServerBuild": "passed",
+  "linuxArm64CrossBuild": "passed",
+  "legacySignalTest": "three repetitions and full suite passed after listener readiness check",
+  "deploymentScriptChecks": "passed using installed GNU coreutils; temporary service/host stubs, not live deployment",
+  "remoteCI": "not registered: ci.yml is absent from default main; no PR merge performed",
+  "limitations": [
+    "Android device not attached",
+    "mobile radio/low-end-device validation pending",
+    "no production host deployment"
+  ],
+  "raceLogSha256": "0cc1a96596a63161cf85249d8c7eb7426d44c4cf35da0f2f87614f63ec97f721",
+  "govulnLogSha256": "3016e51e4eac0d421674d2128bbbdefb2924b4646e0c14a1ab034977ad73fae5",
+  "clientSourceCommit": "2745971dde937848336a27da2e12230607fe0c28",
+  "npmRuntimeAudit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  }
+}

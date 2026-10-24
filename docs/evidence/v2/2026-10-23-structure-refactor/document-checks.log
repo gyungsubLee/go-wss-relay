@@ -1,0 +1,45 @@
+=== Original Task10 documentation check at c684dfd (historical snapshot; before final main.ts fix) ===
+$ python3 .superpowers/sdd/2026-10-23-go-structure-refactor/task-10-check-docs.py
+Local Markdown links: 70 targets across 21 documents; code blocks, external URLs and anchor fragments skipped
+Exact retired-document deletion set: 24 of 24
+Retired-path scan: 96 tracked execution/build/config inputs and 16 live documents
+Historical allowances: approved move/deletion matrices, original dated WSS plans/evidence, active playerauth/game identifiers, previous-ledger initialization refusal
+Bound Go package graph: 13 current repository packages, no retired package
+Source bindings: final-go-source-hashes.json: 47 matched
+Source bindings: final-process-source-hashes.json: 62 matched
+Source bindings: task-8-source-hashes.json: 129 matched
+Source bindings: task-9-final-bindings.json: 70 matched
+Source bindings: task-7-source.sha256: 9 matched
+Source bindings: task-5-browser-backend-Go: 46 matched
+Plan: Task1-9 complete, Task10 Step1-4 complete, Step5 and whole-branch review pending; all4 ledger Rulings preserved
+PASS: documentation links, exact deletions, retired references, current source bindings and pending review statuses
+
+EXIT_STATUS=0
+
+$ git diff --check
+
+EXIT_STATUS=0
+
+PASS: changes contain only owned documentation/evidence; historical JSON/load bytes unchanged; no Go/SDK/runtime/script/config/CI change
+
+=== Metadata closure at product HEAD d182e70 ===
+$ python3 .superpowers/sdd/2026-10-23-go-structure-refactor/task-10-closure-verify.py
+PASS: local Markdown links 80 targets across 23 documents; external URLs/code blocks/anchors excluded
+PASS: all24 approved v1-only document deletions match branch history; retained WSS documents remain
+PASS: retired-reference scan 97 executable/build/config inputs and 16 live documents; dated matrices/reviews/auth/game/old-ledger refusal allowed
+PASS: final-go-source-hashes.json: 47 historical inputs unchanged; changed=[]
+PASS: final-process-source-hashes.json: 61 historical inputs unchanged; changed=['client/src/demo/main.ts']
+PASS: task-8-source-hashes.json: 128 historical inputs unchanged; changed=['client/src/demo/main.ts']
+PASS: task-9-final-bindings.json: 70 historical inputs unchanged; changed=[]
+PASS: task-7-source.sha256: 8 historical inputs unchanged; changed=['client/src/demo/main.ts', 'client/package.json', 'out/wss-relay']
+PASS: task-5-browser-backend-Go: 46 historical inputs unchanged; changed=[]
+PASS: final9 source and all original evidence hashes match; two raw review reports/screenshots exact; prior6 fixed assets unchanged
+PASS: all4 Rulings unchanged; 50 plan Steps and REVIEW-01 closed; six product acceptance gates remain open
+PASS: 18 closure paths limited to owned status/docs/evidence; no product/source/config/CI changes
+PASS: closure read-only/doc checks complete; functional suites were not rerun
+
+EXIT_STATUS=0
+
+$ git diff --check
+
+EXIT_STATUS=0

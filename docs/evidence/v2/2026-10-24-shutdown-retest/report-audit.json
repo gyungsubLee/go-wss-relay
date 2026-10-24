@@ -1,0 +1,18 @@
+{
+  "reviewer": "/root/shutdown_harness",
+  "readOnly": true,
+  "materialDiscrepancies": [],
+  "leftoverPendingClaims": [],
+  "checked": [
+    "exact6profiles and139/178/0comparison",
+    "1000acknowledgements and normalclosures",
+    "SDK20pass0 and SDK10strictfail5",
+    "all507accepted/7293delivered/200recovered",
+    "diagnostic1oldgenerationClose1000 and original5individual-limit",
+    "negative13measurementerrors/87normaldrains/26clientfailures",
+    "staticexitcodes and cleanup",
+    "binding69sources/binary/CA",
+    "clockgap limitations"
+  ],
+  "note": "No tests, load processes, sockets or edits were performed by the auditor."
+}

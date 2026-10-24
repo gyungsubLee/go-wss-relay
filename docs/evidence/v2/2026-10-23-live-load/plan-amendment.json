@@ -1,0 +1,17 @@
+{
+  "reason": "Nominal 20Hz raw clients triggered unexpected rate rejections at100 and200; do not escalate that branch.",
+  "preserve": [
+    "default-summary.json",
+    "normal-summary.json",
+    "diagnostic-summary.json"
+  ],
+  "independentChecks": [
+    "Actual SDK200 at20Hz",
+    "Separate10Hz branch100 then200 then raised-cap500/1000",
+    "Bounded security negatives",
+    "16client room byte-budget saturation at18Hz"
+  ],
+  "interpretation": "Passing10Hz or SDK tests does not clear the failed raw20Hz release gate.",
+  "secondGateFailure": "200 clients,10Hz,679bytes,60seconds:102 unexpected rate rejections; no500/1000 expansion performed",
+  "remaining": "Same200client SDK10Hz comparison and16client bandwidth A/B; no concurrency increase"
+}

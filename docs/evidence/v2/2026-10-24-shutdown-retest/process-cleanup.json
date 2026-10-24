@@ -1,0 +1,32 @@
+[
+  {
+    "kind": "process",
+    "pid": 71363,
+    "returnCode": 1,
+    "output": ""
+  },
+  {
+    "kind": "process",
+    "pid": 82571,
+    "returnCode": 1,
+    "output": ""
+  },
+  {
+    "kind": "process",
+    "pid": 91168,
+    "returnCode": 1,
+    "output": ""
+  },
+  {
+    "kind": "port",
+    "port": 19443,
+    "returnCode": 1,
+    "output": ""
+  },
+  {
+    "kind": "port",
+    "port": 19092,
+    "returnCode": 1,
+    "output": ""
+  }
+]

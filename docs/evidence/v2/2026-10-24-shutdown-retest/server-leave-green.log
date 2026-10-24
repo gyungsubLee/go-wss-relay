@@ -1,0 +1,14 @@
+=== RUN   TestLeaveWaitsForPendingWriteBeforeClosing
+--- PASS: TestLeaveWaitsForPendingWriteBeforeClosing (0.11s)
+=== RUN   TestBlockedSocketWriteDoesNotStallHealthyPeer
+--- PASS: TestBlockedSocketWriteDoesNotStallHealthyPeer (1.28s)
+=== RUN   TestLeaveWaitsForPendingWriteBeforeClosing
+--- PASS: TestLeaveWaitsForPendingWriteBeforeClosing (0.11s)
+=== RUN   TestBlockedSocketWriteDoesNotStallHealthyPeer
+--- PASS: TestBlockedSocketWriteDoesNotStallHealthyPeer (1.28s)
+=== RUN   TestLeaveWaitsForPendingWriteBeforeClosing
+--- PASS: TestLeaveWaitsForPendingWriteBeforeClosing (0.11s)
+=== RUN   TestBlockedSocketWriteDoesNotStallHealthyPeer
+--- PASS: TestBlockedSocketWriteDoesNotStallHealthyPeer (1.32s)
+PASS
+ok  	github.com/gyungsubLee/go-wss-relay/internal/relay	5.791s

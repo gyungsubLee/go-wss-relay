@@ -1,0 +1,157 @@
+[
+  {
+    "participants": 100,
+    "roomSize": 16,
+    "publishHz": 10,
+    "statePayloadBytes": 100,
+    "measurementSeconds": 10,
+    "slowReadMs": 0,
+    "connected": 100,
+    "receivedStates": 145200,
+    "p95Ms": 47.598,
+    "p99Ms": 50.114,
+    "egressBytesPerSecond": 1816899.8346415337,
+    "peakRssKiB": 37456,
+    "peakCpuPercent": 11.7,
+    "failures": 0,
+    "name": "default-c100-n16-f10-b100-s10-slow0",
+    "passed": true,
+    "exitCode": 0,
+    "cleanup": {
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "goroutines": 7,
+      "heapAllocBytes": 4838888
+    },
+    "metricDelta": {
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0
+    }
+  },
+  {
+    "participants": 200,
+    "roomSize": 16,
+    "publishHz": 10,
+    "statePayloadBytes": 679,
+    "measurementSeconds": 30,
+    "slowReadMs": 0,
+    "connected": 200,
+    "receivedStates": 887010,
+    "p95Ms": 48.921,
+    "p99Ms": 50.1,
+    "egressBytesPerSecond": 20784219.871554732,
+    "peakRssKiB": 40464,
+    "peakCpuPercent": 28,
+    "failures": 0,
+    "name": "default-c200-n16-f10-b679-s30-slow0",
+    "passed": true,
+    "exitCode": 0,
+    "cleanup": {
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "goroutines": 7,
+      "heapAllocBytes": 1540576
+    },
+    "metricDelta": {
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0
+    }
+  },
+  {
+    "participants": 200,
+    "roomSize": 16,
+    "publishHz": 10,
+    "statePayloadBytes": 1127,
+    "measurementSeconds": 30,
+    "slowReadMs": 0,
+    "connected": 200,
+    "receivedStates": 887390,
+    "p95Ms": 47.232,
+    "p99Ms": 49.454,
+    "egressBytesPerSecond": 33931113.4269471,
+    "peakRssKiB": 40880,
+    "peakCpuPercent": 29.2,
+    "failures": 0,
+    "name": "default-c200-n16-f10-b1127-s30-slow0",
+    "passed": true,
+    "exitCode": 0,
+    "cleanup": {
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "goroutines": 7,
+      "heapAllocBytes": 11459408
+    },
+    "metricDelta": {
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0
+    }
+  },
+  {
+    "participants": 100,
+    "roomSize": 8,
+    "publishHz": 10,
+    "statePayloadBytes": 679,
+    "measurementSeconds": 15,
+    "slowReadMs": 500,
+    "connected": 100,
+    "receivedStates": 90818,
+    "p95Ms": 48.716,
+    "p99Ms": 50.197,
+    "egressBytesPerSecond": 4818878.254920119,
+    "peakRssKiB": 40944,
+    "peakCpuPercent": 15.9,
+    "failures": 0,
+    "name": "default-c100-n8-f10-b679-s15-slow500",
+    "passed": true,
+    "exitCode": 0,
+    "cleanup": {
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "goroutines": 7,
+      "heapAllocBytes": 5492704
+    },
+    "metricDelta": {
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0
+    }
+  },
+  {
+    "participants": 200,
+    "roomSize": 16,
+    "publishHz": 10,
+    "statePayloadBytes": 679,
+    "measurementSeconds": 60,
+    "slowReadMs": 0,
+    "connected": 200,
+    "receivedStates": 1773228,
+    "p95Ms": 49.263,
+    "p99Ms": 50.525,
+    "egressBytesPerSecond": 20725369.306039322,
+    "peakRssKiB": 39568,
+    "peakCpuPercent": 28.3,
+    "failures": 102,
+    "name": "default-c200-n16-f10-b679-s60-slow0",
+    "passed": false,
+    "exitCode": 1,
+    "cleanup": {
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "goroutines": 7,
+      "heapAllocBytes": 10787768
+    },
+    "metricDelta": {
+      "rateRejected": 102,
+      "queueOverflows": 0,
+      "writeErrors": 0
+    }
+  }
+]

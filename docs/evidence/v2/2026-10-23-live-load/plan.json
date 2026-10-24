@@ -1,0 +1,44 @@
+{
+  "scope": "Local verified TLS; actual TCP/WebSocket clients; separate production server and generators; no remote load",
+  "defaultParticipants": 200,
+  "stressParticipants": [
+    100,
+    500,
+    1000
+  ],
+  "roomSizes": [
+    2,
+    8,
+    16
+  ],
+  "publishHz": [
+    10,
+    20
+  ],
+  "payloadBytes": 100,
+  "warmupSeconds": 2,
+  "measurementSeconds": 10,
+  "additionalCases": [
+    "default 200:679-byte snake 20Hz",
+    "default 200:1127-byte snake 10Hz",
+    "public HTTP + real TypeScript SDK",
+    "slow receivers 500ms",
+    "real SDK concentrated reconnect 100 and 1000",
+    "malformed/auth/origin/rate-limit and resource-recovery checks"
+  ],
+  "gates": {
+    "failures": 0,
+    "p95Ms": 100,
+    "p99Ms": 200,
+    "rssMiB": 512,
+    "cpuPercentOfAllLogicalCores": 70
+  },
+  "stopPolicy": "No higher concurrency after a failed load gate; isolate anticipated security/admission rejections; keep all evidence",
+  "limitations": [
+    "Same host load generator competes for resources",
+    "No Internet/mobile/Linux/proxy capacity claim",
+    "Server stats byte counts exclude TLS/TCP/WebSocket overhead",
+    "Read delay does not prove kernel socket backpressure",
+    "ps CPU samples are process-lifetime averages"
+  ]
+}

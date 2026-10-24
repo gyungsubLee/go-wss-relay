@@ -1,5 +1,5 @@
 [Unit]
-Description=Check lobby relay external transfer every minute
+Description=Check WSS relay external transfer every minute
 
 [Timer]
 OnBootSec=20s

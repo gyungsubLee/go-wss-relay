@@ -1,0 +1,11 @@
+=== RUN   TestAuthenticationAdmissionPreservesOtherIPsAndGlobalCapacity
+    auth_admission_test.go:30: authentication upgrade returned 101 (<nil>), want 429
+--- FAIL: TestAuthenticationAdmissionPreservesOtherIPsAndGlobalCapacity (0.03s)
+=== RUN   TestAuthenticationAdmissionIgnoresUntrustedForwardedAddresses
+    auth_admission_test.go:56: authentication upgrade returned 101 (<nil>), want 429
+--- FAIL: TestAuthenticationAdmissionIgnoresUntrustedForwardedAddresses (0.02s)
+=== RUN   TestAuthenticationAdmissionReleasesEveryCompletedAttempt
+--- PASS: TestAuthenticationAdmissionReleasesEveryCompletedAttempt (1.03s)
+FAIL
+FAIL	github.com/gyungsubLee/go-wss-relay/internal/relay	1.494s
+FAIL

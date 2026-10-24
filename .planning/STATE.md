@@ -1,80 +1,28 @@
----
-gsd_state_version: '1.0'
-status: in_progress
-progress:
-  total_phases: 9
-  completed_phases: 5
-  total_plans: 5
-  completed_plans: 5
-  percent: 56
----
+# WSS 작업 상태
 
-# Project State
+2026-10-23 기준으로 v2 전용 구조와 로컬 검사를 마쳤다. Task 10 독립 리뷰와 전체 브랜치 리뷰를 마쳤다. 최종 I1 수정도 재리뷰에서 닫았다.
+저장소는 `go-wss-relay`, 브랜치는 `codex/wss-v2`다. 전체 제품 목표는 진행 중이다.
 
-## Project Reference
+## 현재 확인한 범위
 
-See: [PROJECT.md](./PROJECT.md)
+- Task 1-2: ID·운영자 토큰·HTTP 기능을 추출했다. v1 실행·생성·전용 검사와 의존 경로를 제거했다.
+- Task 3-5: FIFO 기한·배정 오류·Manager 소유권·app 수명주기·p95 상한 초과 거부를 적용했다.
+- Task 5 인증 후속 작업: v1 전용 임의 키 옵션을 제거했다. 활성 토큰 바이트·HMAC 문자열·같은 키 재시작 검증은 유지했다.
+- Task 6-7: SDK epoch·HTTP 본문 제한과 데모 조회 복구를 적용했다. 실제 Chrome 두 참가자의 연결·사건·복귀를 확인했다.
+- Task 8: v2 staging 생성·drift·고정 baseline gate와 CI 정의를 연결했다. Linux 실행 성공은 아직 확인하지 않았다.
+- Task 9: flat 운영 경로·세 역할 배포·토큰·비용 가드를 적용했다. 입력 검사 세 건을 수정하고 개별 재리뷰를 마쳤다.
+- 최종 Go race·vet·fmt·govulncheck, TS 빌드·lifecycle·wire 17종·실제 SDK와 HTTPS·WSS 프로세스 검사의 소스 연결을 확인했다.
+- Task 10: v1 전용 문서 24개를 제거하고 현재 문서와 증거를 정리했다. 독립 리뷰와 전체 브랜치 리뷰를 마쳤다.
+- 최종 I1: 공통 entryAction으로 중복 진입을 막았다. 31개 production 핸들러 검사·TS 빌드·실제 Chrome을 확인하고 재리뷰에서 닫았다.
 
-**Core value:** 플레이어가 방을 만들거나 빠르게 매칭되고, 매칭된 참가자만 안전하게 같은 UDP Relay room에서 통신할 수 있다.
+현재 명령·출력·소스 해시·Chrome 화면은 [구조 변경 증거](../docs/evidence/v2/2026-10-23-structure-refactor.md)에 있다.
+MinbWebKit은 고정 서브모듈이다. MinbWebLib는 이전 문서의 참조 이름이다.
 
-**Current focus:** Phase 6 — Client SDK Integration planning
+## 남은 조건
 
-## Current Position
-
-Phase: 6 of 9
-
-Plan: not yet written; actual game client target must be chosen first
-
-Status: Milestone 1 complete; Milestone 2 not started
-
-Last activity: 2026-08-20 — Room/Lobby & Quick Match M1 verified and closed
-
-Progress: [██████░░░░] 56%
-
-## Completed Foundation
-
-- Phase 1: bounded Protobuf contract, Go/C# generation and threat boundary
-- Phase 2: operator-authenticated immutable Relay room/grant lifecycle
-- Phase 3: authenticated UDP bind/rebind/replay/admission/fan-out and minimum server binary
-- Phase 4: operator-issued Player Token and bounded public/private Lobby lifecycle
-- Phase 5: one-player FIFO Quick Match, private Relay assignments, and real HTTP→UDP flows
-
-Evidence: [Phase 1](../docs/evidence/m1/phase-1.md), [Phase 2](../docs/evidence/m1/phase-2.md), [Phase 3](../docs/evidence/m1/phase-3.md), [Phase 4](../docs/evidence/m1/phase-4.md), [Phase 5](../docs/evidence/m1/phase-5.md), [M1](../docs/evidence/m1/milestone-1.md)
-
-## Current Decisions
-
-- Existing Relay implementation is the post-match transport and remains unchanged in responsibility.
-- M1 completes Room/Lobby and one-player FIFO Quick Match before any Unity build requirement.
-- Player identity uses operator-issued 15-minute HMAC Player Tokens with a process nonce, so restart invalidates existing tokens.
-- Player HTTP, operator HTTP and UDP Relay use separate listeners in one process.
-- Lobby membership is mutable before match; Relay room participants are immutable after allocation.
-- Steamworks, FishNet and Open Match are optional future adapters, not M1 dependencies.
-
-## Pending Work
-
-1. Choose the actual game client integration target before fixing any Unity editor/platform/device matrix.
-2. Brainstorm and write the Phase 6 plan for UNITY-01~03.
-3. Keep Steamworks and FishNet optional until the selected client requires their adapter boundaries.
-
-## Blockers/Concerns
-
-- No external blocker. Loopback socket tests require the already approved non-sandbox execution environment.
-- Phase 9 must define a named host/load profile before resource targets can be interpreted.
-
-## Deferred Items
-
-| Category | Item | Status |
-|---|---|---|
-| Client | exact Unity editor/platform/device/network matrix | Phase 6 decision after actual client exists |
-| Identity | Steamworks validation adapter | post-M1 candidate |
-| Transport | FishNet integration | Phase 6/post-M1 candidate |
-| Matchmaking | party/skill/region/team/backfill or Open Match | post-M1 candidate |
-| Infrastructure | Redis, persistence, multi-instance, Kubernetes, Agones | demand-driven future candidate |
-
-## Session Continuity
-
-Last session: 2026-08-20
-
-Stopped at: Milestone 1 complete; Phase 6 is next
-
-Resume file: [Milestone 1 evidence](../docs/evidence/m1/milestone-1.md)
+실제 Android·화면 잠금·무선 망·저속 장치·대상 호스트 수용량을 아직 검증하지 않았다.
+실제 Linux systemd·Caddy·공개 DNS·TLS·방화벽과 원격 CI도 실행하지 않았다.
+2026-10-22 Android 빌드·부하 기록은 [완료 감사](../docs/evidence/v2/completion-audit.md)에 보존한다. 전체 부하를 다시 실행하지 않았다.
+Chrome은 오래된 실패 조회의 무효화를 확인했다. 성공한 이전 조회 응답을 퇴장 후 데모 DOM이 소비하는 경우는 별도 증거가 없다.
+새 production 핸들러 검사는 stale query 성공·실패를 확인한다. 이 경계 대체 검사와 SDK 검사는 실제 Chrome DOM 검사를 대신하지 않는다.
+이 구조 변경은 완료했다. 다음 제품 검증은 실제 기기·망·운영 호스트 조건을 준비한 뒤 실행한다.

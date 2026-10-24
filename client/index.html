@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#152e2d" />
+  <title>Relay Lab · WSS</title>
+</head>
+<body>
+  <main data-game-shell>
+    <div data-game-safe-area class="workspace">
+      <header><a class="brand" href="./">◈ <strong>Relay Lab</strong></a><span>WEB + ANDROID</span><output id="connection" role="status">접속 준비</output></header>
+      <aside aria-label="세션 설정">
+        <p class="eyebrow">MULTIPLAYER WORKSPACE</p>
+        <h1>같은 방,<br />같은 순간.</h1>
+        <p class="intro">두 창에서 접속하고 움직여 보세요.<br />좌표와 이벤트를 같은 방에 전달합니다.</p>
+        <div class="identity"><span>내 참가자</span><strong id="identity">인증 중…</strong></div>
+        <section><h2>친구와 연결</h2><button id="create" disabled>새 방 만들기 <span>↗</span></button><label for="room-id">방 코드</label><div class="join"><input id="room-id" placeholder="상대방의 방 코드" autocomplete="off" maxlength="64" /><button id="join" disabled>참가</button></div><button id="ready" class="secondary" disabled>준비하기</button><button id="lobby-leave" class="secondary" disabled>대기방 나가기</button><button id="start" class="secondary" disabled>방 시작</button><output id="room-status" role="status">방을 만들거나 코드로 참가하세요.</output></section>
+        <section><h2>빠른 매칭</h2><button id="match" class="secondary" disabled>상대 찾기</button><button id="cancel" class="secondary" hidden>매칭 취소</button></section>
+        <p class="hint">화면을 클릭하거나 터치해 이동합니다.<br />이동과 보간은 이 클라이언트에서 처리합니다.</p>
+      </aside>
+      <section class="stage" aria-label="플레이 화면">
+        <div class="stage-heading"><div><p class="eyebrow">LIVE ROOM</p><h2>연결을 기다리고 있어요</h2></div><output id="latency">RTT —</output></div>
+        <canvas id="arena" width="900" height="620" aria-label="좌표 교환 영역. 클릭하거나 터치해 이동합니다." tabindex="0"></canvas>
+        <div class="stage-controls"><span><i class="dot"></i> 내 위치 · 녹색</span><button id="pulse" disabled>이벤트 보내기 ✦</button><button id="reconnect" class="secondary" disabled>재접속</button><button id="leave" class="secondary" disabled>퇴장</button></div>
+        <div class="details"><section><h3>참가자와 좌표</h3><ul id="peers" aria-live="polite"><li>아직 참가자가 없습니다.</li></ul></section><section><h3>이벤트 기록</h3><ol id="events" aria-live="polite"><li>연결하면 기록이 표시됩니다.</li></ol></section></div>
+      </section>
+      <footer><span>STORIO / NETWORK LAB</span><span>WSS · PROTOBUF v2</span></footer>
+    </div>
+  </main>
+  <script type="module" src="/src/demo/main.ts"></script>
+</body>
+</html>

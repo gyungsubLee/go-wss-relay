@@ -1,0 +1,32 @@
+{
+  "tool": "Caddy 2.11.7 official macOS arm64 binary",
+  "officialArchiveSha256": "cda3030e5d5b13eb9f0b6fb541037f633bddd958c070c5f561d7a5cccb581665",
+  "archiveSha512MatchesOfficialChecksums": true,
+  "checks": {
+    "Caddyfile.coordinator": {
+      "sha256": "56e64b8ab9ceefaeb6da0ef68577037343e76d5f0fbb32da3614a94babebc32a",
+      "adapt": "passed",
+      "validate": "passed",
+      "httpServers": 1
+    },
+    "Caddyfile.relay": {
+      "sha256": "ddcfde44bb51007b78737c962afd18982ce6d89cf2008f99d7137435fa695d2c",
+      "adapt": "passed",
+      "validate": "passed",
+      "httpServers": 2
+    },
+    "Caddyfile.standalone": {
+      "sha256": "6ee69d445636c3172821b8d561b1bb95d60fb89d0f1dbe6c6902ecdb5830822b",
+      "adapt": "passed",
+      "validate": "passed",
+      "httpServers": 1,
+      "sharedApiAndRelayOrigin": true,
+      "managementPortProxied": false
+    }
+  },
+  "notRun": [
+    "Linux systemd service startup",
+    "real DNS and firewall deployment",
+    "production certificate issuance"
+  ]
+}

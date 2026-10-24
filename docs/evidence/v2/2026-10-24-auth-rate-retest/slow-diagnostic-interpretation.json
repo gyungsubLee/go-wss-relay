@@ -1,0 +1,39 @@
+{
+  "exitCode": 1,
+  "expectedSlowIDs": [
+    0,
+    8,
+    16,
+    24,
+    32,
+    40,
+    48,
+    56,
+    64,
+    72,
+    80,
+    88,
+    96
+  ],
+  "deadlineIDs": [
+    0,
+    8,
+    16,
+    24,
+    32,
+    40,
+    48,
+    56,
+    64,
+    72,
+    80,
+    88,
+    96
+  ],
+  "allDeadlineWritesAreStateBatch": true,
+  "connectionsAfterMeasurement": 87,
+  "measurementWriteErrors": 13,
+  "cleanupAdditionalWriteErrors": 1,
+  "healthyP99Ms": 52.126,
+  "failedNormalGateRemainsFailed": true
+}

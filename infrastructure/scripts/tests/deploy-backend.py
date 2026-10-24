@@ -1,72 +1,275 @@
 #!/usr/bin/env python3
-"""Exercise the real deployment transaction with fake VM services in a temp root."""
+"""Real deployment script, isolated filesystem and stubbed host commands."""
 import hashlib
+import io
+import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import tarfile
 import tempfile
 
-SOURCE = Path(__file__).resolve().parents[1] / 'deploy-backend.sh'
+INFRA = Path(__file__).resolve().parents[2]
 SHA = 'a' * 40
+ROLES = ('standalone', 'coordinator', 'relay')
+CA_CERTIFICATE = """-----BEGIN CERTIFICATE-----
+MIIBzzCCAXWgAwIBAgIQZgw/6Rvp7j7I3geGcx+qJzAKBggqhkjOPQQDAjAlMSMw
+IQYDVQQDExpSZWxheSBMYWIgbG9vcGJhY2sgdGVzdCBDQTAeFw0yNjEwMjExNTQy
+MzFaFw0yNjEwMjIxNTQzMzFaMCUxIzAhBgNVBAMTGlJlbGF5IExhYiBsb29wYmFj
+ayB0ZXN0IENBMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE57H8c22ILFqZl5Ax
+CgIItVsSYq2P9v3HrzAlRT87IYs5SvpU94kxBEIzXBUqqndLECi+PE1tEo1LL0FH
+TTpKcqOBhjCBgzAOBgNVHQ8BAf8EBAMCAoQwEwYDVR0lBAwwCgYIKwYBBQUHAwEw
+DwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUFVZkT/lqAAv0zJd33JpHGW3GMXYw
+LAYDVR0RBCUwI4IJbG9jYWxob3N0hwR/AAABhxAAAAAAAAAAAAAAAAAAAAABMAoG
+CCqGSM49BAMCA0gAMEUCIBW4wxnpP78VQOwzKPcvFw2R9ORtZ+eDNbsUw/K/TxO2
+AiEA/MNrnzjO1UifIg2CVgPxstcesuUZbBN7Gd98ZNlXvYw=
+-----END CERTIFICATE-----
+"""
 
-def executable(path, text):
+
+def executable(path, body):
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text)
+    path.write_text(body)
     path.chmod(0o755)
 
-def scenario(fail_health=False, marker=False, bad_env=False, first=False):
-    with tempfile.TemporaryDirectory(prefix='lobby-relay-deploy-test-') as tmp:
-        root=Path(tmp); opt=root/'opt/lobby-relay'; state=root/'var/lib/lobby-relay'; etc=root/'etc/lobby-relay'
-        for p in [opt/'releases',state,etc,root/'var/lock',root/'etc/systemd/system',root/'etc/caddy',root/'bin']:p.mkdir(parents=True,exist_ok=True)
-        port='80' if bad_env else '7777'
-        (etc/'server.env').write_text(f'# comment\nAPI_HOSTNAME=api.example.com\nRELAY_ADVERTISED_HOST=relay.example.com\nRELAY_UDP_PORT={port}\n')
-        (state/'traffic.json').write_text('{}')
-        if marker:(state/'traffic-stopped').touch()
-        unit_names=['lobby-relay.service','traffic-guard.service','traffic-guard.timer','caddy-lobby-relay.conf','Caddyfile']
-        def release(path, is_new):
-            path.mkdir(parents=True)
-            executable(path/'lobby-relay','#!/bin/sh\nexit 0\n')
-            for n in unit_names:
-                p=path/'ops'/n;p.parent.mkdir(exist_ok=True);p.write_text(n+(' new' if is_new else ' old')+'\n')
-            check='#!/bin/sh\n'
-            if is_new and fail_health:check+='exit 1\n'
-            executable(path/'scripts/check-deployment.sh',check+'echo healthy\n')
-            for n in ['check-traffic-budget.sh','traffic_budget.py']:executable(path/'scripts'/n,'#!/bin/sh\nexit 0\n')
-            files=sorted(p for p in path.rglob('*') if p.is_file())
-            (path/'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+str(p.relative_to(path))+'\n' for p in files))
-        old=opt/'releases'/'old'
-        if not first:release(old,False);(opt/'current').symlink_to(old)
-        bundle=root/'bundle';release(bundle,True);archive=root/'release.tar.gz'
-        with tarfile.open(archive,'w:gz') as tar:
-            for p in bundle.rglob('*'):tar.add(p,arcname=str(p.relative_to(bundle)),recursive=False)
-        executable(root/'bin/id','#!/bin/sh\necho 0\n')
-        executable(root/'bin/flock','#!/bin/sh\nexit 0\n')
-        executable(root/'bin/sleep','#!/bin/sh\nexit 0\n')
-        executable(root/'bin/systemctl','#!/bin/sh\necho "$@" >> "'+str(root/'systemctl-calls')+'"\nexit 0\n')
-        executable(root/'bin/mv', '#!/usr/bin/env python3\nimport os,sys\na=[x for x in sys.argv[1:] if not x.startswith("-")];os.replace(a[-2],a[-1])\n')
-        executable(root/'bin/sha256sum', '#!/usr/bin/env python3\nimport hashlib,pathlib,sys\nfor line in pathlib.Path(sys.argv[-1]).read_text().splitlines():\n h,p=line.split("  ",1)\n if hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()!=h:sys.exit(1)\n')
-        source=SOURCE.read_text()
-        for prefix in ['/opt/lobby-relay','/var/lib/lobby-relay','/var/lock/lobby-relay-deploy.lock','/etc/lobby-relay','/etc/systemd/system','/etc/caddy']:source=source.replace(prefix,str(root/prefix.lstrip('/')))
-        script=root/'deploy.sh';executable(script,source)
-        env={**os.environ,'PATH':str(root/'bin')+os.pathsep+os.environ['PATH']}
-        result=subprocess.run(['bash',str(script),str(archive),SHA],env=env,text=True,capture_output=True,timeout=20)
-        expected_failure=fail_health or marker or bad_env
-        assert (result.returncode!=0)==expected_failure,(result.stdout,result.stderr)
-        calls=(root/'systemctl-calls').read_text() if (root/'systemctl-calls').exists() else ''
-        if expected_failure and not first:
-            assert (opt/'current').resolve()==old.resolve(),(result.stdout,result.stderr)
-        if not expected_failure:
-            assert (opt/'current').resolve()==(opt/'releases'/SHA).resolve(),(result.stdout,result.stderr)
-            assert 'restart lobby-relay.service' in calls and 'reload-or-restart caddy.service' in calls, calls
-            assert (root/'etc/caddy/Caddyfile').read_text()=='Caddyfile new\n' and (root/'etc/systemd/system/caddy.service.d/lobby-relay.conf').read_text()=='caddy-lobby-relay.conf new\n'
-        if fail_health and not first:
-            assert 'previous release restored' in result.stderr,result.stderr
-            assert (root/'etc/caddy/Caddyfile').read_text()=='Caddyfile old\n' and 'try-reload-or-restart caddy.service' in calls, calls
-            assert 'reload-or-restart caddy.service\n' not in calls.replace('try-reload-or-restart','x'), 'failed deploy must not publish the new proxy config'
-        if fail_health and first:assert 'first deployment failed' in result.stderr and 'stop lobby-relay.service' in calls,result.stderr
-        if marker:assert 'reconcile cost guard' in result.stderr and calls=='',result.stderr
-        if bad_env:assert 'server.env requires' in result.stderr and 'restart' not in calls,result.stderr
 
-for options in [{},{'first':True},{'fail_health':True},{'fail_health':True,'first':True},{'marker':True},{'bad_env':True}]:scenario(**options)
-print('PASS deploy: promotion, first install, failed-health rollback, first-install stop, cost-stop refusal, invalid settings refusal (service stubs).')
+def scenario(role, failure=None, first=False, node_fields=None, extra_args=""):
+    with tempfile.TemporaryDirectory(prefix='wss-deploy-') as tmp:
+        root = Path(tmp).resolve()
+        opt = root / 'opt/wss-relay'
+        state = root / 'var/lib/wss-relay'
+        etc = root / 'etc/wss-relay'
+        for path in (opt / 'releases', state, etc / 'secrets', root / 'var/lock',
+                     root / 'etc/systemd/system/caddy.service.d', root / 'etc/caddy', root / 'bin'):
+            path.mkdir(parents=True, exist_ok=True)
+        args = f'--role {role} --operator-token-file {etc}/secrets/operator.token --trusted-proxy 127.0.0.1/32'
+        if role != 'coordinator':
+            args += ' --public-url wss://play.example.com/v2/relay'
+        else:
+            args += f' --nodes-config {etc}/nodes.json'
+        args += f' --traffic-config {etc}/traffic.json'
+        if extra_args:
+            args += ' ' + extra_args
+        (etc / f'{role}.env').write_text('RELAY_ARGS=' + args + '\n')
+        (etc / 'secrets/operator.token').write_text('AQ' + 'A' * 41)
+        (etc / 'secrets/operator.token').chmod(0o600)
+        (etc / 'traffic.json').write_text('{}')
+        (etc / 'nodes.json').write_text(json.dumps({'nodes': [{
+            'id': 'node-a', 'controlUrl': 'https://control.example.com',
+            'websocketUrl': 'wss://node.example.com/v2/relay',
+            'tokenFile': str(etc / 'secrets/operator.token'),
+        }]}))
+        (etc / 'control-root.pem').write_text('live CA bytes, never overwrite')
+        (etc / 'caddy.env').write_text(
+            'STANDALONE_DOMAIN=play.example.com\nCOORDINATOR_DOMAIN=play.example.com\n'
+            'RELAY_DOMAIN=play.example.com\nNODE_CONTROL_DOMAIN=control.example.com\n'
+            'NODE_PRIVATE_IP=10.0.0.2\nCOORDINATOR_PRIVATE_IP=10.0.0.1\n')
+        (etc / 'traffic.env').write_text(f'WSS_INSTANCE={role}\nTRAFFIC_INTERFACE=eth0\nTRAFFIC_WARN_BYTES=1000000\nTRAFFIC_STOP_BYTES=2000000\n')
+        (state / 'traffic.json').write_text('live durable NIC accounting\n')
+        if failure == 'marker':
+            (state / 'traffic-stopped').touch()
+        if failure == 'missing-ledger':
+            (state / 'traffic.json').unlink()
+        modifications = {
+            'injection': 'RELAY_ARGS=$(touch ' + str(root / 'INJECTED') + ')\n',
+            'unknown': 'RELAY_ARGS=' + args + ' --unknown value\n',
+            'duplicate': 'RELAY_ARGS=' + args + ' --role relay\n',
+            'listen': 'RELAY_ARGS=' + args + ' --listen 0.0.0.0:8090\n',
+            'tls': 'RELAY_ARGS=' + args + ' --tls-cert /a --tls-key /b\n',
+            'role': 'RELAY_ARGS=' + args.replace('--role ' + role, '--role invalid') + '\n',
+            'relative-file': 'RELAY_ARGS=' + args.replace(str(etc) + '/secrets/operator.token', 'relative.token') + '\n',
+            'capacity': 'RELAY_ARGS=' + args + ' --max-rooms 99999\n',
+        }
+        if failure in modifications:
+            (etc / f'{role}.env').write_text(modifications[failure])
+        if failure == 'token-mode':
+            (etc / 'secrets/operator.token').chmod(0o644)
+        if failure == 'token-cr':
+            with (etc / 'secrets/operator.token').open('a') as f:
+                f.write('\r')
+        if failure == 'traffic':
+            (etc / 'traffic.json').write_text('{"nodeIngressBytesPerSecond":1}')
+        if failure == 'nodes':
+            (etc / 'nodes.json').write_text('{"nodes":[]}')
+        if failure == 'invalid-ca':
+            config = json.loads((etc / 'nodes.json').read_text())
+            config['nodes'][0]['caFile'] = str(etc / 'control-root.pem')
+            (etc / 'nodes.json').write_text(json.dumps(config))
+        if node_fields is not None:
+            config = json.loads((etc / 'nodes.json').read_text())
+            config['nodes'][0].update(node_fields)
+            if node_fields.get('caFile') == 'fixture.pem':
+                (etc / 'control-root.pem').write_text(CA_CERTIFICATE)
+                config['nodes'][0]['caFile'] = str(etc / 'control-root.pem')
+            (etc / 'nodes.json').write_text(json.dumps(config))
+        if failure == 'caddy-env':
+            (etc / 'caddy.env').write_text('RELAY_DOMAIN=$(bad)\n')
+        if failure == 'reserved-ip':
+            (etc / 'caddy.env').write_text((etc / 'caddy.env').read_text().replace('10.0.0.2', '240.0.0.1'))
+        if failure == 'second-instance':
+            (etc / 'instance').write_text('other\n')
+        live = {p: p.read_bytes() for parent in (etc, state) for p in parent.rglob('*') if p.is_file()}
+
+        def release(path, new):
+            path.mkdir(parents=True)
+            executable(path / 'wss-relay', '#!/bin/sh\nexit 0\n')
+            shutil.copytree(INFRA / 'ops', path / 'ops')
+            for asset in (path / 'ops').iterdir():
+                asset.write_text(asset.read_text().replace('/opt/wss-relay', str(opt)).replace('/etc/wss-relay', str(etc)).replace('/var/lib/wss-relay', str(state)))
+            (path / 'scripts').mkdir()
+            for name in ('check-deployment.sh', 'check-traffic-budget.sh', 'traffic_budget.py', 'deploy-preflight.py', 'install-operator-token.py'):
+                source = INFRA / 'scripts' / name
+                if source.exists():
+                    shutil.copy2(source, path / 'scripts' / name)
+            # The checks themselves are tested separately. This fixture controls health/guard failure.
+            executable(path / 'scripts/check-deployment.sh', '#!/bin/sh\nexit ' + ('1' if new and failure == 'health' else '0') + '\n')
+            executable(path / 'scripts/check-traffic-budget.sh', '#!/bin/sh\nexit 0\n')
+            files = sorted(p for p in path.rglob('*') if p.is_file())
+            (path / 'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest() + '  ' + p.relative_to(path).as_posix() + '\n' for p in files))
+
+        old = opt / 'releases' / ('b' * 40)
+        if not first:
+            release(old, False)
+            (opt / 'current').symlink_to(old)
+            (etc / 'instance').write_text(role + '\n') if failure != 'second-instance' else None
+        owned = [root / 'etc/caddy/Caddyfile', root / 'etc/systemd/system/wss-relay@.service',
+                 root / 'etc/systemd/system/traffic-guard.service', root / 'etc/systemd/system/traffic-guard.timer',
+                 root / 'etc/systemd/system/caddy.service.d/wss-relay.conf',
+                 opt / 'ops/check-traffic-budget.sh', opt / 'ops/traffic_budget.py']
+        if not first:
+            for path in owned:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text('previous ' + path.name + '\n')
+        previous = {p: p.read_bytes() for p in owned if p.exists()}
+        bundle = root / 'bundle'
+        release(bundle, True)
+        if failure == 'unlisted':
+            (bundle / 'unverified').write_text('unlisted')
+        if failure == 'checksum':
+            (bundle / 'wss-relay').write_text('tampered')
+        if failure == 'same-sha':
+            shutil.copytree(bundle, opt / 'releases' / SHA)
+            (opt / 'releases' / SHA / 'wss-relay').write_text('different bytes')
+        archive = root / 'release.tar.gz'
+        with tarfile.open(archive, 'w:gz') as tar:
+            for path in bundle.rglob('*'):
+                tar.add(path, arcname=str(path.relative_to(bundle)), recursive=False)
+            if failure in ('traversal', 'absolute', 'symlink', 'hardlink', 'device', 'special', 'count', 'size'):
+                info = tarfile.TarInfo('../escape' if failure == 'traversal' else '/escape' if failure == 'absolute' else 'evil')
+                if failure == 'symlink': info.type = tarfile.SYMTYPE; info.linkname = '/tmp/escape'
+                if failure == 'hardlink': info.type = tarfile.LNKTYPE; info.linkname = 'wss-relay'
+                if failure == 'device': info.type = tarfile.CHRTYPE
+                if failure == 'special': info.mode = 0o4755
+                if failure == 'size':
+                    info.size = 151 * 1024 * 1024
+                    tar.addfile(info, io.BytesIO(bytes(info.size)))
+                elif failure == 'count':
+                    for n in range(31):
+                        info = tarfile.TarInfo(f'extra{n}'); tar.addfile(info)
+                else: tar.addfile(info)
+        executable(root / 'bin/id', '#!/bin/sh\necho 0\n')
+        executable(root / 'bin/flock', '#!/bin/sh\nexit ' + ('1' if failure == 'lock' else '0') + '\n')
+        executable(root / 'bin/sleep', '#!/bin/sh\nexit 0\n')
+        executable(root / 'bin/systemctl', '#!/bin/sh\ncase "$1" in is-active|is-enabled) exit ' + ('0' if failure == 'second-active' else '1') + ';; esac\necho "$@" >> "' + str(root / 'calls') + '"\nexit 0\n')
+        if failure == 'guard-latch':
+            control = root / 'bin/systemctl'
+            source = control.read_text().replace('exit 0\n', 'if [ "$1 $2" = "start traffic-guard.service" ]; then touch "' + str(state / 'traffic-stopped') + '"; exit 1; fi\nexit 0\n')
+            control.write_text(source)
+        executable(root / 'bin/caddy', '#!/bin/sh\nexit ' + ('1' if failure == 'caddy' else '0') + '\n')
+        executable(root / 'lib/systemd/system/caddy.service', '[Service]\nExecStart=' + str(root / 'bin/caddy') + '\n')
+        executable(root / 'bin/systemd-analyze', '''#!/usr/bin/env python3
+import pathlib,sys
+for arg in sys.argv[2:]:
+ for line in pathlib.Path(arg).read_text().splitlines():
+  if line.startswith(('ExecStart=', 'ExecStartPre=')):
+   target=line.split('=',1)[1].split()[0].lstrip('+')
+   assert pathlib.Path(target).is_file(), target
+sys.exit(''' + ('1' if failure == 'unit' else '0') + ')\n')
+        copied = root / 'scripts'
+        shutil.copytree(INFRA / 'scripts', copied)
+        for path in copied.glob('*'):
+            if not path.is_file(): continue
+            source = path.read_text()
+            for prefix in ('/opt/wss-relay', '/var/lib/wss-relay', '/var/lib/lobby-relay', '/var/lock/wss-relay-deploy.lock', '/etc/wss-relay', '/etc/systemd/system', '/etc/caddy', '/lib/systemd/system/caddy.service'):
+                source = source.replace(prefix, str(root / prefix.lstrip('/')))
+            # Only identity is replaced; file validation and all transaction logic remain real.
+            source = source.replace('pwd.getpwnam("wss-relay")', f'pwd.getpwuid({os.getuid()})')
+            source = source.replace('info.st_uid != 0', f'info.st_uid != {os.getuid()}')
+            path.write_text(source)
+        env = {**os.environ, 'PATH': str(root / 'bin') + os.pathsep + os.environ['PATH']}
+        result = subprocess.run(['bash', str(copied / 'deploy-backend.sh'), str(archive), SHA, role], env=env, capture_output=True, text=True, timeout=30)
+        assert (result.returncode != 0) == bool(failure), (role, failure, result.stdout, result.stderr)
+        calls = (root / 'calls').read_text() if (root / 'calls').exists() else ''
+        for path, body in live.items():
+            assert path.read_bytes() == body, ('live data changed', failure, path)
+        assert not (root / 'INJECTED').exists()
+        if failure:
+            if not first: assert (opt / 'current').resolve() == old
+            else: assert not (opt / 'current').exists()
+            for path, body in previous.items(): assert path.read_bytes() == body, (failure, path)
+            if failure in ('health', 'guard-latch'):
+                assert f'stop wss-relay@{role}.service caddy.service' in calls
+                if not first and failure == 'health': assert 'previous release restored' in result.stderr
+                if failure == 'guard-latch':
+                    assert (state / 'traffic-stopped').exists()
+                    assert 'reload-or-restart caddy.service' not in calls
+                    assert calls.count(f'restart wss-relay@{role}.service') == 1
+            else: assert not calls, (failure, calls)
+        else:
+            assert (opt / 'current').resolve() == opt / 'releases' / SHA
+            assert f'restart wss-relay@{role}.service' in calls
+            assert 'reload-or-restart caddy.service' in calls
+            assert '{$' not in (root / 'etc/caddy/Caddyfile').read_text()
+        print('PASS', role, failure or 'promotion', 'first' if first else 'upgrade')
+
+
+# Configuration boundary regressions.
+for field, scheme, suffix in (('controlUrl', 'https', ''), ('websocketUrl', 'wss', '/v2/relay')):
+    for host in ('control.example.com\n', 'control.example.com\t', 'control host.example.com',
+                 'control.example.com\x00', '-control.example.com', '[fd00::2]junk'):
+        scenario('coordinator', 'node-url', node_fields={field: f'{scheme}://{host}{suffix}'})
+scenario('coordinator', node_fields={
+    'controlUrl': 'https://10.0.0.2', 'websocketUrl': 'wss://[fd00::2]:443/v2/relay',
+})
+
+for flag in ('max-rooms', 'max-participants', 'handshakes-per-ip'):
+    for value in ('08', '010'):
+        scenario('standalone', 'capacity-spelling', extra_args=f'--{flag} {value}')
+for value in ('0', '10'):
+    args = ' '.join(f'--{flag} {value}' for flag in ('max-rooms', 'max-participants', 'handshakes-per-ip'))
+    scenario('standalone', extra_args=args)
+
+for value in (False, 0, [], {}, None):
+    scenario('coordinator', 'ca-type', node_fields={'caFile': value})
+scenario('coordinator', node_fields={'caFile': ''})
+scenario('coordinator', node_fields={'caFile': 'fixture.pem'})
+
+for role in ROLES:
+    for failure, first in ((None, False), (None, True), ('health', False), ('health', True), ('guard-latch', False), ('guard-latch', True)):
+        scenario(role, failure, first)
+for failure in ('lock', 'marker', 'missing-ledger', 'injection', 'unknown', 'duplicate', 'listen', 'tls', 'role',
+                'capacity', 'relative-file', 'token-mode', 'token-cr', 'traffic', 'caddy-env', 'second-instance', 'second-active', 'caddy', 'unit',
+                'unlisted', 'checksum', 'same-sha', 'traversal', 'absolute', 'symlink', 'hardlink', 'device', 'special', 'count', 'size'):
+    scenario('standalone', failure)
+scenario('coordinator', 'nodes')
+scenario('coordinator', 'invalid-ca')
+scenario('relay', 'reserved-ip')
+
+# Probe the real checker with curl responses matching the app's HTTP contract.
+with tempfile.TemporaryDirectory() as tmp:
+    root = Path(tmp)
+    executable(root / 'curl', '''#!/usr/bin/env python3
+import os,sys
+url=sys.argv[-1]
+code='204' if url.endswith('/readyz') else '401' if ':8091/' in url else '426' if url.endswith('/v2/relay') else '200'
+print(os.environ.get('BAD_READY', code) if url.endswith('/readyz') else code, end='')
+''')
+    for role in ROLES:
+        env = {**os.environ, 'PATH': str(root) + os.pathsep + os.environ['PATH']}
+        result = subprocess.run(['bash', str(INFRA / 'scripts/check-deployment.sh'), role], env=env, capture_output=True, text=True)
+        assert result.returncode == 0, (result.stdout, result.stderr)
+        env['BAD_READY'] = '503'
+        result = subprocess.run(['bash', str(INFRA / 'scripts/check-deployment.sh'), role], env=env, capture_output=True, text=True)
+        assert result.returncode != 0
+print('PASS real health checker: healthz 200, readyz 204, auth 401, upgrade 426; readiness 503 refused')

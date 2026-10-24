@@ -1,425 +1,211 @@
-# [TRD v2.0] Go Room/Lobby, Quick Match & UDP Relay Server
+# 웹·Android WSS 기술 계약
 
-| 항목 | 값 |
-|---|---|
-| 갱신일 | 2026-08-20 |
-| 상태 | Milestone 1 verified; Phase 1–5 implemented; Phase 6–9 pending |
-| module | `github.com/gyungsubLee/go-lobby-relay` |
-| runtime | Go 1.26.5, single process, in-memory |
-| 관련 문서 | [PRD](./PRD.md), [Requirements](../.planning/REQUIREMENTS.md), [Roadmap](../.planning/ROADMAP.md) |
+갱신일: 2026-10-23. v2 전용 구조와 로컬 검사를 마쳤다. Task 10 독립 리뷰와 전체 브랜치 리뷰를 마쳤다. 최종 I1 수정도 재리뷰에서 닫았다.
+실기기와 운영 검증은 [완료 감사](evidence/v2/completion-audit.md)로 구분한다.
+모듈: github.com/gyungsubLee/go-wss-relay.
 
-> ADR 0001–0003과 Phase 1–3 evidence는 기존 Relay wire, lifecycle, admission과 security의 권위 문서다. 이 TRD는 그 구현을 변경하지 않고 Player Token, mutable Lobby, FIFO Quick Match와 별도 player HTTP listener를 추가한다.
+## 최종 폴더 구조
 
-## 1. Technical Goals
-
-- verified Player Token claim만 player identity로 사용한다.
-- mutable Lobby와 immutable Relay allocation을 분리한다.
-- compatible FIFO tickets를 one-shot Relay match로 전환한다.
-- operator HTTP, player HTTP와 UDP listener를 한 process 안에서 분리한다.
-- exact deadline, hard limit, privacy와 all-or-nothing mutation을 제공한다.
-- existing Relay protocol, security, race/fuzz evidence를 regression 없이 유지한다.
-
-## 2. Non-goals
-
-- JWT/OAuth/OIDC provider, anonymous login 또는 Steam ownership validation
-- party/team/skill/region/backfill/configurable match functions
-- authoritative gameplay, Unity/FishNet server runtime, payload parsing
-- persistence, multi-process ownership, distributed lock 또는 message broker
-- WebSocket presence/server push; M1 client state는 bounded HTTP polling
-
-## 3. Stack and Dependency Budget
-
-Production direct modules remain:
+아래는 `dfcbdd3` 구현의 주요 경로와 Go 구현 파일이다. 테스트 파일과 생성물의 세부 파일은 생략했다.
+파일 분리는 같은 패키지 안에서 책임을 나눈다. 구현을 변경할 때는 [승인 설계](superpowers/specs/2026-10-23-go-structure-refactor-design.md)의 경계를 따른다.
 
 ```text
-google.golang.org/protobuf v1.36.11
-golang.org/x/time v0.15.0
-github.com/coder/websocket v1.8.15   # optional WebSocket carrier, ADR 0004
+go-wss-relay/
+├── cmd/
+│   ├── wss-relay/main.go
+│   ├── relay-load/main.go
+│   ├── wire-check/main.go
+│   └── dev-tls/main.go
+├── internal/
+│   ├── app/
+│   │   ├── config.go
+│   │   └── run.go
+│   ├── control/
+│   │   ├── http.go
+│   │   ├── manager.go
+│   │   ├── lobby.go
+│   │   ├── queue.go
+│   │   ├── allocation.go
+│   │   ├── views.go
+│   │   └── errors.go
+│   ├── coordinator/
+│   │   ├── config.go
+│   │   ├── node_client.go
+│   │   ├── placement.go
+│   │   ├── recovery.go
+│   │   └── management.go
+│   ├── relay/
+│   │   ├── server.go
+│   │   ├── connection.go
+│   │   ├── rooms.go
+│   │   ├── credentials.go
+│   │   ├── reservation.go
+│   │   ├── management.go
+│   │   └── metrics.go
+│   ├── playerauth/auth.go
+│   ├── operatortoken/token.go
+│   ├── protocol/
+│   │   ├── codec.go
+│   │   └── id.go
+│   └── httpx/
+│       ├── httpx.go
+│       └── ip.go
+├── api/relay/v2/
+│   ├── relay.proto
+│   └── relay-baseline.binpb
+├── gen/go/relay/v2/relay.pb.go
+├── client/
+│   ├── src/relay/
+│   │   ├── api.ts
+│   │   ├── client.ts
+│   │   └── gen/relay/v2/relay_pb.ts
+│   ├── src/demo/
+│   ├── scripts/
+│   ├── android/
+│   └── MinbWebKit/
+├── infrastructure/
+│   ├── config/
+│   ├── ops/
+│   ├── scripts/
+│   │   └── tests/
+│   └── docs/operations.md
+├── scripts/
+├── docs/
+├── .planning/
+├── .github/workflows/ci.yml
+├── Makefile
+├── buf.yaml
+├── buf.gen.yaml
+├── go.mod
+└── go.sum
 ```
 
-New code uses only Go standard library packages including `crypto/hmac`, `crypto/sha256`, `crypto/rand`, `encoding/base64`, `encoding/binary`, `encoding/json`, `net/http`, `sort`, `sync` and `time`.
+## 패키지 역할과 의존 관계
 
-## 4. Runtime Architecture
+의존 열은 일반 Go 소스의 직접 import 중 저장소 내부 경로만 적었다. 표준 라이브러리와 외부 모듈은 제외했다.
+`internal/` 접두사는 패키지 이름에서 생략했다. `gen`은 `gen/go/relay/v2`를 뜻한다.
 
-```mermaid
-flowchart LR
-    O["Operator / future identity adapter"] -->|"private HTTP + operator Bearer"| OH["Operator listener"]
-    P["Game clients"] -->|"HTTP + Player Token"| PH["Player listener"]
-    P <-->|"relay.v1 UDP"| U["UDP Relay"]
-    B["Browser / WebView clients"] <-->|"relay.v1 over WebSocket (optional)"| W["WebSocket carrier"]
-    W -->|"Deliver / Send"| U
-    OH --> A["Player Auth"]
-    OH --> R["Relay Store"]
-    PH --> L["Lobby Manager"]
-    L -->|"match allocation"| R
-    U --> R
-    S["One server sweeper"] --> L
-    S --> R
-```
-
-### 4.1 Package ownership
-
-| Package | Responsibility | Mutable authority |
+| 패키지 | 역할과 상태 소유권 | 직접 의존 |
 |---|---|---|
-| `internal/clock` | wall/monotonic reading and overflow-safe deadlines | none |
-| `internal/protocol` | wire bounds, codec and handshake/data HMAC transcripts | none |
-| `internal/playerauth` | process-ephemeral Player Token issue/verify (`playerauth.Issuer`) | derived key only |
-| `internal/matchmaking` | Lobby, membership, ready, ticket, queue, assignment and match transition | all Lobby/Match maps under one mutex |
-| `internal/relayroom` | immutable Relay room/grant/binding state, handshake and UDP admission limits | room store mutex |
-| `internal/udprelay` | UDP decode/admission/fan-out loop | socket and fixed buffers |
-| `internal/httpapi/httpx` | shared strict JSON, error writer and request admission helpers | none |
-| `internal/httpapi/playerapi` | Player Bearer auth, routes, domain-to-HTTP mapping | limiter/semaphore only |
-| `internal/httpapi/operatorapi` | operator auth, token issue, Relay room API | limiter/semaphore only |
-| `internal/app` | bind, composition, four owned loops, shutdown/join | lifecycle flags only |
-| `cmd/lobby-relay` | flag parsing, operator token file, signal context, exit code | none |
-
-Lock direction is `matchmaking.Manager.mu -> relayroom.Store.mu` during allocation. Room store code never calls matchmaking code, so reverse acquisition does not exist.
-
-## 5. Player Token Contract
-
-### 5.1 Startup key derivation
-
-At startup:
-
-1. read exactly 32 CSPRNG bytes as `process_nonce`;
-2. derive `player_key = HMAC-SHA256(operator_secret, "go-lobby-relay/player-token/v1\x00" || process_nonce)`;
-3. retain only the derived key for process lifetime.
-
-Restart generates a different process nonce and invalidates old Player Tokens even if the operator secret file is unchanged.
-
-### 5.2 Token wire
-
-Before raw-base64url encoding:
-
-```text
-version              1 byte, exact 1
-expires_unix_nano    8 bytes, signed big endian, > 0
-player_id_length     1 byte, 1..64
-player_id            exact ASCII ValidID bytes
-tag                   32-byte HMAC-SHA256 over all preceding bytes
-```
-
-Verification uses strict unpadded base64url, exact total length derived from `player_id_length`, structural validation before attacker-sized allocation, constant-time tag comparison, and authority rule `now >= expires_at => expired`.
-
-TTL is exactly 15 minutes. Error values are fixed `invalid`, `expired`, or fatal random failure and never contain token/key/player input.
-
-## 6. Lobby Domain
-
-### 6.1 Model
-
-```text
-Lobby
-  lobby_id            server CSPRNG ID
-  owner_player_id     current owner
-  visibility          public | private
-  queue_key           ValidID game-mode key
-  capacity            2..16
-  state               open | matched | closed
-  revision            uint64, increment every mutation
-  sequence            server insertion order
-  created/expires     wall + monotonic deadline
-  members             map[player_id]Member
-
-Member
-  player_id
-  ready               bool
-  join_sequence       deterministic owner-transfer order
-```
-
-One `player_id` appears in at most one open/matched Lobby or live Quick Match ticket. A matched Lobby retains assignments until match expiry, preventing accidental overlapping allocation.
-
-### 6.2 Lifecycle invariants
-
-- create validates all fields and capacity before generating/committing an ID;
-- creator is owner and not ready;
-- public list includes only live open public Lobby summaries and is ordered by insertion sequence;
-- private exact get is visible only to a member; join is allowed by exact ID;
-- join and leave require exact current revision;
-- membership change sets every remaining member `ready=false`;
-- owner leave transfers to the lowest surviving join sequence;
-- empty leave closes and removes player ownership immediately;
-- ready changes only caller state and increments revision;
-- start requires caller owner, exact revision, open state, full capacity and all ready;
-- no Lobby mutation occurs until Relay allocation succeeds;
-- after success, member set freezes and each member owns exactly one private Assignment.
-
-### 6.3 Limits
-
-| Limit | Value |
-|---|---:|
-| open/matched Lobby records | 256 |
-| capacity/member count | 2..16 |
-| Lobby TTL | default 30m, maximum 2h |
-| public list limit | default 20, maximum 50 |
-| player active ownership | 1 |
-| ID / queue key | existing `ValidID`, 1..64 ASCII bytes |
-
-Cursor is the decimal server insertion sequence of the last returned Lobby. Invalid, negative, overflow or non-canonical cursor is rejected.
-
-## 7. Quick Match Domain
-
-### 7.1 Ticket
-
-```text
-Ticket
-  ticket_id
-  player_id
-  queue_key
-  capacity            2..16
-  state               queued | matched | cancelled | expired | released
-  revision
-  sequence            global FIFO order
-  deadline            exact 2m
-  assignment          caller-private, matched only
-```
-
-Queue compatibility key is exactly `(queue_key, capacity)`. M1 tickets contain one player only.
-
-### 7.2 Match transition
-
-Under the Lobby mutex:
-
-1. remove logically expired queue heads from consideration;
-2. select the first `capacity` queued tickets for the exact compatibility key;
-3. stage match, Relay room and session IDs;
-4. call existing `store.CreateRoom` with all selected participant IDs and a 2m room/grant expiry;
-5. on failure, leave ticket state and FIFO order unchanged;
-6. on success, mark selected tickets matched and attach the corresponding private assignment.
-
-Cancel requires exact revision and only transitions queued tickets. Matched status is immutable until expiry; cancellation cannot revoke an already formed Relay room.
-
-Hard maximum live ticket records is 4096. Exact deadline ends queue/match authority before sweep.
-
-## 8. Relay Assignment
-
-Assignment contains:
-
-```text
-match_id
-room_id
-player_id
-session_id
-grant_id             raw base64url on HTTP
-grant_secret         raw base64url on HTTP
-grant_expires_at
-relay_endpoint       advertised host + port
-```
-
-The Lobby Manager copies the matching `store.GrantAllocation` into a player-indexed private record. HTTP derives caller identity from Player Token and never accepts a requested `player_id`; therefore one player cannot select another assignment.
-
-Relay room ID and every session ID are generated before allocation from 16 CSPRNG bytes with valid prefixes. Collision draws are retried at most nine times. A successful Store allocation is the last fallible operation before the Lobby/Ticket matched commit.
-
-## 9. HTTP Contracts
-
-### 9.1 Common rules
-
-- HTTP/1.1 JSON, UTF-8, exact `/v1` routes
-- `Content-Type: application/json` on body methods
-- exactly one Bearer header; operator and player token formats never overlap
-- strict decoder, duplicate/unknown field rejection, one JSON value, 64KiB body maximum
-- `Cache-Control: no-store` on every response
-- fixed envelope:
-
-```json
-{"error":{"code":"conflict","message":"request conflicts with current state"}}
-```
-
-- fixed codes: `invalid_request`, `unauthorized`, `forbidden`, `not_found`, `conflict`, `capacity`, `rate_limited`, `unavailable`, `internal_error`
-- no token, grant, key, payload, raw request body or high-cardinality secret in messages/logs
-
-### 9.2 Operator listener
-
-#### `POST /v1/player-tokens`
-
-Request:
-
-```json
-{"player_id":"player-a"}
-```
-
-Response `201`:
-
-```json
-{"player_id":"player-a","token":"<opaque>","expires_at":"2026-08-20T12:15:00Z"}
-```
-
-Only existing operator Bearer authentication may call this route.
-
-Existing `PUT|GET|DELETE /v1/rooms/{room_id}` remains unchanged and is not served on the player listener.
-
-### 9.3 Player listener
-
-#### `POST /v1/lobbies`
-
-```json
-{"visibility":"public","queue_key":"duel","capacity":2}
-```
-
-Returns `201` Lobby snapshot.
-
-#### `GET /v1/lobbies?queue_key=duel&limit=20&cursor=<sequence>`
-
-Returns public live Lobby summaries and optional `next_cursor`. Unknown query keys and repeated values are invalid.
-
-#### `GET /v1/lobbies/{lobby_id}`
-
-Returns full member state only when caller is a member. Non-member private state collapses to `not_found`.
-
-#### `POST /v1/lobbies/{lobby_id}/join`
-
-```json
-{"revision":1}
-```
-
-#### `DELETE /v1/lobbies/{lobby_id}/members/me`
-
-```json
-{"revision":2}
-```
-
-#### `PUT /v1/lobbies/{lobby_id}/members/me/ready`
-
-```json
-{"revision":3,"ready":true}
-```
-
-#### `POST /v1/lobbies/{lobby_id}/start`
-
-```json
-{"revision":5}
-```
-
-Returns caller-private matched assignment. Other members obtain theirs from exact Lobby get after match; each response includes only the authenticated caller's assignment.
-
-#### `POST /v1/matchmaking/tickets`
-
-```json
-{"queue_key":"duel","capacity":2}
-```
-
-Returns `201` queued or matched Ticket snapshot.
-
-#### `GET /v1/matchmaking/tickets/me`
-
-Returns caller ticket and caller-private assignment when matched.
-
-#### `DELETE /v1/matchmaking/tickets/me`
-
-```json
-{"revision":1}
-```
-
-Returns cancelled Ticket snapshot; matched ticket cancellation returns conflict.
-
-#### `POST /v1/matchmaking/tickets/me/release`
-
-```json
-{"revision":2}
-```
-
-Releases the caller's **matched** ticket so the player can queue or open a Lobby again (e.g. a rematch) before the match TTL ends. Returns the ticket snapshot with state `released` and no assignment. The Relay room and other participants' tickets and grants are untouched; the room still ends at its own deadline. A queued ticket, stale revision or missing ticket returns conflict / not found. ([ADR 0004](./decisions/0004-relay-carriers-and-match-ttl.md))
-
-## 10. Server Composition and Lifecycle
-
-Required CLI inputs:
-
-```text
---management-listen
---player-listen
---relay-network udp4|udp6
---relay-listen
---advertised-host
---advertised-port
---operator-token-file
-```
-
-Optional CLI inputs ([ADR 0004](./decisions/0004-relay-carriers-and-match-ttl.md)):
-
-```text
---relay-ws-listen             enable the WebSocket Relay carrier (route /v1/relay, subprotocol relay.v1)
---relay-ws-allowed-origin     cross-origin host pattern; repeatable; "*" rejected
---relay-ws-max-per-source     per peer IP connection cap (default 16, max 256)
---match-ttl                   formed match lifetime, Go duration (default 2m, max 2h)
-```
-
-WebSocket options without `--relay-ws-listen` are rejected. With the carrier enabled, the TCP listener binds after UDP and `Run` owns a fifth loop (the WebSocket `http.Server`); shutdown also closes live WebSockets with status 1001.
-
-`server.New` validates every value, derives Player Auth, and binds management TCP → player TCP → UDP. Failure closes already-bound listeners in reverse order. `New` starts no goroutine.
-
-`Run` owns exactly four loops:
-
-1. management `http.Server.Serve`;
-2. player `http.Server.Serve`;
-3. UDP `Relay.Run`;
-4. one 1s ticker calling Relay Store `Expire()` and Lobby Manager `Expire()`.
-
-Caller cancellation, `Close`, fatal CSPRNG failure or unexpected owned-loop exit cancels siblings, closes all listeners, joins all four results and returns a fixed secret-free error for unexpected failure. After `Run` joins, all three addresses are reusable.
-
-## 11. Existing Relay Contract
-
-The following implemented properties remain unchanged:
-
-- proto3 `relay.v1`, protocol revision `1`
-- one datagram = one bounded envelope
-- maximum datagram `1200`, opaque payload `900`
-- HELLO→CHALLENGE→AUTH→BOUND with exact-source binding
-- binding-scoped 64-bit replay window
-- HMAC-authenticated client data and server fan-out
-- same-room active/bound recipients excluding sender
-- queue-free synchronous one-attempt writes with bounded deadline
-- pre-auth/session/room/process packet/byte limits and room/process fan-out limits
-- exact monotonic authority and bounded cleanup/tombstones
-
-References: [ADR 0001](./decisions/0001-m1-wire-and-threat-boundary.md), [ADR 0002](./decisions/0002-m1-control-lifecycle-policy.md), [ADR 0003](./decisions/0003-m1-udp-admission-and-fanout-policy.md).
-
-## 12. Error, Privacy and Cleanup Invariants
-
-- auth failure cannot reveal whether player, Lobby, ticket, room or grant exists;
-- private Lobby never appears in list;
-- non-member exact private get returns the same not-found shape as unknown;
-- response assignment is indexed only by verified claim;
-- mutation validates auth, path/body, limits, ownership, revision and deadline before state change;
-- allocation failure creates no matched Lobby/Ticket state;
-- expiry is authoritative at `now >= deadline` regardless of sweep;
-- one server sweeper removes expired Lobby/Ticket/assignment and existing Relay records;
-- process restart intentionally loses all state and invalidates Player Tokens via process nonce.
-
-## 13. Verification Matrix
-
-| Boundary | Required evidence |
+| `app` | 설정 검증, 의존성 조립, listener 생성·실행·종료와 자원 정리 | `control`, `coordinator`, `relay`, `playerauth`, `operatortoken`, `httpx` |
+| `control` | `Server`의 HTTP 입력·인증·응답, `Manager`의 로비·FIFO·소속·만료·배정 상태와 잠금 | `relay`, `playerauth`, `protocol`, `httpx` |
+| `coordinator` | 노드 등록·선택, 예약 소유권, 장애 감지·복원·드레이닝 | `control`, `relay`, `protocol`, `operatortoken`, `httpx` |
+| `relay` | 방·연결·접속권·재접속 세대·상태 캐시·이벤트 큐·전송 예산·계측 | `protocol`, `httpx`, `gen` |
+| `playerauth` | 플레이어 토큰 발급·서명·만료 검증 | `protocol` |
+| `operatortoken` | 토큰 파싱과 파일 권한·크기·교체 여부 검증 | 없음 |
+| `protocol` | Protobuf 인코딩·디코딩, 메시지와 식별자 검증 | `gen` |
+| `httpx` | HTTP 입력·오류·요청 제한·신뢰 프록시 IP 처리 | 없음 |
+| `gen/go/relay/v2` | 스키마에서 생성한 메시지 타입 | 없음 |
+
+`control/http.go`는 Manager를 호출하고 응답을 쓴다. `manager.go`·`lobby.go`·`queue.go`·`allocation.go`는 상태 변경을 처리한다.
+`views.go`는 응답용 복사본을 만든다. `errors.go`는 업무 오류 타입을 정의하고 `http.go`가 HTTP 상태로 변환한다.
+Manager는 잠금 안에서 응답 슬라이스와 맵을 복사한다. JSON 인코딩과 원격 예약 호출은 잠금 밖에서 실행한다.
+
+`coordinator`는 노드 호출·배정·복구·관리 API를 파일별로 나눈다. `Pool`은 노드와 예약 소유권을 보관한다.
+`relay`는 서버·연결·방·접속권·예약·관리·계측을 파일별로 나눈다. 잠금 순서는 `server.mu → room.mu → client.mu`다.
+메시지는 연결별 writer 하나가 전송한다. 기능 모듈의 생성과 정리는 `app.Run`이 조립한다.
+
+### 명령과 Go 외부 경로
+
+| 경로 | 역할 | 구현 또는 계약 |
+|---|---|---|
+| `cmd/wss-relay` | 신호와 종료 코드를 처리하는 서버 진입점 | `app.Run` 호출 |
+| `cmd/relay-load` | 별도 TLS 서버의 부하 측정 | `relay`와 Go 생성 메시지 사용 |
+| `cmd/wire-check` | Go→TS→Go 메시지 호환 검사 | Go 생성 메시지 사용 |
+| `cmd/dev-tls` | 로컬 인증서 생성 | 표준 라이브러리 사용 |
+| `api/relay/v2` | WSS 바이너리 계약과 호환성 기준 | `relay.proto`, `relay-baseline.binpb` |
+| `client/src/relay` | 게임에 독립적인 공용 TS SDK | `api.ts`는 HTTP, `client.ts`는 WSS 담당 |
+| `client/src/relay/gen/relay/v2` | 같은 스키마에서 생성한 TS 메시지 | SDK가 사용 |
+| `client/src/demo` | 게임 상태·모션·보간·검증 화면 | SDK와 `snake-state.ts`의 게임 계약 사용 |
+| `client/android` | Capacitor Android 앱 | 웹 SDK와 검증 화면 사용 |
+| `client/MinbWebKit` | 고정한 공용 viewport·SR·빌드 정책 | 외부 서브모듈 |
+| `client/scripts` | SDK·수명주기·복구·호환 검사 | 실제 소켓 검사와 경계 대체 검사를 구분 |
+| `infrastructure` | 역할별 설정·서비스·패키징·배포·비용 가드 | `config`, `ops`, `scripts`, `docs` |
+| `scripts` | 도구 설치·프로토콜 생성·부하 결과 검사 | Makefile과 CI에서 사용 |
+
+## 역할별 실행 조립
+
+[app.Run](../internal/app/run.go)이 `--role` 값으로 구성을 선택한다. 세 역할은 같은 `cmd/wss-relay` 바이너리를 사용한다.
+
+- `standalone`: `control.Server`와 `relay.Server`를 함께 만든다. `control.LocalAllocator`가 같은 프로세스의 방 예약과 접속권 갱신을 호출한다.
+- `coordinator`: `control.Server`와 `coordinator.Pool`을 만든다. Pool이 원격 relay의 관리 API로 예약·조회·복원을 처리한다.
+- `relay`: `relay.Server`가 WSS 연결과 노드 관리 API를 제공한다. 공개 로비 API는 coordinator가 제공한다.
+
+`control`이 [Allocator](../internal/control/allocation.go) 계약을 소유한다. `coordinator.Pool`과 `control.LocalAllocator`가 이 계약을 구현하며 `app`이 선택해 주입한다.
+실제 import 방향은 `coordinator → control`이다. `control → relay`는 LocalAllocator와 `relay.Ticket`·오류 타입을 공유하는 의존이다.
+`protocol`·`httpx`·`operatortoken`은 실행 역할을 선택하지 않는다.
+
+참가자는 제어 API에서 자기 배정을 받은 뒤 지정된 relay와 WSS로 직접 데이터를 교환한다.
+coordinator는 게임 데이터 중계 경로에 들어가지 않는다. 두 경로의 조립 근거는 [app.Run](../internal/app/run.go)과 [노드 호출](../internal/coordinator/node_client.go)에 있다.
+`app.Run`은 취소·오류·드레이닝 때 listener와 릴레이를 닫는다. Pool이 소유한 유휴 HTTP 연결도 정리한다.
+
+## 승인 설계와 구현의 차이
+
+[승인 설계](superpowers/specs/2026-10-23-go-structure-refactor-design.md)의 큰 폴더 구조와 상태 소유권은 그대로다.
+아래는 구체 구현 선택, 작업 순서 조정과 리뷰 후 보강을 구분한 기록이다.
+
+| 항목 | 구분 | 실제 구현과 이유 | 소스 근거 |
+|---|---|---|---|
+| Manager 연결 | 구현 선택 | HTTP `Server`가 구체 타입 `*Manager`를 임베딩한다. 상태 소유권을 분리하면서 전달 메서드와 새 인터페이스를 줄였다. | [http.go](../internal/control/http.go) |
+| v1 인증 옵션 제거 | 작업 순서 조정 | 실행 조립을 바꾼 Task 5에서 임의 키 옵션을 제거했다. 전체 제품 호출자가 안정 키를 사용함을 확인하고 활성 v2 토큰 결과를 유지했다. | [auth.go](../internal/playerauth/auth.go), [실행 계획](superpowers/plans/2026-10-23-go-structure-refactor.md) |
+| 배포 입력 검사 | 리뷰 후 보강 | `caFile` 타입·숫자 표기·원시 URL 검사를 보강했다. Python과 Go의 해석 차이로 잘못된 설정이 승격하는 사례를 막았다. | [deploy-preflight.py](../infrastructure/scripts/deploy-preflight.py) |
+| 데모 중복 진입 | 추가 리뷰 수정 | 공통 `entryAction`과 회귀 검사를 추가했다. 겹친 create·join·match가 먼저 성공한 서버 소속을 버리는 오류를 수정했다. | [main.ts](../client/src/demo/main.ts), [회귀 검사](../client/scripts/check-demo-entry.mjs) |
+
+배정 결과 분류·FIFO 만료·토큰 파일 보안·연결 정리·SDK 수명주기 검사는 처음부터 승인 범위였다.
+위 보강은 서버 API나 패키지 경계를 새로 만들지 않았다. 발견 조건·수정 커밋·실행 결과는 [구조 변경 증거](evidence/v2/2026-10-23-structure-refactor.md)에 보존한다.
+
+v1 서버·UDP·C#·Unity 실행 경로는 제거했다. 이전 구현은 Git 이력에서 확인한다.
+활성 인증의 `tokenVersion=1`·`player-token/v1`과 `snake-demo.v1`·`demo.v1`·`load.v1`은 유지한다.
+
+## 전송과 권한
+
+운영 제어 API는 HTTPS, 게임 경로는 /v2/relay WSS이며 서브프로토콜은 relay.v2다.
+관리 API는 운영자 토큰으로 인증하며 루프백 주소에서 수신한다.
+클라이언트에는 플레이어 토큰과 자기 접속권만 전달한다. 운영자 토큰은 전달하지 않는다.
+최초 Connect는 번호 0, 나머지는 증가하는 uint32 번호를 사용한다.
+uint64는 TS에서 bigint로 보존한다. 모든 메시지 종류의 양방향 호환 검사를 유지한다.
+
+전체 메시지·본문·빈도·TTL·큐 한도는 [메시지 명세](specs/2026-10-20-relay-v2-message-spec.md)를 따른다.
+연결별 제어·사건 대기열은 32개·256 KiB, 참가자별 대기 상태는 한 개다.
+방 잠금 안에서 네트워크 쓰기를 하지 않는다. 실제 소켓 송신은 연결별 writer 하나가 수행한다.
+스냅샷 이전 상태가 이후에 객체를 복원하지 않도록 세대·상태 번호와 참가자 목록을 검사한다.
+
+## 공개 제어 API
+
+접두사는 /v2/api다. Authorization은 Bearer 플레이어 토큰이다.
+CORS preflight를 인증 전에 처리한다. WSS Origin 검사는 별도로 수행한다.
+게스트 발급에는 IP별 제한을 적용한다. 임의 Forwarded 헤더로 접속자 IP를 덮어쓰지 않는다.
+
+| 요청 | 역할 |
 |---|---|
-| Player Token | valid, exact expiry, tamper, strict encoding, different secret/nonce, fatal random |
-| Lobby | create/list/privacy, capacity, revision, join/leave, owner transfer, ready reset, start gates, exact expiry |
-| Quick Match | FIFO equality/one-over, key/capacity isolation, cancel, expiry, rollback, concurrent grouping |
-| HTTP | exact routes/methods, auth, strict JSON/query, bounds, fixed errors, no-store, redaction |
-| Assignment | caller-private grant, no cross-player selection, Relay room definition correctness |
-| E2E | Lobby and Quick Match HTTP→two UDP binds→same-room exchange |
-| Lifecycle | bind rollback, four-loop cancellation/fatal join, address reuse, restart token invalidation |
-| Regression | protocol-check, all Go tests, race, protocol/Relay fuzz, vet, binary build |
+| POST /sessions | 서버 식별자와 15분 플레이어 토큰 발급 |
+| POST /sessions/refresh | 현재 플레이어 토큰 갱신 |
+| GET /lobbies | 호환 계약별 공개 로비 목록 |
+| GET /lobbies/{id}/preview | 코드로 찾은 로비의 참가 전 요약 |
+| POST /lobbies | 방 생성 |
+| GET /lobbies/{id} | 참여한 방 조회 |
+| POST /lobbies/{id}/join | 방 코드로 참가 |
+| POST /lobbies/{id}/ready | 준비 상태와 revision 갱신 |
+| POST /lobbies/{id}/leave | 대기방 퇴장·소유자 이전 |
+| POST /lobbies/{id}/start | 소유자가 매치 시작 |
+| GET /lobbies/{id}/assignment | 자기 배정만 조회 |
+| POST /lobbies/{id}/assignment | 같은 참가자의 접속권 재발급 |
+| POST /matchmaking | 호환 계약·정원별 FIFO 대기 등록 |
+| GET /matchmaking/{id} | 자기 매칭표 조회 |
+| DELETE /matchmaking/{id} | 아직 묶이지 않은 대기 취소 |
 
-M1 completion evidence is recorded only from a clean candidate after all rows pass.
+참가·준비·시작·퇴장은 현재 revision을 요구한다. 변경 충돌은 409다.
+예약 결과가 불확실하면 참가자 구성을 고정하고 같은 시작 요청을 재시도한다.
+전체 본문·응답 계약은 [HTTP API 명세](specs/2026-10-22-control-v2-http.md)를 따른다.
 
-## 14. Requirement Traceability
+## 측정과 분산
 
-| Component | Requirements | Phase |
-|---|---|---:|
-| existing protocol/store/control/relay/server | PROT-01~02, ROOM-01~03, SESS-01~04, RELY-01~03, SAFE-01~03 | 1–3 complete |
-| `internal/playerauth`, operator token endpoint | AUTH-01 | 4 complete |
-| `internal/matchmaking` lifecycle, `internal/httpapi/playerapi` | LOBBY-01~04 | 4 complete |
-| `internal/matchmaking` matcher and assignment, E2E | MATCH-01~03 | 5 complete |
-| actual C# game client integration | UNITY-01~03 | 6 |
-| operations | OPS-01~04 | 7 |
-| packaging/deployment | SHIP-01~03 | 8 |
-| drills/performance | VERI-01~02, PERF-01~02 | 9 |
+관리 경로 GET /v2/status는 누적 전송량, 큐·쓰기 지연, 대기 시간, Go 메모리와 연결 수를 반환한다.
+Protobuf 바이트는 TLS/TCP 오버헤드를 포함하지 않는다. 히스토그램 p95/p99는 버킷 상한이다.
+부하 도구는 별도 프로세스의 OS CPU·RSS를 수집한다. 실제 Android 지연과 구분한다.
 
-## 15. Deferred Adoption Triggers
-
-| Candidate | Adopt only when |
-|---|---|
-| Steamworks | real Steam identity/invite flow is selected and its ticket verification boundary is approved |
-| FishNet | actual gameplay client chooses FishNet and Relay/transport responsibility is defined |
-| Open Match | FIFO exact-key matching cannot express required pools/functions/backfill |
-| Redis/database | restart loss or multi-process ownership is no longer acceptable with explicit consistency semantics |
-| Kubernetes/Agones | measured single-host limits require a multi-instance fleet |
-
-M1 contains no scaffolding for these candidates.
+분산은 같은 코드베이스의 standalone/coordinator/relay 역할로 구성한다.
+실제 프로세스 검사는 방 단일 소유·격리, 드레이닝 중 복귀, 배정기 재시작, 노드 종료·재시작, 증설과 배수 완료 후 종료를 확인한다.
+운영자는 [배포 절차](../infrastructure/README.md)의 네트워크·키·상한을 환경에 맞게 설정한다.
+배포는 flat `infrastructure/{config,ops,scripts,docs}`만 사용한다. 운영 형식과 수동 호스트 준비는 [운영 절차](../infrastructure/docs/operations.md)를 따른다.
+검사 명령·소스 연결·미실행 조건은 [구조 변경 증거](evidence/v2/2026-10-23-structure-refactor.md)에 있다.

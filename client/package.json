@@ -1,0 +1,33 @@
+{
+  "name": "@storio/wss-relay-client",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "proto": "make -C .. proto-generate",
+    "check": "node --disable-warning=ExperimentalWarning --experimental-transform-types scripts/check-sdk.ts",
+    "build:app": "MINB_APP_PLATFORM=android npm run build",
+    "android:sync": "npm run build:app && cap sync android",
+    "check:lifecycle": "node --disable-warning=ExperimentalWarning --experimental-transform-types scripts/check-lifecycle.ts"
+  },
+  "exports": {
+    "./relay": "./src/relay/client.ts"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "2.16.0",
+    "@capacitor/app": "7.1.2",
+    "@capacitor/core": "7.6.9",
+    "@minbgames/web-kit": "file:MinbWebKit",
+    "phaser": "3.90.0"
+  },
+  "devDependencies": {
+    "@bufbuild/protoc-gen-es": "2.16.0",
+    "@capacitor/android": "7.6.9",
+    "@capacitor/cli": "7.6.9",
+    "@types/node": "26.6.5",
+    "typescript": "6.0.2",
+    "vite": "8.3.5"
+  }
+}

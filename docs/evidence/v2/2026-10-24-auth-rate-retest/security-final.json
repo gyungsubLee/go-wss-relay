@@ -1,0 +1,94 @@
+{
+  "missingBearer": {
+    "status": 401,
+    "passed": true
+  },
+  "forgedBearer": {
+    "status": 401,
+    "passed": true
+  },
+  "badOriginHTTP": {
+    "status": 403,
+    "passed": true
+  },
+  "credentialQuery": {
+    "status": 400,
+    "passed": true
+  },
+  "duplicateJSON": {
+    "status": 400,
+    "passed": true
+  },
+  "oversizedJSON": {
+    "status": 413,
+    "passed": true
+  },
+  "managementOnPublic": {
+    "status": 404,
+    "passed": true
+  },
+  "managementUnauthorized": {
+    "status": 401,
+    "passed": true
+  },
+  "badOriginWSS": {
+    "status": 403,
+    "passed": true
+  },
+  "singleUseTicket": {
+    "errorCode": 4,
+    "passed": true
+  },
+  "applicationIsolation": {
+    "errorCode": 3,
+    "correctProtocolStillWorks": true
+  },
+  "textFrame": {
+    "closeCode": 1003,
+    "passed": true
+  },
+  "oversizedFrame": {
+    "closeCode": 1009,
+    "passed": true
+  },
+  "authenticatedOverRate": {
+    "durationMs": 1103.0236249999998,
+    "sent": 92,
+    "errorsReceived": 67,
+    "stillOpen": true,
+    "rateRejectedDelta": 67,
+    "ingressBytesDelta": 95128
+  },
+  "silentAuthAdmission": {
+    "silentConnections": 64,
+    "rejected429": 16,
+    "holdMs": 102.3750829999999,
+    "sameIPUpgradeStatus": 429,
+    "untrustedXFFUpgradeStatus": 429,
+    "expectedMaxPerIP": 64,
+    "declaredGlobalLimit": 128,
+    "enforcement": "per-IP cap required below global limit",
+    "passed": true,
+    "independentIPIsolation": "Covered by product regression tests; this loopback probe uses one source IP."
+  },
+  "authSuccessReleasesSlot": {
+    "successiveWelcomesWithOneFreeSlot": 2,
+    "passed": true
+  },
+  "silentAuthRecovery": {
+    "status": 101,
+    "passed": true
+  },
+  "guestRateAndUntrustedXFF": {
+    "attempted": 64,
+    "accepted": 40,
+    "rejected429": 24,
+    "passed": true
+  },
+  "passed": true,
+  "cleanup": {
+    "rooms": 0,
+    "connections": 0,
+    "reservedParticipants": 0
+  }
+}

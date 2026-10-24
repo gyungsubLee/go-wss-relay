@@ -1,0 +1,10 @@
+=== RUN   TestPacedStateUpdatesSurviveReaderPause
+2026/10/24 00:14:23 DIAG rate_reject participant=sender seq=4 kind=*relayv2.ClientEnvelope_StateUpdate reason=message_kind received_us=1792768463230229 gap_us=3 total_tokens=38.000 kind_tokens=0.000 node_tokens=2097152 room_tokens=131035 arrivals_us=[1792768462971131 1792768463230216 1792768463230226 1792768463230229 0 0 0 0] index=4
+2026/10/24 00:14:23 DIAG rate_reject participant=sender seq=5 kind=*relayv2.ClientEnvelope_StateUpdate reason=message_kind received_us=1792768463230583 gap_us=354 total_tokens=37.015 kind_tokens=0.007 node_tokens=2097152 room_tokens=131072 arrivals_us=[1792768462971131 1792768463230216 1792768463230226 1792768463230229 1792768463230583 0 0 0] index=5
+2026/10/24 00:14:23 DIAG rate_reject participant=sender seq=6 kind=*relayv2.ClientEnvelope_StateUpdate reason=message_kind received_us=1792768463230597 gap_us=13 total_tokens=36.015 kind_tokens=0.007 node_tokens=2097152 room_tokens=131072 arrivals_us=[1792768462971131 1792768463230216 1792768463230226 1792768463230229 1792768463230583 1792768463230597 0 0] index=6
+    rate_jitter_test.go:75: 20Hz publisher was rejected after a reader pause: code:ERROR_CODE_RATE_LIMITED message:"rate limited" related_client_sequence:4 retry_after_ms:1000
+2026/10/24 00:14:23 DIAG write_error participant=sender context=context canceled terminal=&{5 1012 server restarting} status=-1 error=failed to write msg: failed to write frame: context canceled
+--- FAIL: TestPacedStateUpdatesSurviveReaderPause (0.27s)
+FAIL
+FAIL	github.com/gyungsubLee/go-wss-relay/internal/relay	0.872s
+FAIL

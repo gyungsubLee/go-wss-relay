@@ -1,0 +1,95 @@
+[
+  {
+    "participants": 2,
+    "roomSize": 2,
+    "publishHz": 20,
+    "statePayloadBytes": 100,
+    "measurementSeconds": 10,
+    "slowReadMs": 0,
+    "connected": 2,
+    "receivedStates": 398,
+    "p95Ms": 50.462,
+    "p99Ms": 50.656,
+    "egressBytesPerSecond": 5274.233311604454,
+    "peakRssKiB": 20288,
+    "peakCpuPercent": 0.9,
+    "failures": 0,
+    "name": "default-c2-n2-f20-b100-s10-slow0",
+    "passed": true,
+    "exitCode": 0,
+    "cleanup": {
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "goroutines": 7,
+      "heapAllocBytes": 6276856
+    },
+    "metricDelta": {
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0
+    }
+  },
+  {
+    "participants": 100,
+    "roomSize": 2,
+    "publishHz": 10,
+    "statePayloadBytes": 100,
+    "measurementSeconds": 10,
+    "slowReadMs": 0,
+    "connected": 100,
+    "receivedStates": 10000,
+    "p95Ms": 48.425,
+    "p99Ms": 50.368,
+    "egressBytesPerSecond": 132517.1736027562,
+    "peakRssKiB": 27696,
+    "peakCpuPercent": 11.6,
+    "failures": 0,
+    "name": "default-c100-n2-f10-b100-s10-slow0",
+    "passed": true,
+    "exitCode": 0,
+    "cleanup": {
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "goroutines": 7,
+      "heapAllocBytes": 2079928
+    },
+    "metricDelta": {
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0
+    }
+  },
+  {
+    "participants": 100,
+    "roomSize": 2,
+    "publishHz": 20,
+    "statePayloadBytes": 100,
+    "measurementSeconds": 15,
+    "slowReadMs": 0,
+    "connected": 100,
+    "receivedStates": 29976,
+    "p95Ms": 48.717,
+    "p99Ms": 50.287,
+    "egressBytesPerSecond": 267744.7034325819,
+    "peakRssKiB": 28640,
+    "peakCpuPercent": 20.4,
+    "failures": 0,
+    "name": "default-c100-n2-f20-b100-s15-slow0",
+    "passed": true,
+    "exitCode": 0,
+    "cleanup": {
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "goroutines": 7,
+      "heapAllocBytes": 3891056
+    },
+    "metricDelta": {
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0
+    }
+  }
+]

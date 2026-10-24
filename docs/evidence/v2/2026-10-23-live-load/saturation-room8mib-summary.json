@@ -1,0 +1,56 @@
+[
+  {
+    "participants": 16,
+    "roomSize": 16,
+    "publishHz": 18,
+    "statePayloadBytes": 1127,
+    "measurementSeconds": 15,
+    "slowReadMs": 0,
+    "connected": 16,
+    "receivedStates": 65028,
+    "p95Ms": 48.901,
+    "p99Ms": 50.773,
+    "egressBytesPerSecond": 4985893.312706,
+    "peakRssKiB": 21376,
+    "peakCpuPercent": 6.3,
+    "failures": 0,
+    "name": "saturation-room8mib-c16-n16-f18-b1127-s15-slow0",
+    "passed": true,
+    "exitCode": 0,
+    "latencyGateApplied": false,
+    "latencyWithinNormalGate": true,
+    "nodeLimits": {
+      "maxRooms": 512,
+      "maxParticipants": 200
+    },
+    "traffic": {
+      "nodeIngressBytesPerSecond": 8388608,
+      "nodeEgressBytesPerSecond": 67108864,
+      "roomIngressBytesPerSecond": 524288,
+      "roomEgressBytesPerSecond": 8388608
+    },
+    "baseline": {
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0
+    },
+    "cleanup": {
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "goroutines": 7,
+      "heapAllocBytes": 2654512
+    },
+    "metricDelta": {
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0
+    },
+    "protobufByteDelta": {
+      "ingressBytes": 4932912,
+      "egressBytes": 75307689
+    },
+    "receivedStatePayloadBytes": 73286556,
+    "ingressBytesPerSecond": 326593.1179081485
+  }
+]

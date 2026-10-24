@@ -1,10 +1,8 @@
 package playerauth
 
 import (
-	"bytes"
 	"encoding/base64"
 	"errors"
-	"io"
 	"strings"
 	"testing"
 	"time"
@@ -18,7 +16,7 @@ func (clock *authTestClock) read() time.Time { return clock.now }
 
 func TestIssueAndVerifyPlayerToken(t *testing.T) {
 	clock := &authTestClock{now: authTestNow}
-	auth := newTestAuth(t, clock, 0x21, testOperatorSecret(0x41))
+	auth := newTestAuth(t, clock, testOperatorSecret(0x41))
 
 	token, issued, err := auth.Issue("player-a")
 	if err != nil {
@@ -51,7 +49,7 @@ func TestIssueAndVerifyPlayerToken(t *testing.T) {
 
 func TestPlayerTokenRejectsTamperingAndNonCanonicalEncoding(t *testing.T) {
 	clock := &authTestClock{now: authTestNow}
-	auth := newTestAuth(t, clock, 0x22, testOperatorSecret(0x42))
+	auth := newTestAuth(t, clock, testOperatorSecret(0x42))
 	token, _, err := auth.Issue("player-a")
 	if err != nil {
 		t.Fatalf("Issue: %v", err)
@@ -79,31 +77,24 @@ func TestPlayerTokenRejectsTamperingAndNonCanonicalEncoding(t *testing.T) {
 	}
 }
 
-func TestPlayerTokenIsScopedToSecretAndProcessNonce(t *testing.T) {
+func TestPlayerTokenIsScopedToSecret(t *testing.T) {
 	clock := &authTestClock{now: authTestNow}
-	issuer := newTestAuth(t, clock, 0x23, testOperatorSecret(0x43))
+	issuer := newTestAuth(t, clock, testOperatorSecret(0x43))
 	token, _, err := issuer.Issue("player-a")
 	if err != nil {
 		t.Fatalf("Issue: %v", err)
 	}
 
-	for name, verifier := range map[string]*Issuer{
-		"different process": newTestAuth(t, clock, 0x24, testOperatorSecret(0x43)),
-		"different secret":  newTestAuth(t, clock, 0x23, testOperatorSecret(0x44)),
-	} {
-		t.Run(name, func(t *testing.T) {
-			if _, err := verifier.Verify(token); !errors.Is(err, ErrInvalid) {
-				t.Fatalf("Verify = %v, want invalid", err)
-			}
-		})
+	verifier := newTestAuth(t, clock, testOperatorSecret(0x44))
+	if _, err := verifier.Verify(token); !errors.Is(err, ErrInvalid) {
+		t.Fatalf("Verify with different secret = %v, want invalid", err)
 	}
 }
 
-func TestPlayerAuthValidationAndFatalRandom(t *testing.T) {
+func TestPlayerAuthValidation(t *testing.T) {
 	valid := Config{
 		OperatorSecret: testOperatorSecret(0x45),
 		Now:            func() time.Time { return authTestNow },
-		Random:         bytes.NewReader(bytes.Repeat([]byte{0x25}, 32)),
 		TokenTTL:       HardTokenTTL,
 	}
 	for name, mutate := range map[string]func(*Config){
@@ -119,17 +110,11 @@ func TestPlayerAuthValidationAndFatalRandom(t *testing.T) {
 			}
 		})
 	}
-
-	failed := valid
-	failed.Random = errorReader{}
-	if _, err := New(failed); !errors.Is(err, ErrFatalRandom) {
-		t.Fatalf("New random failure = %v, want fatal random", err)
-	}
 }
 
 func TestPlayerAuthRejectsInvalidPlayerIDsWithoutLeakingInput(t *testing.T) {
 	clock := &authTestClock{now: authTestNow}
-	auth := newTestAuth(t, clock, 0x26, testOperatorSecret(0x46))
+	auth := newTestAuth(t, clock, testOperatorSecret(0x46))
 	for _, playerID := range []string{"", "-bad", "bad!", strings.Repeat("a", 65)} {
 		if _, _, err := auth.Issue(playerID); !errors.Is(err, ErrInvalid) {
 			t.Fatalf("Issue(%q) = %v, want invalid", playerID, err)
@@ -141,7 +126,7 @@ func TestPlayerAuthRejectsInvalidPlayerIDsWithoutLeakingInput(t *testing.T) {
 
 func TestPlayerAuthErrorsDoNotLeakToken(t *testing.T) {
 	clock := &authTestClock{now: authTestNow}
-	auth := newTestAuth(t, clock, 0x27, testOperatorSecret(0x47))
+	auth := newTestAuth(t, clock, testOperatorSecret(0x47))
 	candidate := "sensitive-player-token"
 	_, err := auth.Verify(candidate)
 	if !errors.Is(err, ErrInvalid) {
@@ -152,12 +137,11 @@ func TestPlayerAuthErrorsDoNotLeakToken(t *testing.T) {
 	}
 }
 
-func newTestAuth(t *testing.T, clock *authTestClock, nonceByte byte, secret [32]byte) *Issuer {
+func newTestAuth(t *testing.T, clock *authTestClock, secret [32]byte) *Issuer {
 	t.Helper()
 	auth, err := New(Config{
 		OperatorSecret: secret,
 		Now:            clock.read,
-		Random:         bytes.NewReader(bytes.Repeat([]byte{nonceByte}, 32)),
 		TokenTTL:       HardTokenTTL,
 	})
 	if err != nil {
@@ -174,6 +158,21 @@ func testOperatorSecret(value byte) [32]byte {
 	return secret
 }
 
-type errorReader struct{}
-
-func (errorReader) Read([]byte) (int, error) { return 0, io.ErrUnexpectedEOF }
+func TestDefaultIssuerSurvivesRestart(t *testing.T) {
+	config := Config{OperatorSecret: testOperatorSecret(0x41), TokenTTL: HardTokenTTL}
+	first, err := New(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	token, _, err := first.Issue("player-a")
+	if err != nil {
+		t.Fatal(err)
+	}
+	restarted, err := New(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := restarted.Verify(token); err != nil {
+		t.Fatalf("default issuer restart invalidated player identity: %v", err)
+	}
+}

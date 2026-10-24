@@ -1,0 +1,50 @@
+{
+  "finalOwnServerPID": 54840,
+  "statusBeforeStop": {
+    "goCpuReady": false,
+    "systemBytes": 36821272,
+    "goBusyFractionEstimate": 0,
+    "nodeId": "local",
+    "rooms": 0,
+    "connections": 0,
+    "reservedParticipants": 0,
+    "ingressBytes": 216731305,
+    "egressBytes": 3143998775,
+    "receivedMessages": 283470,
+    "sentMessages": 305779,
+    "rateRejected": 67,
+    "queueOverflows": 0,
+    "writeErrors": 134,
+    "queueP95UpperMs": 50,
+    "queueP99UpperMs": 50,
+    "writeP95UpperMs": 1,
+    "writeP99UpperMs": 1,
+    "oldestQueuedMs": 0,
+    "heapAllocBytes": 2798536,
+    "gcCycles": 835,
+    "goroutines": 7,
+    "traffic": {
+      "nodeIngressBytesPerSecond": 8388608,
+      "nodeEgressBytesPerSecond": 67108864,
+      "roomIngressBytesPerSecond": 524288,
+      "roomEgressBytesPerSecond": 4194304
+    }
+  },
+  "signal": "SIGTERM",
+  "otherTestServersStopped": [
+    38080,
+    49768,
+    54149
+  ],
+  "portsClosed": {
+    "19443": true,
+    "19092": true
+  },
+  "noOwnTestServerProcesses": true,
+  "serverExitCodes": {
+    "baselineDiagnostic": 0,
+    "initialFinal": 0,
+    "slowDiagnostic": 0,
+    "resumedFinal": 0
+  }
+}

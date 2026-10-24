@@ -1,0 +1,7 @@
+{
+  "Replace": {
+    "/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/internal/relay/connection.go": "/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.cache/shutdown-retest/connection-baseline.go",
+    "/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/internal/relay/server.go": "/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.cache/shutdown-retest/server-baseline.go",
+    "/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/cmd/relay-load/main.go": "/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.cache/shutdown-retest/load-forceclose.go"
+  }
+}

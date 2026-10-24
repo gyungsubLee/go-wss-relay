@@ -1,0 +1,1807 @@
+{
+  "recordedAt": "2026-10-24T01:59:23.297Z",
+  "passed": true,
+  "transport": "public HTTPS matchmaking + real TypeScript RelayClient WSS; explicit Node CA trust; local host",
+  "profile": {
+    "base": "https://localhost:19443",
+    "participants": 200,
+    "roomSize": 16,
+    "payloadBytes": 679,
+    "publishHz": 10,
+    "measurementSeconds": 30
+  },
+  "setupMs": 13275.592666,
+  "steadyMs": 30000.728082999998,
+  "totalMs": 54789.606708,
+  "rooms": [
+    {
+      "participants": 16,
+      "setupMs": 1119.610041
+    },
+    {
+      "participants": 16,
+      "setupMs": 1048.942292
+    },
+    {
+      "participants": 16,
+      "setupMs": 1055.7607910000002
+    },
+    {
+      "participants": 16,
+      "setupMs": 1090.7664999999997
+    },
+    {
+      "participants": 16,
+      "setupMs": 1049.859292
+    },
+    {
+      "participants": 16,
+      "setupMs": 1050.8918329999997
+    },
+    {
+      "participants": 16,
+      "setupMs": 1057.2282919999998
+    },
+    {
+      "participants": 16,
+      "setupMs": 1059.2324589999998
+    },
+    {
+      "participants": 16,
+      "setupMs": 1046.1706250000007
+    },
+    {
+      "participants": 16,
+      "setupMs": 1043.462125
+    },
+    {
+      "participants": 16,
+      "setupMs": 1049.3008339999997
+    },
+    {
+      "participants": 16,
+      "setupMs": 1042.129417
+    },
+    {
+      "participants": 8,
+      "setupMs": 534.9754169999997
+    }
+  ],
+  "activeTotal": 200,
+  "activeMinimum": {
+    "warmup": 200,
+    "steady": 200,
+    "capacity": 200,
+    "reconnect": 0,
+    "afterReconnect": 200,
+    "finalDrain": 200
+  },
+  "statusTransitions": {
+    "closed": 400,
+    "connecting": 200,
+    "active": 400,
+    "reconnecting": 200
+  },
+  "httpStatuses": {
+    "200": 210,
+    "201": 404,
+    "409": 2
+  },
+  "receivedStates": 1157009,
+  "stateCounts": {
+    "warmup": 85246,
+    "steady": 879165,
+    "capacity": 34406,
+    "preReconnectDrain": 360,
+    "reconnect": 11055,
+    "afterReconnect": 146715,
+    "finalDrain": 40,
+    "cleanup": 22
+  },
+  "stateLatency": {
+    "sampling": "one in sixteen states; latest 65536 bounded samples per window",
+    "steady": {
+      "observations": 54947,
+      "sampleCount": 54947,
+      "p95Ms": 54.72600000000239,
+      "p99Ms": 67.5837079999983,
+      "maxMs": 123.32429200000115
+    },
+    "afterReconnect": {
+      "observations": 9170,
+      "sampleCount": 9170,
+      "p95Ms": 72.44358400000056,
+      "p99Ms": 83.67733299999963,
+      "maxMs": 93.73249999999825
+    }
+  },
+  "participantTraffic": [
+    {
+      "index": 0,
+      "receivedStates": 5950,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 1,
+      "receivedStates": 5951,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 2,
+      "receivedStates": 5948,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 3,
+      "receivedStates": 5949,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 4,
+      "receivedStates": 5947,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 5,
+      "receivedStates": 5945,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 6,
+      "receivedStates": 5945,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 7,
+      "receivedStates": 5946,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 8,
+      "receivedStates": 5942,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 9,
+      "receivedStates": 5958,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 10,
+      "receivedStates": 5957,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 11,
+      "receivedStates": 5935,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 12,
+      "receivedStates": 5940,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 13,
+      "receivedStates": 5939,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 14,
+      "receivedStates": 5938,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 15,
+      "receivedStates": 5937,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 16,
+      "receivedStates": 5934,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 17,
+      "receivedStates": 5933,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 18,
+      "receivedStates": 5938,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 19,
+      "receivedStates": 5936,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 20,
+      "receivedStates": 5946,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 21,
+      "receivedStates": 5944,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 22,
+      "receivedStates": 5945,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 23,
+      "receivedStates": 5943,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 24,
+      "receivedStates": 5944,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 25,
+      "receivedStates": 5926,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 26,
+      "receivedStates": 5927,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 27,
+      "receivedStates": 5924,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 28,
+      "receivedStates": 5925,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 29,
+      "receivedStates": 5923,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 30,
+      "receivedStates": 5921,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 31,
+      "receivedStates": 5921,
+      "peerSenders": 15,
+      "pongs": 3
+    },
+    {
+      "index": 32,
+      "receivedStates": 5943,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 33,
+      "receivedStates": 5953,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 34,
+      "receivedStates": 5959,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 35,
+      "receivedStates": 5957,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 36,
+      "receivedStates": 5958,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 37,
+      "receivedStates": 5941,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 38,
+      "receivedStates": 5955,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 39,
+      "receivedStates": 5939,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 40,
+      "receivedStates": 5938,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 41,
+      "receivedStates": 5936,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 42,
+      "receivedStates": 5935,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 43,
+      "receivedStates": 5934,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 44,
+      "receivedStates": 5933,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 45,
+      "receivedStates": 5932,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 46,
+      "receivedStates": 5932,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 47,
+      "receivedStates": 5930,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 48,
+      "receivedStates": 5940,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 49,
+      "receivedStates": 5939,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 50,
+      "receivedStates": 5937,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 51,
+      "receivedStates": 5936,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 52,
+      "receivedStates": 5935,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 53,
+      "receivedStates": 5933,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 54,
+      "receivedStates": 5934,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 55,
+      "receivedStates": 5938,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 56,
+      "receivedStates": 5931,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 57,
+      "receivedStates": 5937,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 58,
+      "receivedStates": 5944,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 59,
+      "receivedStates": 5943,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 60,
+      "receivedStates": 5942,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 61,
+      "receivedStates": 5941,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 62,
+      "receivedStates": 5925,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 63,
+      "receivedStates": 5923,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 64,
+      "receivedStates": 5897,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 65,
+      "receivedStates": 5896,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 66,
+      "receivedStates": 5895,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 67,
+      "receivedStates": 5891,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 68,
+      "receivedStates": 5880,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 69,
+      "receivedStates": 5883,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 70,
+      "receivedStates": 5890,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 71,
+      "receivedStates": 5902,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 72,
+      "receivedStates": 5911,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 73,
+      "receivedStates": 5898,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 74,
+      "receivedStates": 5902,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 75,
+      "receivedStates": 5904,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 76,
+      "receivedStates": 5902,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 77,
+      "receivedStates": 5890,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 78,
+      "receivedStates": 5903,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 79,
+      "receivedStates": 5882,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 80,
+      "receivedStates": 5900,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 81,
+      "receivedStates": 5888,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 82,
+      "receivedStates": 5897,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 83,
+      "receivedStates": 5902,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 84,
+      "receivedStates": 5910,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 85,
+      "receivedStates": 5895,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 86,
+      "receivedStates": 5898,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 87,
+      "receivedStates": 5911,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 88,
+      "receivedStates": 5908,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 89,
+      "receivedStates": 5908,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 90,
+      "receivedStates": 5906,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 91,
+      "receivedStates": 5906,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 92,
+      "receivedStates": 5897,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 93,
+      "receivedStates": 5894,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 94,
+      "receivedStates": 5892,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 95,
+      "receivedStates": 5889,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 96,
+      "receivedStates": 5899,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 97,
+      "receivedStates": 5898,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 98,
+      "receivedStates": 5893,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 99,
+      "receivedStates": 5896,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 100,
+      "receivedStates": 5902,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 101,
+      "receivedStates": 5897,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 102,
+      "receivedStates": 5906,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 103,
+      "receivedStates": 5903,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 104,
+      "receivedStates": 5907,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 105,
+      "receivedStates": 5899,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 106,
+      "receivedStates": 5891,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 107,
+      "receivedStates": 5911,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 108,
+      "receivedStates": 5902,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 109,
+      "receivedStates": 5898,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 110,
+      "receivedStates": 5893,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 111,
+      "receivedStates": 5897,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 112,
+      "receivedStates": 5924,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 113,
+      "receivedStates": 5923,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 114,
+      "receivedStates": 5905,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 115,
+      "receivedStates": 5907,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 116,
+      "receivedStates": 5902,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 117,
+      "receivedStates": 5900,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 118,
+      "receivedStates": 5913,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 119,
+      "receivedStates": 5897,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 120,
+      "receivedStates": 5890,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 121,
+      "receivedStates": 5903,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 122,
+      "receivedStates": 5901,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 123,
+      "receivedStates": 5898,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 124,
+      "receivedStates": 5899,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 125,
+      "receivedStates": 5891,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 126,
+      "receivedStates": 5888,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 127,
+      "receivedStates": 5898,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 128,
+      "receivedStates": 5909,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 129,
+      "receivedStates": 5915,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 130,
+      "receivedStates": 5912,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 131,
+      "receivedStates": 5907,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 132,
+      "receivedStates": 5890,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 133,
+      "receivedStates": 5902,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 134,
+      "receivedStates": 5898,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 135,
+      "receivedStates": 5905,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 136,
+      "receivedStates": 5895,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 137,
+      "receivedStates": 5903,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 138,
+      "receivedStates": 5907,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 139,
+      "receivedStates": 5900,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 140,
+      "receivedStates": 5902,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 141,
+      "receivedStates": 5897,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 142,
+      "receivedStates": 5906,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 143,
+      "receivedStates": 5898,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 144,
+      "receivedStates": 5887,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 145,
+      "receivedStates": 5889,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 146,
+      "receivedStates": 5884,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 147,
+      "receivedStates": 5899,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 148,
+      "receivedStates": 5893,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 149,
+      "receivedStates": 5895,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 150,
+      "receivedStates": 5894,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 151,
+      "receivedStates": 5898,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 152,
+      "receivedStates": 5876,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 153,
+      "receivedStates": 5873,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 154,
+      "receivedStates": 5881,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 155,
+      "receivedStates": 5879,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 156,
+      "receivedStates": 5871,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 157,
+      "receivedStates": 5876,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 158,
+      "receivedStates": 5880,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 159,
+      "receivedStates": 5869,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 160,
+      "receivedStates": 5907,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 161,
+      "receivedStates": 5904,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 162,
+      "receivedStates": 5904,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 163,
+      "receivedStates": 5902,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 164,
+      "receivedStates": 5919,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 165,
+      "receivedStates": 5916,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 166,
+      "receivedStates": 5913,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 167,
+      "receivedStates": 5915,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 168,
+      "receivedStates": 5920,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 169,
+      "receivedStates": 5908,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 170,
+      "receivedStates": 5893,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 171,
+      "receivedStates": 5925,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 172,
+      "receivedStates": 5907,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 173,
+      "receivedStates": 5899,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 174,
+      "receivedStates": 5911,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 175,
+      "receivedStates": 5909,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 176,
+      "receivedStates": 5889,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 177,
+      "receivedStates": 5876,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 178,
+      "receivedStates": 5881,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 179,
+      "receivedStates": 5886,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 180,
+      "receivedStates": 5875,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 181,
+      "receivedStates": 5879,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 182,
+      "receivedStates": 5880,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 183,
+      "receivedStates": 5889,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 184,
+      "receivedStates": 5883,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 185,
+      "receivedStates": 5900,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 186,
+      "receivedStates": 5899,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 187,
+      "receivedStates": 5898,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 188,
+      "receivedStates": 5901,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 189,
+      "receivedStates": 5901,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 190,
+      "receivedStates": 5883,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 191,
+      "receivedStates": 5893,
+      "peerSenders": 15,
+      "pongs": 2
+    },
+    {
+      "index": 192,
+      "receivedStates": 2751,
+      "peerSenders": 7,
+      "pongs": 2
+    },
+    {
+      "index": 193,
+      "receivedStates": 2751,
+      "peerSenders": 7,
+      "pongs": 2
+    },
+    {
+      "index": 194,
+      "receivedStates": 2747,
+      "peerSenders": 7,
+      "pongs": 2
+    },
+    {
+      "index": 195,
+      "receivedStates": 2749,
+      "peerSenders": 7,
+      "pongs": 2
+    },
+    {
+      "index": 196,
+      "receivedStates": 2746,
+      "peerSenders": 7,
+      "pongs": 2
+    },
+    {
+      "index": 197,
+      "receivedStates": 2744,
+      "peerSenders": 7,
+      "pongs": 2
+    },
+    {
+      "index": 198,
+      "receivedStates": 2748,
+      "peerSenders": 7,
+      "pongs": 2
+    },
+    {
+      "index": 199,
+      "receivedStates": 2750,
+      "peerSenders": 7,
+      "pongs": 2
+    }
+  ],
+  "events": {
+    "sent": 507,
+    "accepted": 507,
+    "received": 7293,
+    "expectedDeliveries": 7293,
+    "pending": 0,
+    "latency": {
+      "observations": 7293,
+      "sampleCount": 7293,
+      "p95Ms": 5.46833400000105,
+      "p99Ms": 16.180541999994603,
+      "maxMs": 21.343166999999085
+    }
+  },
+  "reconnect": {
+    "windowMs": 722.9619579999999,
+    "recovered": 200,
+    "observations": 200,
+    "sampleCount": 200,
+    "p95Ms": 540.5832080000037,
+    "p99Ms": 542.695375000003,
+    "maxMs": 543.7354170000035
+  },
+  "capacityProbe": {
+    "additionalPlayers": 2,
+    "responses": [
+      {
+        "method": "POST",
+        "path": "/v2/api/sessions",
+        "httpStatus": 201
+      },
+      {
+        "method": "POST",
+        "path": "/v2/api/matchmaking",
+        "httpStatus": 201,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "POST",
+        "path": "/v2/api/sessions",
+        "httpStatus": 201
+      },
+      {
+        "method": "POST",
+        "path": "/v2/api/matchmaking",
+        "httpStatus": 201,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      },
+      {
+        "method": "GET",
+        "path": "/v2/api/matchmaking/:ticket",
+        "httpStatus": 200,
+        "matchStatus": "queued",
+        "hasAssignment": false
+      }
+    ],
+    "cleanup": [
+      {
+        "status": "formed group expires after its existing two-minute TTL",
+        "httpStatus": 409
+      },
+      {
+        "status": "formed group expires after its existing two-minute TTL",
+        "httpStatus": 409
+      }
+    ]
+  },
+  "errorCount": 0,
+  "errors": [],
+  "errorDetails": [],
+  "metricSnapshots": [
+    {
+      "label": "before-setup",
+      "phase": "setup",
+      "elapsedMs": 27.19833300000002,
+      "stats": {
+        "goCpuReady": false,
+        "systemBytes": 12863752,
+        "goBusyFractionEstimate": 0,
+        "nodeId": "local",
+        "rooms": 0,
+        "connections": 0,
+        "reservedParticipants": 0,
+        "ingressBytes": 0,
+        "egressBytes": 0,
+        "receivedMessages": 0,
+        "sentMessages": 0,
+        "rateRejected": 0,
+        "queueOverflows": 0,
+        "writeErrors": 0,
+        "queueP95UpperMs": 0,
+        "queueP99UpperMs": 0,
+        "writeP95UpperMs": 0,
+        "writeP99UpperMs": 0,
+        "oldestQueuedMs": 0,
+        "heapAllocBytes": 459368,
+        "gcCycles": 0,
+        "goroutines": 7,
+        "traffic": {
+          "nodeIngressBytesPerSecond": 8388608,
+          "nodeEgressBytesPerSecond": 67108864,
+          "roomIngressBytesPerSecond": 524288,
+          "roomEgressBytesPerSecond": 4194304
+        }
+      }
+    },
+    {
+      "label": "enter-warmup",
+      "phase": "warmup",
+      "elapsedMs": 13277.667916,
+      "stats": {
+        "goCpuReady": false,
+        "systemBytes": 32819464,
+        "goBusyFractionEstimate": 0,
+        "nodeId": "local",
+        "rooms": 13,
+        "connections": 200,
+        "reservedParticipants": 200,
+        "ingressBytes": 14200,
+        "egressBytes": 159793,
+        "receivedMessages": 200,
+        "sentMessages": 1668,
+        "rateRejected": 0,
+        "queueOverflows": 0,
+        "writeErrors": 0,
+        "queueP95UpperMs": 1,
+        "queueP99UpperMs": 1,
+        "writeP95UpperMs": 1,
+        "writeP99UpperMs": 1,
+        "oldestQueuedMs": 0,
+        "heapAllocBytes": 8277920,
+        "gcCycles": 12,
+        "goroutines": 410,
+        "traffic": {
+          "nodeIngressBytesPerSecond": 8388608,
+          "nodeEgressBytesPerSecond": 67108864,
+          "roomIngressBytesPerSecond": 524288,
+          "roomEgressBytesPerSecond": 4194304
+        }
+      }
+    },
+    {
+      "label": "enter-steady",
+      "phase": "steady",
+      "elapsedMs": 16283.14825,
+      "stats": {
+        "goCpuReady": true,
+        "systemBytes": 41208072,
+        "goBusyFractionEstimate": 0.03074350118768021,
+        "nodeId": "local",
+        "rooms": 13,
+        "connections": 200,
+        "reservedParticipants": 200,
+        "ingressBytes": 4016009,
+        "egressBytes": 61549161,
+        "receivedMessages": 6062,
+        "sentMessages": 11546,
+        "rateRejected": 0,
+        "queueOverflows": 0,
+        "writeErrors": 0,
+        "queueP95UpperMs": 50,
+        "queueP99UpperMs": 50,
+        "writeP95UpperMs": 1,
+        "writeP99UpperMs": 1,
+        "oldestQueuedMs": 0,
+        "heapAllocBytes": 8389288,
+        "gcCycles": 29,
+        "goroutines": 409,
+        "traffic": {
+          "nodeIngressBytesPerSecond": 8388608,
+          "nodeEgressBytesPerSecond": 67108864,
+          "roomIngressBytesPerSecond": 524288,
+          "roomEgressBytesPerSecond": 4194304
+        }
+      }
+    },
+    {
+      "label": "enter-capacity",
+      "phase": "capacity",
+      "elapsedMs": 46353.664333,
+      "stats": {
+        "goCpuReady": false,
+        "systemBytes": 41208072,
+        "goBusyFractionEstimate": 0,
+        "nodeId": "local",
+        "rooms": 13,
+        "connections": 200,
+        "reservedParticipants": 200,
+        "ingressBytes": 45412741,
+        "egressBytes": 696535904,
+        "receivedMessages": 66850,
+        "sentMessages": 87103,
+        "rateRejected": 0,
+        "queueOverflows": 0,
+        "writeErrors": 0,
+        "queueP95UpperMs": 50,
+        "queueP99UpperMs": 50,
+        "writeP95UpperMs": 1,
+        "writeP99UpperMs": 1,
+        "oldestQueuedMs": 1,
+        "heapAllocBytes": 8831160,
+        "gcCycles": 180,
+        "goroutines": 407,
+        "traffic": {
+          "nodeIngressBytesPerSecond": 8388608,
+          "nodeEgressBytesPerSecond": 67108864,
+          "roomIngressBytesPerSecond": 524288,
+          "roomEgressBytesPerSecond": 4194304
+        }
+      }
+    },
+    {
+      "label": "enter-preReconnectDrain",
+      "phase": "preReconnectDrain",
+      "elapsedMs": 47513.582166,
+      "stats": {
+        "goCpuReady": true,
+        "systemBytes": 41208072,
+        "goBusyFractionEstimate": 0.030218537994694317,
+        "nodeId": "local",
+        "rooms": 13,
+        "connections": 200,
+        "reservedParticipants": 200,
+        "ingressBytes": 47071382,
+        "egressBytes": 720378924,
+        "receivedMessages": 69290,
+        "sentMessages": 89951,
+        "rateRejected": 0,
+        "queueOverflows": 0,
+        "writeErrors": 0,
+        "queueP95UpperMs": 50,
+        "queueP99UpperMs": 50,
+        "writeP95UpperMs": 1,
+        "writeP99UpperMs": 1,
+        "oldestQueuedMs": 10,
+        "heapAllocBytes": 7042304,
+        "gcCycles": 186,
+        "goroutines": 409,
+        "traffic": {
+          "nodeIngressBytesPerSecond": 8388608,
+          "nodeEgressBytesPerSecond": 67108864,
+          "roomIngressBytesPerSecond": 524288,
+          "roomEgressBytesPerSecond": 4194304
+        }
+      }
+    },
+    {
+      "label": "enter-reconnect",
+      "phase": "reconnect",
+      "elapsedMs": 47515.125666,
+      "stats": {
+        "goCpuReady": false,
+        "systemBytes": 41208072,
+        "goBusyFractionEstimate": 0,
+        "nodeId": "local",
+        "rooms": 13,
+        "connections": 200,
+        "reservedParticipants": 200,
+        "ingressBytes": 47071382,
+        "egressBytes": 720487034,
+        "receivedMessages": 69290,
+        "sentMessages": 89961,
+        "rateRejected": 0,
+        "queueOverflows": 0,
+        "writeErrors": 0,
+        "queueP95UpperMs": 50,
+        "queueP99UpperMs": 50,
+        "writeP95UpperMs": 1,
+        "writeP99UpperMs": 1,
+        "oldestQueuedMs": 13,
+        "heapAllocBytes": 7198560,
+        "gcCycles": 186,
+        "goroutines": 410,
+        "traffic": {
+          "nodeIngressBytesPerSecond": 8388608,
+          "nodeEgressBytesPerSecond": 67108864,
+          "roomIngressBytesPerSecond": 524288,
+          "roomEgressBytesPerSecond": 4194304
+        }
+      }
+    },
+    {
+      "label": "enter-afterReconnect",
+      "phase": "afterReconnect",
+      "elapsedMs": 48241.314833000004,
+      "stats": {
+        "goCpuReady": true,
+        "systemBytes": 41208072,
+        "goBusyFractionEstimate": 0.05734409003497831,
+        "nodeId": "local",
+        "rooms": 13,
+        "connections": 200,
+        "reservedParticipants": 200,
+        "ingressBytes": 47558236,
+        "egressBytes": 729683027,
+        "receivedMessages": 70176,
+        "sentMessages": 94090,
+        "rateRejected": 0,
+        "queueOverflows": 0,
+        "writeErrors": 1,
+        "queueP95UpperMs": 50,
+        "queueP99UpperMs": 50,
+        "writeP95UpperMs": 1,
+        "writeP99UpperMs": 1,
+        "oldestQueuedMs": 22,
+        "heapAllocBytes": 7218576,
+        "gcCycles": 202,
+        "goroutines": 408,
+        "traffic": {
+          "nodeIngressBytesPerSecond": 8388608,
+          "nodeEgressBytesPerSecond": 67108864,
+          "roomIngressBytesPerSecond": 524288,
+          "roomEgressBytesPerSecond": 4194304
+        }
+      }
+    },
+    {
+      "label": "enter-finalDrain",
+      "phase": "finalDrain",
+      "elapsedMs": 53250.320416,
+      "stats": {
+        "goCpuReady": true,
+        "systemBytes": 41208072,
+        "goBusyFractionEstimate": 0.027158681022523834,
+        "nodeId": "local",
+        "rooms": 13,
+        "connections": 200,
+        "reservedParticipants": 200,
+        "ingressBytes": 54483596,
+        "egressBytes": 835357488,
+        "receivedMessages": 80291,
+        "sentMessages": 109593,
+        "rateRejected": 0,
+        "queueOverflows": 0,
+        "writeErrors": 1,
+        "queueP95UpperMs": 50,
+        "queueP99UpperMs": 50,
+        "writeP95UpperMs": 1,
+        "writeP99UpperMs": 1,
+        "oldestQueuedMs": 1,
+        "heapAllocBytes": 9865096,
+        "gcCycles": 229,
+        "goroutines": 407,
+        "traffic": {
+          "nodeIngressBytesPerSecond": 8388608,
+          "nodeEgressBytesPerSecond": 67108864,
+          "roomIngressBytesPerSecond": 524288,
+          "roomEgressBytesPerSecond": 4194304
+        }
+      }
+    },
+    {
+      "label": "enter-cleanup",
+      "phase": "cleanup",
+      "elapsedMs": 53251.315541,
+      "stats": {
+        "goCpuReady": false,
+        "systemBytes": 41208072,
+        "goBusyFractionEstimate": 0,
+        "nodeId": "local",
+        "rooms": 13,
+        "connections": 200,
+        "reservedParticipants": 200,
+        "ingressBytes": 54487041,
+        "egressBytes": 835373336,
+        "receivedMessages": 80296,
+        "sentMessages": 109596,
+        "rateRejected": 0,
+        "queueOverflows": 0,
+        "writeErrors": 1,
+        "queueP95UpperMs": 50,
+        "queueP99UpperMs": 50,
+        "writeP95UpperMs": 1,
+        "writeP99UpperMs": 1,
+        "oldestQueuedMs": 2,
+        "heapAllocBytes": 9923088,
+        "gcCycles": 229,
+        "goroutines": 408,
+        "traffic": {
+          "nodeIngressBytesPerSecond": 8388608,
+          "nodeEgressBytesPerSecond": 67108864,
+          "roomIngressBytesPerSecond": 524288,
+          "roomEgressBytesPerSecond": 4194304
+        }
+      }
+    },
+    {
+      "label": "after-cleanup",
+      "phase": "cleanup",
+      "elapsedMs": 54783.801375,
+      "stats": {
+        "goCpuReady": false,
+        "systemBytes": 41208072,
+        "goBusyFractionEstimate": 0,
+        "nodeId": "local",
+        "rooms": 0,
+        "connections": 0,
+        "reservedParticipants": 0,
+        "ingressBytes": 54488241,
+        "egressBytes": 835487058,
+        "receivedMessages": 80496,
+        "sentMessages": 111276,
+        "rateRejected": 0,
+        "queueOverflows": 0,
+        "writeErrors": 1,
+        "queueP95UpperMs": 50,
+        "queueP99UpperMs": 50,
+        "writeP95UpperMs": 1,
+        "writeP99UpperMs": 1,
+        "oldestQueuedMs": 0,
+        "heapAllocBytes": 7853344,
+        "gcCycles": 230,
+        "goroutines": 10,
+        "traffic": {
+          "nodeIngressBytesPerSecond": 8388608,
+          "nodeEgressBytesPerSecond": 67108864,
+          "roomIngressBytesPerSecond": 524288,
+          "roomEgressBytesPerSecond": 4194304
+        }
+      }
+    }
+  ]
+}

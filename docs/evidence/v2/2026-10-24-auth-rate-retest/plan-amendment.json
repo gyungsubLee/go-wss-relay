@@ -1,0 +1,23 @@
+{
+  "reason": "A previously unexecuted 20Hz/20s slow-reader profile failed the zero-error normal gate; no result is overwritten or relabelled as passed.",
+  "failedProfile": {
+    "participants": 100,
+    "roomSize": 8,
+    "hz": 20,
+    "payloadBytes": 679,
+    "seconds": 20,
+    "slowReadMs": 500
+  },
+  "confirmedCause": "Diagnostic overlay reproduced exactly the13 deliberately slow participants hitting1s StateBatch write deadlines;87 healthy participants remained connected.",
+  "historicalSlowProfile": {
+    "participants": 100,
+    "roomSize": 8,
+    "hz": 10,
+    "payloadBytes": 679,
+    "seconds": 15,
+    "slowReadMs": 500
+  },
+  "continuation": "Repeat the original lower-traffic ten-hz suite including200-client60s; no500/1000 escalation and no increased byte budget.",
+  "normalSuiteStoppedBefore": "200 participants/room16/20Hz/679B/60s",
+  "criterionUnchanged": "normal measurement unexpected errors0,p95<=100ms,p99<=200ms,RSS<=512MiB; intentional slow-reader deadline experiment remains failed under zero-error gate."
+}

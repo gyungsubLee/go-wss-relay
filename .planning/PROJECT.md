@@ -1,73 +1,33 @@
-# Go Lobby & Relay Server
+# 웹·Android WSS 중계 서버
 
-## What This Is
+2026-10-23 기준으로 v2 전용 구조와 로컬 검사를 마쳤다. Task 10 독립 리뷰와 전체 브랜치 리뷰를 마쳤다. 최종 I1 수정도 재리뷰에서 닫았다.
+제품 전체 목표는 진행 중이다. Android 실기기·무선 망·실제 Linux 배포·원격 CI 증거가 남아 있다.
 
-소규모 멀티플레이 게임을 위한 Go 기반 Room/Lobby, Quick Match, 인증된 UDP Relay 백엔드다. 플레이어는 짧은 수명의 Player Token으로 공개·비공개 로비를 만들고 검색·입장·퇴장·준비할 수 있다. 로비 시작 또는 빠른 매칭이 성사되면 서버는 이미 구현된 Relay room과 참가자별 grant를 할당한다.
+## 제품과 가치
 
-초기 릴리스는 외부 저장소가 없는 단일 Go 프로세스다. 게임 로직, 물리, Unity Headless를 실행하지 않으며 Steamworks, FishNet, Open Match는 선택적 후속 adapter다.
+TypeScript 웹 게임과 Android WebView 앱이 같은 HTTPS 제어 API와 WSS 바이너리 계약을 사용한다.
+참가자는 로비 또는 FIFO 매칭으로 같은 방에 들어간다. 서버는 인증·배정·상태·사건 전달을 담당한다.
+클라이언트는 모션·보간·충돌·승패를 계산한다. 사건 접수 확인은 상대의 적용 완료를 보장하지 않는다.
 
-## Core Value
+## 현재 경계
 
-플레이어가 방을 만들거나 빠르게 매칭되고, 매칭된 참가자만 안전하게 같은 UDP Relay room에서 통신할 수 있다.
+- `cmd/wss-relay` 하나가 standalone·coordinator·relay 역할을 실행한다. `app`이 설정과 자원 수명주기를 조립한다.
+- `control.Manager`는 로비·티켓·소속·만료·배정을 소유한다. HTTP Server는 인증·입력·응답을 담당한다.
+- `coordinator`는 기존 `Allocator`를 구현한다. `relay`는 방·연결·접속권·세대·전송 예산을 소유한다.
+- 방당 최대 16명이다. 방 하나는 노드 하나만 소유한다. 노드 사이 방 이동과 배정기 다중 작성자는 제공하지 않는다.
+- 활성 방·로비·티켓은 메모리에 둔다. 배정기 재시작은 노드의 활성 방을 복원하지만 대기 로비·티켓은 복원하지 않는다.
+- 같은 운영자 키를 쓰면 현재 플레이어 토큰을 재시작 후에도 검증한다. 노드 재시작은 이전 방 인스턴스를 되살리지 않는다.
+- Go 1.26.10과 기존 의존성을 유지한다. SDK는 게임 규칙에 의존하지 않으며 MinbWebKit은 검증 화면이 소비한다.
+- 운영 경로는 flat `infrastructure`다. 수동 호스트 준비와 호스트당 인스턴스 하나를 지원한다.
 
-## Requirements
+## 제외 범위
 
-### Validated
+v1 서버·UDP·C#·Unity 호환, 서버 게임 판정, Redis·DB·Kubernetes는 제공하지 않는다.
+이전 구현은 Git 이력에 있다. 활성 인증의 `tokenVersion=1`·`player-token/v1`과 게임의 `.v1` 식별자는 유지한다.
+현재 승인 범위는 구현·회귀 검사·로컬 커밋이다. push·merge·실제 배포는 포함하지 않는다.
 
-- [x] Go/C# bounded Protobuf Relay 계약과 재현 가능한 생성 절차
-- [x] 운영자용 immutable Relay room/grant 수명주기
-- [x] 인증·replay 방지·rebind·same-room UDP fan-out
-- [x] 입력·rate·fan-out hard limit과 secret-free cleanup
+## 기준 문서
 
-### Completed in M1
-
-- [x] 운영자가 플레이어 ID에 묶인 짧은 수명의 Player Token을 발급한다.
-- [x] 플레이어가 public/private Lobby를 생성·검색·조회·입장·퇴장한다.
-- [x] Lobby owner와 ready 상태가 동시성·revision 충돌에도 일관되게 유지된다.
-- [x] owner가 full/all-ready Lobby를 기존 Relay allocation으로 시작한다.
-- [x] 플레이어가 동일 queue/capacity의 bounded FIFO Quick Match에 참가·조회·취소한다.
-- [x] 매칭된 각 플레이어는 자기 Relay grant만 받는다.
-- [x] 전체 HTTP→Relay 흐름이 Unity 없이 자동 검증된다.
-
-### Out of Scope
-
-- Unity Headless, 서버 물리·충돌·게임 규칙, authoritative simulation
-- Steamworks/FishNet/Open Match runtime의 M1 도입
-- skill rating, party, team, region, backfill, invite, chat, presence
-- Redis, persistence, multi-process state, Kubernetes, Agones
-- WebGL/WebSocket, reliable/ordered gameplay transport
-- 고정 Unity Editor patch나 실기기 지원 주장의 M1 선행 조건화
-
-## Constraints
-
-- **Runtime:** 단일 Go 바이너리와 인메모리 상태
-- **Dependencies:** 표준 라이브러리 우선, 기존 Protobuf와 `x/time/rate`만 유지
-- **Identity:** player API는 body/path의 player ID를 신뢰하지 않고 검증된 Player Token만 사용
-- **Network:** private operator HTTP, player HTTP, UDP Relay listener를 분리
-- **Security:** token/grant/payload를 로그에 남기지 않고 trust 이전에 hard limit 적용
-- **Lifecycle:** 프로세스 재시작 시 token, Lobby, ticket, assignment, Relay state 모두 소멸
-- **Deployment:** Redis/Kubernetes 없이 단일 VM 또는 Docker host부터 운영
-
-## Key Decisions
-
-| Decision | Outcome |
-|---|---|
-| UDP Relay Phase 1–3 구현은 폐기하지 않고 post-match transport로 유지 | Accepted — 2026-08-20 |
-| M1을 Room/Lobby & Quick Match backend로 재정의 | Accepted — 2026-08-20 |
-| operator secret + process nonce로 짧은 수명의 Player Token 발급 | Accepted — 2026-08-20 |
-| mutable Lobby state는 별도 single-lock Manager가 소유 | Accepted — 2026-08-20 |
-| Quick Match는 동일 queue/capacity의 1인 FIFO ticket만 지원 | Accepted — 2026-08-20 |
-| player와 operator HTTP listener 분리 | Accepted — 2026-08-20 |
-| Unity version/device matrix는 실제 client integration Phase에서 결정 | Accepted — 2026-08-20 |
-| Steamworks/FishNet/Open Match는 검증된 필요가 생길 때 adapter로 추가 | Deferred |
-
-## Context
-
-- Phase 1–3 evidence: [phase-1](../docs/evidence/m1/phase-1.md), [phase-2](../docs/evidence/m1/phase-2.md), [phase-3](../docs/evidence/m1/phase-3.md)
-- Approved redesign: [Room/Lobby & Quick Match design](../docs/superpowers/specs/2026-08-20-room-lobby-quick-match-design.md)
-- Execution plan: [M1 implementation plan](../docs/superpowers/plans/2026-08-20-room-lobby-quick-match-m1.md)
-- Completion evidence: [Milestone 1](../docs/evidence/m1/milestone-1.md)
-- ADR 0001–0003 remain authoritative for the implemented Relay wire, lifecycle, and UDP admission contracts.
-
----
-*Last updated: 2026-08-20 after verified M1 completion*
+[제품 요구사항](../docs/PRD.md), [기술 계약](../docs/TRD.md), [요구사항](REQUIREMENTS.md)을 현재 기준으로 사용한다.
+[원래 WSS 계획](../docs/plans/2026-10-20-web-android-wss-relay-refactor.md)의 실기기·망·호스트 완료 기준을 유지한다.
+[구조 변경 증거](../docs/evidence/v2/2026-10-23-structure-refactor.md)에 소스 해시·실행 결과·승인 판정 네 건을 기록한다.

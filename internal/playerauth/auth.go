@@ -2,15 +2,13 @@ package playerauth
 
 import (
 	"crypto/hmac"
-	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/binary"
 	"errors"
-	"io"
 	"time"
 
-	"github.com/gyungsubLee/go-lobby-relay/internal/protocol"
+	"github.com/gyungsubLee/go-wss-relay/internal/protocol"
 )
 
 const (
@@ -23,15 +21,13 @@ const (
 )
 
 var (
-	ErrInvalid     = errors.New("playerauth: invalid")
-	ErrExpired     = errors.New("playerauth: expired")
-	ErrFatalRandom = errors.New("playerauth: fatal random")
+	ErrInvalid = errors.New("playerauth: invalid")
+	ErrExpired = errors.New("playerauth: expired")
 )
 
 type Config struct {
 	OperatorSecret [32]byte
 	Now            func() time.Time
-	Random         io.Reader
 	TokenTTL       time.Duration
 }
 
@@ -54,18 +50,9 @@ func New(config Config) (*Issuer, error) {
 	if now == nil {
 		now = time.Now
 	}
-	random := config.Random
-	if random == nil {
-		random = rand.Reader
-	}
-
-	var nonce [32]byte
-	if _, err := io.ReadFull(random, nonce[:]); err != nil {
-		return nil, ErrFatalRandom
-	}
 	mac := hmac.New(sha256.New, config.OperatorSecret[:])
 	_, _ = mac.Write([]byte("go-lobby-relay/player-token/v1\x00"))
-	_, _ = mac.Write(nonce[:])
+	_, _ = mac.Write([]byte("coordinator-stable-session/v2"))
 	var key [32]byte
 	copy(key[:], mac.Sum(nil))
 	return &Issuer{key: key, now: now, tokenTTL: config.TokenTTL}, nil

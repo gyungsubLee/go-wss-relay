@@ -26,6 +26,11 @@ with tempfile.TemporaryDirectory() as temporary:
     assert stat.S_IMODE((target/'operator-token').stat().st_mode)==0o600
     assert installer.install_operator_token(target,owner) is False
     assert (target/'operator-token').read_bytes()==original,'operator identity must survive reruns'
+    (target/'operator-token').write_bytes(original+b'\r')
+    try: installer.install_operator_token(target,owner)
+    except ValueError: pass
+    else: raise AssertionError('bare CR token suffix accepted; only LF or CRLF is valid')
+    (target/'operator-token').write_bytes(original)
     (target/'operator-token').chmod(0o644)
     try: installer.install_operator_token(target,owner)
     except ValueError: pass
@@ -45,3 +50,41 @@ with tempfile.TemporaryDirectory() as temporary:
     except ValueError: pass
     else: raise AssertionError('group/world-writable runtime directory accepted')
 print('operator token: all assertions passed')
+
+with tempfile.TemporaryDirectory() as temporary:
+    root = Path(temporary)
+    assert installer.install_operator_token(root, owner, filename='node-a.token')
+    token = root / 'node-a.token'
+    original = token.read_bytes()
+    for name in ('', '.', '..', '../escape', '/absolute', 'a/b', 'a\\b'):
+        try: installer.install_operator_token(root, owner, filename=name)
+        except ValueError: pass
+        else: raise AssertionError('unsafe token basename accepted: ' + name)
+    for suffix in (b'\n', b'\r\n'):
+        token.write_bytes(original + suffix)
+        assert not installer.install_operator_token(root, owner, filename='node-a.token')
+    token.write_bytes(original)
+    os.link(token, root / 'alias')
+    try: installer.install_operator_token(root, owner, filename='node-a.token')
+    except ValueError: pass
+    else: raise AssertionError('multiply linked token accepted')
+    assert token.read_bytes() == original
+print('token filename, canonical suffix and hardlink protection passed')
+
+with tempfile.TemporaryDirectory() as temporary:
+    root = Path(temporary)
+    installer.install_operator_token(root, owner)
+    token = root / 'operator-token'
+    original = token.read_bytes()
+    try: installer.create_private(token, 'replacement', owner)
+    except FileExistsError: pass
+    else: raise AssertionError('exclusive installation overwrote identity')
+    assert token.read_bytes() == original
+    assert list(root.iterdir()) == [token], 'failed creation leaked a temporary token'
+    for malformed in (original + b'x', original + b'\n\n', b'A' * 100000):
+        token.write_bytes(malformed)
+        try: installer.install_operator_token(root, owner)
+        except ValueError: pass
+        else: raise AssertionError('oversized/noncanonical token accepted')
+        assert token.read_bytes() == malformed
+print('exclusive installation and bounded token reads passed')

@@ -1,0 +1,69 @@
+{
+  "reviewer": "/root/shutdown_review",
+  "baseCommit": "e78f6a3",
+  "scope": [
+    "cmd/relay-load/main.go",
+    "cmd/relay-load/main_test.go",
+    "internal/relay/connection.go",
+    "internal/relay/leave_test.go",
+    "docs/evidence/v2/2026-10-24-shutdown-retest/run-load.py",
+    "docs/evidence/v2/2026-10-24-shutdown-retest/check-harness.py"
+  ],
+  "critical": [],
+  "important": [],
+  "minor": [
+    {
+      "severity": "P3",
+      "file": "cmd/relay-load/main.go",
+      "finding": "begin could become zero between batch admission and timestamp filtering",
+      "disposition": "accepted and fixed by a single measurementStart snapshot per batch",
+      "reviewerConfirmedResolved": true
+    }
+  ],
+  "remainingFindings": [],
+  "verdict": "Product changes ready; no remaining code findings. SDK10 strict runtime failure is retained.",
+  "declinedAndRootDisposition": [
+    {
+      "behavior": "Historical139 individual attribution",
+      "reason": "Original per-error records do not exist",
+      "disposition": "Explicitly retain limitation; use reproduced mechanism and counterfactual tests, not individual retrospective claims"
+    },
+    {
+      "behavior": "Existing CPU sampling and room deletion error handling",
+      "reason": "Unchanged code outside focused fix",
+      "disposition": "Accepted scope; actual lifecycle/resource gates remain strict"
+    },
+    {
+      "behavior": "Abrupt disconnect and concurrent room/server termination may preempt Left",
+      "reason": "Existing failure policies",
+      "disposition": "Retained; loader must report incomplete graceful shutdown as failure"
+    },
+    {
+      "behavior": "SDK runner and final load results",
+      "reason": "Outside product code review scope",
+      "disposition": "Root performs actual runtime and evidence verification"
+    },
+    {
+      "behavior": "Guaranteed delivery to deliberately retired WebSocket",
+      "reason": "Outside scoped shutdown fix",
+      "disposition": "Accepted; retired old-generation notification errors remain counted and strictSDK10 remains failed"
+    }
+  ],
+  "sourceSha256": {
+    "cmd/relay-load/main.go": "66ec162d0cbbf4d8096c865ac2dadf7265b628b14a51de1b0c7d3b485e7e5f7e",
+    "cmd/relay-load/main_test.go": "48dc59731856c679abf7ad8e06d787ce3d20d8f3f1c07c45d62fca24bb4a4764",
+    "internal/relay/connection.go": "da35ee14b868a589bae522c42dc334e2f6727755261c3a8916bdca7185f7723c",
+    "internal/relay/leave_test.go": "048c8e67ee2efc963e259cc9635eb6a0bdb028c05b99d6e1e721b599b9eb0b98"
+  },
+  "note": "Reviewer was read-only and ran no tests or sockets.",
+  "runtimeAssessment": {
+    "reviewerAgreesNoFurtherProductFixRequired": true,
+    "sdk10OriginalStrictFailureWriteErrors": 5,
+    "diagnosticRawCounterMatchesTrace": 1,
+    "diagnosticClassification": "old gen1 PeerStatusChanged write after normal Close1000 reconnect; no own deadline",
+    "healthyNewGenerationRecovered": 200,
+    "rawErrorsExcluded": false,
+    "original5IndividuallyClassified": false,
+    "frequencyLimit": "Diagnostic logging can alter race timing/count; claim mechanism only."
+  }
+}

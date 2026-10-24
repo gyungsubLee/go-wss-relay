@@ -1,0 +1,31 @@
+# Public WSS endpoint; Caddy terminates TLS and preserves the WebSocket upgrade.
+{$RELAY_DOMAIN} {
+	handle /v2/relay {
+		reverse_proxy 127.0.0.1:8090 {
+			stream_timeout 2h
+		}
+	}
+	handle /healthz {
+		reverse_proxy 127.0.0.1:8090
+	}
+	handle /readyz {
+		reverse_proxy 127.0.0.1:8090
+	}
+	handle {
+		respond 404
+	}
+}
+
+# Bind the management proxy exclusively to the node's private interface.
+# Export this Caddy installation's root CA to the coordinator via a secure channel.
+https://{$NODE_CONTROL_DOMAIN} {
+	bind {$NODE_PRIVATE_IP}
+	tls internal
+	@coordinator remote_ip {$COORDINATOR_PRIVATE_IP}/32
+	handle @coordinator {
+		reverse_proxy 127.0.0.1:8091
+	}
+	handle {
+		respond 403
+	}
+}

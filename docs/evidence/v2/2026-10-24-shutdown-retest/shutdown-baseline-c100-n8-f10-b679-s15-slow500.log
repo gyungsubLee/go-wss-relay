@@ -1,0 +1,172 @@
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872628155000,"event":"cancel_all"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637655000,"closeStatus":-1,"contextError":"context canceled","error":"failed to read: failed to acquire lock: context canceled","event":"read_end","participant":"p-57"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637664000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-36"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637669000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-85"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637735000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-35"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637725000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-13"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637732000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-25"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637733000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-2"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637768000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-29"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637815000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-65"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637817000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-37"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637798000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-91"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637786000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-76"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637814000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-98"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637790000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-7"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637829000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-92"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637949000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-45"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637981000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-89"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637868000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-28"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637871000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-74"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637873000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-86"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638127000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-63"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638150000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-47"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637842000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-6"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637903000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-81"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638199000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-14"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637921000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-78"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637931000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-27"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637847000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-46"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637963000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-66"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637970000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-31"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637860000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-42"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637993000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-73"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638312000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-43"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638012000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-69"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638019000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-19"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638039000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-20"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638357000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-54"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638371000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-62"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638058000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-99"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638406000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-4"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638198000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-75"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638065000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-59"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638086000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-52"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638094000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-71"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638105000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-15"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638143000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-84"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638129000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-5"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638527000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-97"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638162000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-87"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638169000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-55"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638185000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-50"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638198000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-23"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637916000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-17"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638221000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-68"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638628000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-79"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638645000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-51"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872637921000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-22"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638688000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-95"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638241000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-10"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638263000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-49"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638271000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-58"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638302000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-34"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638305000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-3"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638314000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-60"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638040000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-90"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638371000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-38"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638407000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-30"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638417000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-41"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638431000,"closeStatus":-1,"contextError":"context canceled","error":"failed to read: failed to acquire lock: context canceled","event":"read_end","participant":"p-70"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638447000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-9"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638355000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-21"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638464000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-18"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638478000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-67"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638487000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-26"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638486000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-53"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638506000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-1"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638517000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-83"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638555000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-44"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638571000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-61"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638578000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-93"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638581000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-39"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638604000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-77"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638618000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-12"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638621000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-33"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638264000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-11"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638671000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-94"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872638242000,"closeStatus":-1,"contextError":"context canceled","error":"failed to get reader: context canceled","event":"read_end","participant":"p-82"}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872639022000,"event":"workers_stopped"}
+{
+  "recordedAt": "2026-10-23T15:54:32.63945Z",
+  "runtime": "go1.26.10 darwin/arm64 CPUs=10; same-host loopback TLS; 1/16 rolling latency samples",
+  "participants": 100,
+  "roomSize": 8,
+  "publishHz": 10,
+  "statePayloadBytes": 679,
+  "measurementSeconds": 15,
+  "slowReadMs": 500,
+  "connected": 100,
+  "receivedStates": 90595,
+  "rollingSampleCount": 5621,
+  "p95Ms": 47.595,
+  "p99Ms": 50.467,
+  "ingressBytesPerSecond": 690621.5024502625,
+  "egressBytesPerSecond": 4812664.531779978,
+  "peakRssKiB": 41488,
+  "peakCpuPercent": 23.2,
+  "peakHeapBytes": 5340720,
+  "gcCycles": 45,
+  "failures": 0,
+  "nodeBefore": {
+    "goCpuReady": true,
+    "systemBytes": 36821272,
+    "goBusyFractionEstimate": 0.016062235830189953,
+    "nodeId": "local",
+    "rooms": 13,
+    "connections": 100,
+    "reservedParticipants": 100,
+    "ingressBytes": 127923794,
+    "egressBytes": 1917808801,
+    "receivedMessages": 212146,
+    "sentMessages": 226389,
+    "rateRejected": 0,
+    "queueOverflows": 0,
+    "writeErrors": 163,
+    "queueP95UpperMs": 50,
+    "queueP99UpperMs": 50,
+    "writeP95UpperMs": 1,
+    "writeP99UpperMs": 1,
+    "oldestQueuedMs": 0,
+    "heapAllocBytes": 4530272,
+    "gcCycles": 548,
+    "goroutines": 207,
+    "traffic": {
+      "nodeIngressBytesPerSecond": 8388608,
+      "nodeEgressBytesPerSecond": 67108864,
+      "roomIngressBytesPerSecond": 524288,
+      "roomEgressBytesPerSecond": 4194304
+    }
+  },
+  "nodeAfter": {
+    "goCpuReady": false,
+    "systemBytes": 36821272,
+    "goBusyFractionEstimate": 0,
+    "nodeId": "local",
+    "rooms": 13,
+    "connections": 100,
+    "reservedParticipants": 100,
+    "ingressBytes": 138369300,
+    "egressBytes": 1990599347,
+    "receivedMessages": 227300,
+    "sentMessages": 241933,
+    "rateRejected": 0,
+    "queueOverflows": 0,
+    "writeErrors": 163,
+    "queueP95UpperMs": 50,
+    "queueP99UpperMs": 50,
+    "writeP95UpperMs": 1,
+    "writeP99UpperMs": 1,
+    "oldestQueuedMs": 25,
+    "heapAllocBytes": 4436688,
+    "gcCycles": 593,
+    "goroutines": 207,
+    "traffic": {
+      "nodeIngressBytesPerSecond": 8388608,
+      "nodeEgressBytesPerSecond": 67108864,
+      "roomIngressBytesPerSecond": 524288,
+      "roomEgressBytesPerSecond": 4194304
+    }
+  }
+}
+2026/10/24 00:54:32 LOAD_SHUTDOWN {"atNs":1792770872641153000,"event":"cleanup_begin"}
