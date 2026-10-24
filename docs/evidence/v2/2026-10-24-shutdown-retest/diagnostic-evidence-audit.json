@@ -1,0 +1,198 @@
+{
+  "auditMethod": "Read-only inspection of saved JSON, raw diagnostic logs, archived diagnostic sources, classifier code, and the installed websocket dependency. No socket, Go, SDK, or load execution.",
+  "baseline": {
+    "profiles": [
+      {
+        "name": "shutdown-baseline-c200-n16-f20-b100-s15-slow0",
+        "passed": false,
+        "exitCode": 0,
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        },
+        "postMeasurementMetricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 144
+        },
+        "lifecycleMetricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 144
+        }
+      },
+      {
+        "name": "shutdown-baseline-c100-n16-f10-b100-s10-slow0",
+        "passed": false,
+        "exitCode": 0,
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        },
+        "postMeasurementMetricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 1
+        },
+        "lifecycleMetricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 1
+        }
+      },
+      {
+        "name": "shutdown-baseline-c200-n16-f10-b679-s30-slow0",
+        "passed": false,
+        "exitCode": 0,
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        },
+        "postMeasurementMetricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 9
+        },
+        "lifecycleMetricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 9
+        }
+      },
+      {
+        "name": "shutdown-baseline-c200-n16-f10-b1127-s30-slow0",
+        "passed": false,
+        "exitCode": 0,
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        },
+        "postMeasurementMetricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 9
+        },
+        "lifecycleMetricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 9
+        }
+      },
+      {
+        "name": "shutdown-baseline-c100-n8-f10-b679-s15-slow500",
+        "passed": false,
+        "exitCode": 0,
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        },
+        "postMeasurementMetricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 14
+        },
+        "lifecycleMetricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 14
+        }
+      },
+      {
+        "name": "shutdown-baseline-c200-n16-f10-b679-s60-slow0",
+        "passed": false,
+        "exitCode": 0,
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        },
+        "postMeasurementMetricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 1
+        },
+        "lifecycleMetricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 1
+        }
+      }
+    ],
+    "counterWriteErrors": 178,
+    "traceWriteErrors": 178,
+    "allCountsMatch": true,
+    "classifications": {
+      "client_abort_transport_failure": 166,
+      "unclassified_or_real_deadline": 12
+    },
+    "bodies": {
+      "*relayv2.ServerEnvelope_PeerStatusChanged": 165,
+      "*relayv2.ServerEnvelope_StateBatch": 13
+    },
+    "errorStrings": {
+      "broken pipe": 173,
+      "context canceled": 5
+    },
+    "ownWriteDeadlineElapsedOrDeadlineErrorCount": 0,
+    "allObservedReadEndsPrecedeAssociatedWriteErrors": true,
+    "unclassifiedLimit": "The 12 baseline rows labeled unclassified_or_real_deadline all have no client read_end and no elapsed write deadline or deadline error. All are designated slow readers. The label does not demonstrate any real deadline failure."
+  },
+  "forceCloseDiagnostic": {
+    "counterWriteErrors": 40,
+    "traceWriteErrors": 40,
+    "countsMatch": true,
+    "exclusiveClassifications": {
+      "explicit_CloseNow_before_write_error": 13,
+      "Read_context_cancel_closes_transport": 27
+    },
+    "slowParticipants": 13,
+    "slowBodies": {
+      "*relayv2.ServerEnvelope_StateBatch": 12,
+      "*relayv2.ServerEnvelope_PeerStatusChanged": 1
+    },
+    "slowClientReadEndAbsentCount": 13,
+    "slowForceClosePrecedesWriteErrorCount": 13,
+    "ownWriteDeadlineElapsedOrDeadlineErrorCount": 0,
+    "forceClosePrecedesWriteErrorNonExclusiveCount": 35,
+    "limits": [
+      "Use the 27 read-cancel and 13 explicit-close categories as the exclusive classification. The 35 close-before-error timing observations overlap 22 read-cancel rows.",
+      "The diagnostic source has no read_sleep_cancel log. Do not claim such an event was captured.",
+      "This is an additional execution with a timing discrepancy. Use its per-connection abort/write-error evidence for causality, not performance."
+    ]
+  },
+  "clocks": {
+    "wallStartedUnixNs": 1792778266898969000,
+    "wallFinishedUnixNs": 1792781884714475000,
+    "wallStartedUTC": "2026-10-23T17:57:46.898969+00:00",
+    "wallFinishedUTC": "2026-10-23T18:58:04.714475+00:00",
+    "wholeSubprocessAndCleanupWallSeconds": 3617.815506,
+    "configuredGoMeasurementSeconds": 15,
+    "goMeasurementElapsedSecondsDerivedFromIngressRate": 15.5482195,
+    "measurementClockSource": "The archived load source calculates the rate denominator using time.Since(started), retaining Go monotonic time. The measurementSeconds report field is the configured duration.",
+    "discrepancyCause": "Unknown. The saved evidence cannot distinguish a wall-clock adjustment, host suspend behavior, or another cause.",
+    "interpretation": "The whole wall interval includes setup, warmup, measurement, and cleanup, so it is not directly the same interval as the Go measurement. The 3617.815506-second wall interval nevertheless does not support an uninterrupted 15-second wall-clock trial. Near-cleanup event order, dependency behavior, and matching counters support the abort mechanism; do not infer workload duration, stable performance, or suspend cause from this extra diagnostic."
+  },
+  "historical139": {
+    "perEventClassificationPossible": false,
+    "limit": "Original139counter increments lacked per-event strings; this proves the same-source same-profile reproduced mechanism, not a one-to-one retrospective mapping.",
+    "wording": "The original 139 increments lack per-event error strings and cannot be assigned a retrospective one-to-one cause. Same-profile retests of the prior implementation with diagnostic logging reproduced the cancellation/abrupt-close mechanism. Instrumentation and scheduling can change the count."
+  },
+  "normalProtocolScope": "These diagnostics use read-context cancellation followed by CloseNow and do not send Leave. They demonstrate abrupt transport shutdown, not successful Leave/Left/close-1000 protocol shutdown. Claims about normal protocol shutdown need the separate protocol tests and final Left/normal-closure counts.",
+  "archivedSourceSha256": {
+    "connection-baseline.go": "e28db36384f52c2c7f2d6de690390599f3bc936ad90e7aa82c68c739ccbe54e3",
+    "server-baseline.go": "fe931d869d9c19d5a814ad451f2a29d764eb890f8ae349aab392f20512daa080",
+    "load-baseline.go": "6620b05bbb804f02e001e7d339fa63cf04823a584e8821561db228c68a8aaece",
+    "load-forceclose.go": "7e413f2bf377565d11b1b46289f7613980b11e53921ed76ba6ce81421ffa084d"
+  },
+  "suggestedReportWording": [
+    "The six prior profiles reproduced 178 post-measurement write errors: 144, 1, 9, 9, 14, and 1. Setup and measurement rate, queue, and write-error deltas were zero; all six fail the full-lifecycle zero-error gate.",
+    "Tracing associates 166 errors with canceled client reads. The 12 remaining baseline errors are slow-reader broken pipes before the server write deadline. An additional diagnostic records all 13 slow readers closing their sockets before their associated server write errors; its exclusive totals are 27 read cancellations and 13 explicit socket closes.",
+    "The extra diagnostic has a 3617.815506-second whole wall interval and a 15.5482195-second Go measurement interval. The discrepancy cause is unknown. Its event traces support the shutdown mechanism only; performance results use the separately recorded final runs.",
+    "These executions do not recover the individual causes of the historical 139 increments. They distinguish abrupt client shutdown from the normal Leave/Left/close-1000 flow."
+  ]
+}

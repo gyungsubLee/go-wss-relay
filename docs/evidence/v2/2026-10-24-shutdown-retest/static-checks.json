@@ -1,0 +1,54 @@
+[
+  {
+    "name": "go-race",
+    "command": [
+      "/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/bin/go",
+      "test",
+      "-race",
+      "-count=1",
+      "-p",
+      "1",
+      "./..."
+    ],
+    "exitCode": 0,
+    "startedNs": 1792806597582876000,
+    "finishedNs": 1792806634703044000
+  },
+  {
+    "name": "go-vet",
+    "command": [
+      "/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/bin/go",
+      "vet",
+      "./..."
+    ],
+    "exitCode": 0,
+    "startedNs": 1792806634704037000,
+    "finishedNs": 1792806635857170000
+  },
+  {
+    "name": "build-server",
+    "command": [
+      "/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/bin/go",
+      "build",
+      "-o",
+      "out/shutdown-retest-20261024/wss-relay",
+      "./cmd/wss-relay"
+    ],
+    "exitCode": 0,
+    "startedNs": 1792806635857818000,
+    "finishedNs": 1792806636242137000
+  },
+  {
+    "name": "build-load",
+    "command": [
+      "/Users/igyeongseob/Develop/08_side/storio_games/go-wss-relay/.tools/go/bin/go",
+      "build",
+      "-o",
+      "out/shutdown-retest-20261024/relay-load",
+      "./cmd/relay-load"
+    ],
+    "exitCode": 0,
+    "startedNs": 1792806636242854000,
+    "finishedNs": 1792806637651759000
+  }
+]

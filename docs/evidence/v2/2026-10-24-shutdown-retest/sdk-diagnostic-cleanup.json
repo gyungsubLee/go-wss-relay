@@ -1,0 +1,34 @@
+{
+  "serverPID": 91168,
+  "stats": {
+    "goCpuReady": false,
+    "systemBytes": 41208072,
+    "goBusyFractionEstimate": 0,
+    "nodeId": "local",
+    "rooms": 0,
+    "connections": 0,
+    "reservedParticipants": 0,
+    "ingressBytes": 54488241,
+    "egressBytes": 835487058,
+    "receivedMessages": 80496,
+    "sentMessages": 111276,
+    "rateRejected": 0,
+    "queueOverflows": 0,
+    "writeErrors": 1,
+    "queueP95UpperMs": 50,
+    "queueP99UpperMs": 50,
+    "writeP95UpperMs": 1,
+    "writeP99UpperMs": 1,
+    "oldestQueuedMs": 0,
+    "heapAllocBytes": 7869872,
+    "gcCycles": 230,
+    "goroutines": 7,
+    "traffic": {
+      "nodeIngressBytesPerSecond": 8388608,
+      "nodeEgressBytesPerSecond": 67108864,
+      "roomIngressBytesPerSecond": 524288,
+      "roomEgressBytesPerSecond": 4194304
+    }
+  },
+  "resourcesRecovered": true
+}

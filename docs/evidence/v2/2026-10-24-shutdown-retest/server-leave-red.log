@@ -1,0 +1,6 @@
+=== RUN   TestLeaveWaitsForPendingWriteBeforeClosing
+    leave_test.go:123: following frame canceled Leave acknowledgement before the pending write finished
+--- FAIL: TestLeaveWaitsForPendingWriteBeforeClosing (0.00s)
+FAIL
+FAIL	github.com/gyungsubLee/go-wss-relay/internal/relay	0.478s
+FAIL

@@ -1,0 +1,1496 @@
+[
+  {
+    "participants": 200,
+    "roomSize": 16,
+    "publishHz": 20,
+    "statePayloadBytes": 100,
+    "measurementSeconds": 15,
+    "slowReadMs": 0,
+    "connected": 200,
+    "receivedStates": 884277,
+    "p95Ms": 48.464,
+    "p99Ms": 49.975,
+    "egressBytesPerSecond": 7378159.615396651,
+    "peakRssKiB": 38128,
+    "peakCpuPercent": 53,
+    "failures": 0,
+    "name": "shutdown-final-c200-n16-f20-b100-s15-slow0",
+    "passed": true,
+    "exitCode": 0,
+    "shutdownMetricsPresent": true,
+    "legacyShutdownReport": false,
+    "shutdownGateApplied": true,
+    "shutdownPassed": true,
+    "subprocessTiming": {
+      "startedUnixNs": 1792806662086996000,
+      "finishedUnixNs": 1792806681201814000,
+      "elapsedWallNs": 19114818000,
+      "elapsedMonotonicNs": 19114865250,
+      "wallMinusMonotonicNs": -47250
+    },
+    "latencyGateApplied": true,
+    "latencyWithinNormalGate": true,
+    "nodeLimits": {
+      "maxRooms": 512,
+      "maxParticipants": 200
+    },
+    "traffic": {
+      "nodeIngressBytesPerSecond": 8388608,
+      "nodeEgressBytesPerSecond": 67108864,
+      "roomIngressBytesPerSecond": 524288,
+      "roomEgressBytesPerSecond": 4194304
+    },
+    "baseline": {
+      "goCpuReady": false,
+      "systemBytes": 12601608,
+      "goBusyFractionEstimate": 0,
+      "nodeId": "local",
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "ingressBytes": 0,
+      "egressBytes": 0,
+      "receivedMessages": 0,
+      "sentMessages": 0,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 0,
+      "queueP99UpperMs": 0,
+      "writeP95UpperMs": 0,
+      "writeP99UpperMs": 0,
+      "oldestQueuedMs": 0,
+      "heapAllocBytes": 451168,
+      "gcCycles": 0,
+      "goroutines": 7,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "before": {
+      "goCpuReady": true,
+      "systemBytes": 37013768,
+      "goBusyFractionEstimate": 0.03838929984282957,
+      "nodeId": "local",
+      "rooms": 13,
+      "connections": 200,
+      "reservedParticipants": 200,
+      "ingressBytes": 855836,
+      "egressBytes": 14357832,
+      "receivedMessages": 8017,
+      "sentMessages": 9455,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 49,
+      "heapAllocBytes": 8043080,
+      "gcCycles": 17,
+      "goroutines": 407,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "after": {
+      "goCpuReady": false,
+      "systemBytes": 37013768,
+      "goBusyFractionEstimate": 0,
+      "nodeId": "local",
+      "rooms": 13,
+      "connections": 200,
+      "reservedParticipants": 200,
+      "ingressBytes": 7420000,
+      "egressBytes": 125761317,
+      "receivedMessages": 68400,
+      "sentMessages": 69850,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 49,
+      "heapAllocBytes": 8421672,
+      "gcCycles": 64,
+      "goroutines": 407,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "cleanup": {
+      "goCpuReady": false,
+      "systemBytes": 37013768,
+      "goBusyFractionEstimate": 0,
+      "nodeId": "local",
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "ingressBytes": 7422272,
+      "egressBytes": 125810837,
+      "receivedMessages": 68608,
+      "sentMessages": 71532,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 0,
+      "heapAllocBytes": 11478088,
+      "gcCycles": 64,
+      "goroutines": 7,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "metricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "metricScope": "Every error counter must stay unchanged across setup, warmup, measurement, and cleanup; no write errors are excluded",
+    "setupAndWarmupMetricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "postMeasurementMetricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "lifecycleMetricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "phaseMetricDeltas": [
+      {
+        "from": "baseline",
+        "to": "measurement-start",
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        }
+      },
+      {
+        "from": "measurement-start",
+        "to": "measurement-end",
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        }
+      },
+      {
+        "from": "measurement-end",
+        "to": "cleanup",
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        }
+      }
+    ],
+    "provenance": {
+      "serverPID": 82571,
+      "serverCommand": [
+        "out/shutdown-retest-20261024/wss-relay",
+        "--listen",
+        "127.0.0.1:19443",
+        "--management-listen",
+        "127.0.0.1:19092",
+        "--operator-token-file",
+        ".cache/live-load-20261023/operator.token",
+        "--tls-cert",
+        ".cache/live-load-20261023/tls/cert.pem",
+        "--tls-key",
+        ".cache/live-load-20261023/tls/key.pem",
+        "--public-url",
+        "wss://localhost:19443/v2/relay",
+        "--allowed-origin",
+        "localhost:5173"
+      ],
+      "binarySha256": {
+        "wss-relay": "a1838a7d56a5f9e2ba9e0955a076c83a430e227613de963140c157c91e8e6ce7",
+        "relay-load": "3866279b2380c315063aaa41d1fd97f3ab6120243e6a9fdd77400367dbde7db4"
+      },
+      "testCASha256": "11df9ab9c10600087eb0cb864df93d2ca794f14e11c85b6f8ac4a57484c56d49"
+    },
+    "continuationNote": null,
+    "protobufByteDelta": {
+      "ingressBytes": 6564164,
+      "egressBytes": 111403485
+    },
+    "receivedStatePayloadBytes": 88427700,
+    "ingressBytesPerSecond": 434739.0903762171,
+    "leftAcknowledgements": 200,
+    "normalClosures": 200,
+    "shutdownFailures": 0,
+    "shutdownForcedClosures": 0,
+    "shutdownDurationMs": 15.026167
+  },
+  {
+    "participants": 100,
+    "roomSize": 16,
+    "publishHz": 10,
+    "statePayloadBytes": 100,
+    "measurementSeconds": 10,
+    "slowReadMs": 0,
+    "connected": 100,
+    "receivedStates": 146118,
+    "p95Ms": 47.837,
+    "p99Ms": 51.125,
+    "egressBytesPerSecond": 1816113.6460460639,
+    "peakRssKiB": 38208,
+    "peakCpuPercent": 24.8,
+    "failures": 0,
+    "name": "shutdown-final-c100-n16-f10-b100-s10-slow0",
+    "passed": true,
+    "exitCode": 0,
+    "shutdownMetricsPresent": true,
+    "legacyShutdownReport": false,
+    "shutdownGateApplied": true,
+    "shutdownPassed": true,
+    "subprocessTiming": {
+      "startedUnixNs": 1792806682459235000,
+      "finishedUnixNs": 1792806695383338000,
+      "elapsedWallNs": 12924103000,
+      "elapsedMonotonicNs": 12924133667,
+      "wallMinusMonotonicNs": -30667
+    },
+    "latencyGateApplied": true,
+    "latencyWithinNormalGate": true,
+    "nodeLimits": {
+      "maxRooms": 512,
+      "maxParticipants": 200
+    },
+    "traffic": {
+      "nodeIngressBytesPerSecond": 8388608,
+      "nodeEgressBytesPerSecond": 67108864,
+      "roomIngressBytesPerSecond": 524288,
+      "roomEgressBytesPerSecond": 4194304
+    },
+    "baseline": {
+      "goCpuReady": false,
+      "systemBytes": 37013768,
+      "goBusyFractionEstimate": 0,
+      "nodeId": "local",
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "ingressBytes": 7422272,
+      "egressBytes": 125810837,
+      "receivedMessages": 68608,
+      "sentMessages": 71532,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 0,
+      "heapAllocBytes": 11484272,
+      "gcCycles": 64,
+      "goroutines": 7,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "before": {
+      "goCpuReady": true,
+      "systemBytes": 37013768,
+      "goBusyFractionEstimate": 0.013529371762196485,
+      "nodeId": "local",
+      "rooms": 7,
+      "connections": 100,
+      "reservedParticipants": 100,
+      "ingressBytes": 7643748,
+      "egressBytes": 129297814,
+      "receivedMessages": 70705,
+      "sentMessages": 74329,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 2,
+      "heapAllocBytes": 6379792,
+      "gcCycles": 73,
+      "goroutines": 207,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "after": {
+      "goCpuReady": false,
+      "systemBytes": 37013768,
+      "goBusyFractionEstimate": 0,
+      "nodeId": "local",
+      "rooms": 7,
+      "connections": 100,
+      "reservedParticipants": 100,
+      "ingressBytes": 8734872,
+      "egressBytes": 147683968,
+      "receivedMessages": 80808,
+      "sentMessages": 85020,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 31,
+      "heapAllocBytes": 4514824,
+      "gcCycles": 89,
+      "goroutines": 207,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "cleanup": {
+      "goCpuReady": false,
+      "systemBytes": 37013768,
+      "goBusyFractionEstimate": 0,
+      "nodeId": "local",
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "ingressBytes": 8735472,
+      "egressBytes": 147706929,
+      "receivedMessages": 80908,
+      "sentMessages": 85851,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 0,
+      "heapAllocBytes": 6032520,
+      "gcCycles": 89,
+      "goroutines": 7,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "metricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "metricScope": "Every error counter must stay unchanged across setup, warmup, measurement, and cleanup; no write errors are excluded",
+    "setupAndWarmupMetricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "postMeasurementMetricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "lifecycleMetricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "phaseMetricDeltas": [
+      {
+        "from": "baseline",
+        "to": "measurement-start",
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        }
+      },
+      {
+        "from": "measurement-start",
+        "to": "measurement-end",
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        }
+      },
+      {
+        "from": "measurement-end",
+        "to": "cleanup",
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        }
+      }
+    ],
+    "provenance": {
+      "serverPID": 82571,
+      "serverCommand": [
+        "out/shutdown-retest-20261024/wss-relay",
+        "--listen",
+        "127.0.0.1:19443",
+        "--management-listen",
+        "127.0.0.1:19092",
+        "--operator-token-file",
+        ".cache/live-load-20261023/operator.token",
+        "--tls-cert",
+        ".cache/live-load-20261023/tls/cert.pem",
+        "--tls-key",
+        ".cache/live-load-20261023/tls/key.pem",
+        "--public-url",
+        "wss://localhost:19443/v2/relay",
+        "--allowed-origin",
+        "localhost:5173"
+      ],
+      "binarySha256": {
+        "wss-relay": "a1838a7d56a5f9e2ba9e0955a076c83a430e227613de963140c157c91e8e6ce7",
+        "relay-load": "3866279b2380c315063aaa41d1fd97f3ab6120243e6a9fdd77400367dbde7db4"
+      },
+      "testCASha256": "11df9ab9c10600087eb0cb864df93d2ca794f14e11c85b6f8ac4a57484c56d49"
+    },
+    "continuationNote": null,
+    "protobufByteDelta": {
+      "ingressBytes": 1091124,
+      "egressBytes": 18386154
+    },
+    "receivedStatePayloadBytes": 14611800,
+    "ingressBytesPerSecond": 107777.03623761475,
+    "leftAcknowledgements": 100,
+    "normalClosures": 100,
+    "shutdownFailures": 0,
+    "shutdownForcedClosures": 0,
+    "shutdownDurationMs": 8.325209
+  },
+  {
+    "participants": 200,
+    "roomSize": 16,
+    "publishHz": 10,
+    "statePayloadBytes": 679,
+    "measurementSeconds": 30,
+    "slowReadMs": 0,
+    "connected": 200,
+    "receivedStates": 889183,
+    "p95Ms": 48.498,
+    "p99Ms": 49.882,
+    "egressBytesPerSecond": 20767447.44282022,
+    "peakRssKiB": 38592,
+    "peakCpuPercent": 48.6,
+    "failures": 0,
+    "name": "shutdown-final-c200-n16-f10-b679-s30-slow0",
+    "passed": true,
+    "exitCode": 0,
+    "shutdownMetricsPresent": true,
+    "legacyShutdownReport": false,
+    "shutdownGateApplied": true,
+    "shutdownPassed": true,
+    "subprocessTiming": {
+      "startedUnixNs": 1792806696635837000,
+      "finishedUnixNs": 1792806730475148000,
+      "elapsedWallNs": 33839311000,
+      "elapsedMonotonicNs": 33839396000,
+      "wallMinusMonotonicNs": -85000
+    },
+    "latencyGateApplied": true,
+    "latencyWithinNormalGate": true,
+    "nodeLimits": {
+      "maxRooms": 512,
+      "maxParticipants": 200
+    },
+    "traffic": {
+      "nodeIngressBytesPerSecond": 8388608,
+      "nodeEgressBytesPerSecond": 67108864,
+      "roomIngressBytesPerSecond": 524288,
+      "roomEgressBytesPerSecond": 4194304
+    },
+    "baseline": {
+      "goCpuReady": false,
+      "systemBytes": 37013768,
+      "goBusyFractionEstimate": 0,
+      "nodeId": "local",
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "ingressBytes": 8735472,
+      "egressBytes": 147706929,
+      "receivedMessages": 80908,
+      "sentMessages": 85851,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 0,
+      "heapAllocBytes": 6038720,
+      "gcCycles": 89,
+      "goroutines": 7,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "before": {
+      "goCpuReady": true,
+      "systemBytes": 37013768,
+      "goBusyFractionEstimate": 0.0333744983981028,
+      "nodeId": "local",
+      "rooms": 13,
+      "connections": 200,
+      "reservedParticipants": 200,
+      "ingressBytes": 11430038,
+      "egressBytes": 187189437,
+      "receivedMessages": 85002,
+      "sentMessages": 91450,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 0,
+      "heapAllocBytes": 9933992,
+      "gcCycles": 108,
+      "goroutines": 407,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "after": {
+      "goCpuReady": false,
+      "systemBytes": 37013768,
+      "goBusyFractionEstimate": 0,
+      "nodeId": "local",
+      "rooms": 13,
+      "connections": 200,
+      "reservedParticipants": 200,
+      "ingressBytes": 53295672,
+      "egressBytes": 816918374,
+      "receivedMessages": 145708,
+      "sentMessages": 154272,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 25,
+      "heapAllocBytes": 9401192,
+      "gcCycles": 260,
+      "goroutines": 407,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "cleanup": {
+      "goCpuReady": true,
+      "systemBytes": 37013768,
+      "goBusyFractionEstimate": 0.09541403330098774,
+      "nodeId": "local",
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "ingressBytes": 53297072,
+      "egressBytes": 817029172,
+      "receivedMessages": 145908,
+      "sentMessages": 155953,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 0,
+      "heapAllocBytes": 2145824,
+      "gcCycles": 261,
+      "goroutines": 7,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "metricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "metricScope": "Every error counter must stay unchanged across setup, warmup, measurement, and cleanup; no write errors are excluded",
+    "setupAndWarmupMetricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "postMeasurementMetricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "lifecycleMetricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "phaseMetricDeltas": [
+      {
+        "from": "baseline",
+        "to": "measurement-start",
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        }
+      },
+      {
+        "from": "measurement-start",
+        "to": "measurement-end",
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        }
+      },
+      {
+        "from": "measurement-end",
+        "to": "cleanup",
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        }
+      }
+    ],
+    "provenance": {
+      "serverPID": 82571,
+      "serverCommand": [
+        "out/shutdown-retest-20261024/wss-relay",
+        "--listen",
+        "127.0.0.1:19443",
+        "--management-listen",
+        "127.0.0.1:19092",
+        "--operator-token-file",
+        ".cache/live-load-20261023/operator.token",
+        "--tls-cert",
+        ".cache/live-load-20261023/tls/cert.pem",
+        "--tls-key",
+        ".cache/live-load-20261023/tls/key.pem",
+        "--public-url",
+        "wss://localhost:19443/v2/relay",
+        "--allowed-origin",
+        "localhost:5173"
+      ],
+      "binarySha256": {
+        "wss-relay": "a1838a7d56a5f9e2ba9e0955a076c83a430e227613de963140c157c91e8e6ce7",
+        "relay-load": "3866279b2380c315063aaa41d1fd97f3ab6120243e6a9fdd77400367dbde7db4"
+      },
+      "testCASha256": "11df9ab9c10600087eb0cb864df93d2ca794f14e11c85b6f8ac4a57484c56d49"
+    },
+    "continuationNote": null,
+    "protobufByteDelta": {
+      "ingressBytes": 41865634,
+      "egressBytes": 629728937
+    },
+    "receivedStatePayloadBytes": 603755257,
+    "ingressBytesPerSecond": 1380661.2697477918,
+    "leftAcknowledgements": 200,
+    "normalClosures": 200,
+    "shutdownFailures": 0,
+    "shutdownForcedClosures": 0,
+    "shutdownDurationMs": 12.7235
+  },
+  {
+    "participants": 200,
+    "roomSize": 16,
+    "publishHz": 10,
+    "statePayloadBytes": 1127,
+    "measurementSeconds": 30,
+    "slowReadMs": 0,
+    "connected": 200,
+    "receivedStates": 887891,
+    "p95Ms": 47.261,
+    "p99Ms": 50.197,
+    "egressBytesPerSecond": 33921469.2502801,
+    "peakRssKiB": 40800,
+    "peakCpuPercent": 55.5,
+    "failures": 0,
+    "name": "shutdown-final-c200-n16-f10-b1127-s30-slow0",
+    "passed": true,
+    "exitCode": 0,
+    "shutdownMetricsPresent": true,
+    "legacyShutdownReport": false,
+    "shutdownGateApplied": true,
+    "shutdownPassed": true,
+    "subprocessTiming": {
+      "startedUnixNs": 1792806731732855000,
+      "finishedUnixNs": 1792806765530812000,
+      "elapsedWallNs": 33797957000,
+      "elapsedMonotonicNs": 33798042167,
+      "wallMinusMonotonicNs": -85167
+    },
+    "latencyGateApplied": true,
+    "latencyWithinNormalGate": true,
+    "nodeLimits": {
+      "maxRooms": 512,
+      "maxParticipants": 200
+    },
+    "traffic": {
+      "nodeIngressBytesPerSecond": 8388608,
+      "nodeEgressBytesPerSecond": 67108864,
+      "roomIngressBytesPerSecond": 524288,
+      "roomEgressBytesPerSecond": 4194304
+    },
+    "baseline": {
+      "goCpuReady": false,
+      "systemBytes": 37013768,
+      "goBusyFractionEstimate": 0,
+      "nodeId": "local",
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "ingressBytes": 53297072,
+      "egressBytes": 817029172,
+      "receivedMessages": 145908,
+      "sentMessages": 155953,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 0,
+      "heapAllocBytes": 2161752,
+      "gcCycles": 261,
+      "goroutines": 7,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "before": {
+      "goCpuReady": true,
+      "systemBytes": 37013768,
+      "goBusyFractionEstimate": 0.04575692977311052,
+      "nodeId": "local",
+      "rooms": 13,
+      "connections": 200,
+      "reservedParticipants": 200,
+      "ingressBytes": 57673615,
+      "egressBytes": 881513177,
+      "receivedMessages": 149947,
+      "sentMessages": 161663,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 0,
+      "heapAllocBytes": 7178696,
+      "gcCycles": 288,
+      "goroutines": 407,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "after": {
+      "goCpuReady": false,
+      "systemBytes": 41208072,
+      "goBusyFractionEstimate": 0,
+      "nodeId": "local",
+      "rooms": 13,
+      "connections": 200,
+      "reservedParticipants": 200,
+      "ingressBytes": 126570472,
+      "egressBytes": 1908940202,
+      "receivedMessages": 210508,
+      "sentMessages": 227013,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 0,
+      "heapAllocBytes": 7532320,
+      "gcCycles": 546,
+      "goroutines": 407,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "cleanup": {
+      "goCpuReady": false,
+      "systemBytes": 41208072,
+      "goBusyFractionEstimate": 0,
+      "nodeId": "local",
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "ingressBytes": 126571872,
+      "egressBytes": 1908972390,
+      "receivedMessages": 210708,
+      "sentMessages": 228681,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 0,
+      "heapAllocBytes": 10539040,
+      "gcCycles": 546,
+      "goroutines": 7,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "metricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "metricScope": "Every error counter must stay unchanged across setup, warmup, measurement, and cleanup; no write errors are excluded",
+    "setupAndWarmupMetricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "postMeasurementMetricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "lifecycleMetricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "phaseMetricDeltas": [
+      {
+        "from": "baseline",
+        "to": "measurement-start",
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        }
+      },
+      {
+        "from": "measurement-start",
+        "to": "measurement-end",
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        }
+      },
+      {
+        "from": "measurement-end",
+        "to": "cleanup",
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        }
+      }
+    ],
+    "provenance": {
+      "serverPID": 82571,
+      "serverCommand": [
+        "out/shutdown-retest-20261024/wss-relay",
+        "--listen",
+        "127.0.0.1:19443",
+        "--management-listen",
+        "127.0.0.1:19092",
+        "--operator-token-file",
+        ".cache/live-load-20261023/operator.token",
+        "--tls-cert",
+        ".cache/live-load-20261023/tls/cert.pem",
+        "--tls-key",
+        ".cache/live-load-20261023/tls/key.pem",
+        "--public-url",
+        "wss://localhost:19443/v2/relay",
+        "--allowed-origin",
+        "localhost:5173"
+      ],
+      "binarySha256": {
+        "wss-relay": "a1838a7d56a5f9e2ba9e0955a076c83a430e227613de963140c157c91e8e6ce7",
+        "relay-load": "3866279b2380c315063aaa41d1fd97f3ab6120243e6a9fdd77400367dbde7db4"
+      },
+      "testCASha256": "11df9ab9c10600087eb0cb864df93d2ca794f14e11c85b6f8ac4a57484c56d49"
+    },
+    "continuationNote": null,
+    "protobufByteDelta": {
+      "ingressBytes": 68896857,
+      "egressBytes": 1027427025
+    },
+    "receivedStatePayloadBytes": 1000653157,
+    "ingressBytesPerSecond": 2274694.51289394,
+    "leftAcknowledgements": 200,
+    "normalClosures": 200,
+    "shutdownFailures": 0,
+    "shutdownForcedClosures": 0,
+    "shutdownDurationMs": 18.766166
+  },
+  {
+    "participants": 100,
+    "roomSize": 8,
+    "publishHz": 10,
+    "statePayloadBytes": 679,
+    "measurementSeconds": 15,
+    "slowReadMs": 500,
+    "connected": 100,
+    "receivedStates": 91141,
+    "p95Ms": 48.185,
+    "p99Ms": 50.595,
+    "egressBytesPerSecond": 4810713.017237267,
+    "peakRssKiB": 40976,
+    "peakCpuPercent": 28.3,
+    "failures": 0,
+    "name": "shutdown-final-c100-n8-f10-b679-s15-slow500",
+    "passed": true,
+    "exitCode": 0,
+    "shutdownMetricsPresent": true,
+    "legacyShutdownReport": false,
+    "shutdownGateApplied": true,
+    "shutdownPassed": true,
+    "subprocessTiming": {
+      "startedUnixNs": 1792806766791029000,
+      "finishedUnixNs": 1792806784843698000,
+      "elapsedWallNs": 18052669000,
+      "elapsedMonotonicNs": 18052711000,
+      "wallMinusMonotonicNs": -42000
+    },
+    "latencyGateApplied": true,
+    "latencyWithinNormalGate": true,
+    "nodeLimits": {
+      "maxRooms": 512,
+      "maxParticipants": 200
+    },
+    "traffic": {
+      "nodeIngressBytesPerSecond": 8388608,
+      "nodeEgressBytesPerSecond": 67108864,
+      "roomIngressBytesPerSecond": 524288,
+      "roomEgressBytesPerSecond": 4194304
+    },
+    "baseline": {
+      "goCpuReady": false,
+      "systemBytes": 41208072,
+      "goBusyFractionEstimate": 0,
+      "nodeId": "local",
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "ingressBytes": 126571872,
+      "egressBytes": 1908972390,
+      "receivedMessages": 210708,
+      "sentMessages": 228681,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 0,
+      "heapAllocBytes": 10545224,
+      "gcCycles": 546,
+      "goroutines": 7,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "before": {
+      "goCpuReady": true,
+      "systemBytes": 41208072,
+      "goBusyFractionEstimate": 0.01987915464948342,
+      "nodeId": "local",
+      "rooms": 13,
+      "connections": 100,
+      "reservedParticipants": 100,
+      "ingressBytes": 127890906,
+      "egressBytes": 1918178717,
+      "receivedMessages": 212714,
+      "sentMessages": 231074,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 0,
+      "heapAllocBytes": 5653080,
+      "gcCycles": 556,
+      "goroutines": 207,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "after": {
+      "goCpuReady": false,
+      "systemBytes": 41208072,
+      "goBusyFractionEstimate": 0,
+      "nodeId": "local",
+      "rooms": 13,
+      "connections": 100,
+      "reservedParticipants": 100,
+      "ingressBytes": 138432972,
+      "egressBytes": 1991410736,
+      "receivedMessages": 228008,
+      "sentMessages": 246966,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 26,
+      "heapAllocBytes": 5593992,
+      "gcCycles": 601,
+      "goroutines": 207,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "cleanup": {
+      "goCpuReady": false,
+      "systemBytes": 41208072,
+      "goBusyFractionEstimate": 0,
+      "nodeId": "local",
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "ingressBytes": 138433672,
+      "egressBytes": 1991492231,
+      "receivedMessages": 228108,
+      "sentMessages": 247424,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 0,
+      "heapAllocBytes": 6644360,
+      "gcCycles": 601,
+      "goroutines": 7,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "metricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "metricScope": "Every error counter must stay unchanged across setup, warmup, measurement, and cleanup; no write errors are excluded",
+    "setupAndWarmupMetricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "postMeasurementMetricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "lifecycleMetricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "phaseMetricDeltas": [
+      {
+        "from": "baseline",
+        "to": "measurement-start",
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        }
+      },
+      {
+        "from": "measurement-start",
+        "to": "measurement-end",
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        }
+      },
+      {
+        "from": "measurement-end",
+        "to": "cleanup",
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        }
+      }
+    ],
+    "provenance": {
+      "serverPID": 82571,
+      "serverCommand": [
+        "out/shutdown-retest-20261024/wss-relay",
+        "--listen",
+        "127.0.0.1:19443",
+        "--management-listen",
+        "127.0.0.1:19092",
+        "--operator-token-file",
+        ".cache/live-load-20261023/operator.token",
+        "--tls-cert",
+        ".cache/live-load-20261023/tls/cert.pem",
+        "--tls-key",
+        ".cache/live-load-20261023/tls/key.pem",
+        "--public-url",
+        "wss://localhost:19443/v2/relay",
+        "--allowed-origin",
+        "localhost:5173"
+      ],
+      "binarySha256": {
+        "wss-relay": "a1838a7d56a5f9e2ba9e0955a076c83a430e227613de963140c157c91e8e6ce7",
+        "relay-load": "3866279b2380c315063aaa41d1fd97f3ab6120243e6a9fdd77400367dbde7db4"
+      },
+      "testCASha256": "11df9ab9c10600087eb0cb864df93d2ca794f14e11c85b6f8ac4a57484c56d49"
+    },
+    "continuationNote": null,
+    "protobufByteDelta": {
+      "ingressBytes": 10542066,
+      "egressBytes": 73232019
+    },
+    "receivedStatePayloadBytes": 61884739,
+    "ingressBytesPerSecond": 692522.9541298652,
+    "leftAcknowledgements": 100,
+    "normalClosures": 100,
+    "shutdownFailures": 0,
+    "shutdownForcedClosures": 0,
+    "shutdownDurationMs": 32.386084
+  },
+  {
+    "participants": 200,
+    "roomSize": 16,
+    "publishHz": 10,
+    "statePayloadBytes": 679,
+    "measurementSeconds": 60,
+    "slowReadMs": 0,
+    "connected": 200,
+    "receivedStates": 1777163,
+    "p95Ms": 48.218,
+    "p99Ms": 50.472,
+    "egressBytesPerSecond": 20773413.05487395,
+    "peakRssKiB": 40576,
+    "peakCpuPercent": 49.7,
+    "failures": 0,
+    "name": "shutdown-final-c200-n16-f10-b679-s60-slow0",
+    "passed": true,
+    "exitCode": 0,
+    "shutdownMetricsPresent": true,
+    "legacyShutdownReport": false,
+    "shutdownGateApplied": true,
+    "shutdownPassed": true,
+    "subprocessTiming": {
+      "startedUnixNs": 1792806786104398000,
+      "finishedUnixNs": 1792806850156489000,
+      "elapsedWallNs": 64052091000,
+      "elapsedMonotonicNs": 64052254375,
+      "wallMinusMonotonicNs": -163375
+    },
+    "latencyGateApplied": true,
+    "latencyWithinNormalGate": true,
+    "nodeLimits": {
+      "maxRooms": 512,
+      "maxParticipants": 200
+    },
+    "traffic": {
+      "nodeIngressBytesPerSecond": 8388608,
+      "nodeEgressBytesPerSecond": 67108864,
+      "roomIngressBytesPerSecond": 524288,
+      "roomEgressBytesPerSecond": 4194304
+    },
+    "baseline": {
+      "goCpuReady": false,
+      "systemBytes": 41208072,
+      "goBusyFractionEstimate": 0,
+      "nodeId": "local",
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "ingressBytes": 138433672,
+      "egressBytes": 1991492231,
+      "receivedMessages": 228108,
+      "sentMessages": 247424,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 0,
+      "heapAllocBytes": 6650544,
+      "gcCycles": 601,
+      "goroutines": 7,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "before": {
+      "goCpuReady": true,
+      "systemBytes": 41208072,
+      "goBusyFractionEstimate": 0.035539830818913654,
+      "nodeId": "local",
+      "rooms": 13,
+      "connections": 200,
+      "reservedParticipants": 200,
+      "ingressBytes": 141122037,
+      "egressBytes": 2031003116,
+      "receivedMessages": 232193,
+      "sentMessages": 253186,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 1,
+      "heapAllocBytes": 8541728,
+      "gcCycles": 622,
+      "goroutines": 407,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "after": {
+      "goCpuReady": false,
+      "systemBytes": 41208072,
+      "goBusyFractionEstimate": 0,
+      "nodeId": "local",
+      "rooms": 13,
+      "connections": 200,
+      "reservedParticipants": 200,
+      "ingressBytes": 224669872,
+      "egressBytes": 3288657787,
+      "receivedMessages": 353308,
+      "sentMessages": 385012,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 44,
+      "heapAllocBytes": 9015408,
+      "gcCycles": 926,
+      "goroutines": 407,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "cleanup": {
+      "goCpuReady": false,
+      "systemBytes": 41208072,
+      "goBusyFractionEstimate": 0,
+      "nodeId": "local",
+      "rooms": 0,
+      "connections": 0,
+      "reservedParticipants": 0,
+      "ingressBytes": 224671272,
+      "egressBytes": 3288827282,
+      "receivedMessages": 353508,
+      "sentMessages": 386700,
+      "rateRejected": 0,
+      "queueOverflows": 0,
+      "writeErrors": 0,
+      "queueP95UpperMs": 50,
+      "queueP99UpperMs": 50,
+      "writeP95UpperMs": 1,
+      "writeP99UpperMs": 1,
+      "oldestQueuedMs": 0,
+      "heapAllocBytes": 12140048,
+      "gcCycles": 926,
+      "goroutines": 7,
+      "traffic": {
+        "nodeIngressBytesPerSecond": 8388608,
+        "nodeEgressBytesPerSecond": 67108864,
+        "roomIngressBytesPerSecond": 524288,
+        "roomEgressBytesPerSecond": 4194304
+      }
+    },
+    "metricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "metricScope": "Every error counter must stay unchanged across setup, warmup, measurement, and cleanup; no write errors are excluded",
+    "setupAndWarmupMetricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "postMeasurementMetricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "lifecycleMetricDelta": {
+      "queueOverflows": 0,
+      "rateRejected": 0,
+      "writeErrors": 0
+    },
+    "phaseMetricDeltas": [
+      {
+        "from": "baseline",
+        "to": "measurement-start",
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        }
+      },
+      {
+        "from": "measurement-start",
+        "to": "measurement-end",
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        }
+      },
+      {
+        "from": "measurement-end",
+        "to": "cleanup",
+        "metricDelta": {
+          "queueOverflows": 0,
+          "rateRejected": 0,
+          "writeErrors": 0
+        }
+      }
+    ],
+    "provenance": {
+      "serverPID": 82571,
+      "serverCommand": [
+        "out/shutdown-retest-20261024/wss-relay",
+        "--listen",
+        "127.0.0.1:19443",
+        "--management-listen",
+        "127.0.0.1:19092",
+        "--operator-token-file",
+        ".cache/live-load-20261023/operator.token",
+        "--tls-cert",
+        ".cache/live-load-20261023/tls/cert.pem",
+        "--tls-key",
+        ".cache/live-load-20261023/tls/key.pem",
+        "--public-url",
+        "wss://localhost:19443/v2/relay",
+        "--allowed-origin",
+        "localhost:5173"
+      ],
+      "binarySha256": {
+        "wss-relay": "a1838a7d56a5f9e2ba9e0955a076c83a430e227613de963140c157c91e8e6ce7",
+        "relay-load": "3866279b2380c315063aaa41d1fd97f3ab6120243e6a9fdd77400367dbde7db4"
+      },
+      "testCASha256": "11df9ab9c10600087eb0cb864df93d2ca794f14e11c85b6f8ac4a57484c56d49"
+    },
+    "continuationNote": null,
+    "protobufByteDelta": {
+      "ingressBytes": 83547835,
+      "egressBytes": 1257654671
+    },
+    "receivedStatePayloadBytes": 1206693677,
+    "ingressBytesPerSecond": 1380008.1423905075,
+    "leftAcknowledgements": 200,
+    "normalClosures": 200,
+    "shutdownFailures": 0,
+    "shutdownForcedClosures": 0,
+    "shutdownDurationMs": 13.918625
+  }
+]

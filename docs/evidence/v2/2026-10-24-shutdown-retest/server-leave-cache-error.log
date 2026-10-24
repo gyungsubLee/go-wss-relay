@@ -1,0 +1,4 @@
+# ./internal/relay
+open /Users/igyeongseob/Library/Caches/go-build/f9/f905cbffe2dc617bc87715440ba394dcb0be3b2622d8d3c65e05d2a051e8879f-d: operation not permitted
+FAIL	./internal/relay [setup failed]
+FAIL

@@ -1,0 +1,164 @@
+{
+  "metricWriteErrors": 1,
+  "traceWriteErrors": 1,
+  "countsMatch": true,
+  "classifications": {
+    "old_generation_normal_close_during_reconnect": 1
+  },
+  "strictLifecyclePassed": false,
+  "clientSDKPassed": true,
+  "clientErrorCount": 0,
+  "events": {
+    "sent": 507,
+    "accepted": 507,
+    "received": 7293,
+    "expectedDeliveries": 7293,
+    "pending": 0,
+    "latency": {
+      "observations": 7293,
+      "sampleCount": 7293,
+      "p95Ms": 5.46833400000105,
+      "p99Ms": 16.180541999994603,
+      "maxMs": 21.343166999999085
+    }
+  },
+  "recovered": 200,
+  "phaseMetricDeltas": [
+    {
+      "from": "before-setup",
+      "to": "enter-warmup",
+      "startedAtMs": 27.19833300000002,
+      "finishedAtMs": 13277.667916,
+      "metricDelta": {
+        "queueOverflows": 0,
+        "rateRejected": 0,
+        "writeErrors": 0
+      }
+    },
+    {
+      "from": "enter-warmup",
+      "to": "enter-steady",
+      "startedAtMs": 13277.667916,
+      "finishedAtMs": 16283.14825,
+      "metricDelta": {
+        "queueOverflows": 0,
+        "rateRejected": 0,
+        "writeErrors": 0
+      }
+    },
+    {
+      "from": "enter-steady",
+      "to": "enter-capacity",
+      "startedAtMs": 16283.14825,
+      "finishedAtMs": 46353.664333,
+      "metricDelta": {
+        "queueOverflows": 0,
+        "rateRejected": 0,
+        "writeErrors": 0
+      }
+    },
+    {
+      "from": "enter-capacity",
+      "to": "enter-preReconnectDrain",
+      "startedAtMs": 46353.664333,
+      "finishedAtMs": 47513.582166,
+      "metricDelta": {
+        "queueOverflows": 0,
+        "rateRejected": 0,
+        "writeErrors": 0
+      }
+    },
+    {
+      "from": "enter-preReconnectDrain",
+      "to": "enter-reconnect",
+      "startedAtMs": 47513.582166,
+      "finishedAtMs": 47515.125666,
+      "metricDelta": {
+        "queueOverflows": 0,
+        "rateRejected": 0,
+        "writeErrors": 0
+      }
+    },
+    {
+      "from": "enter-reconnect",
+      "to": "enter-afterReconnect",
+      "startedAtMs": 47515.125666,
+      "finishedAtMs": 48241.314833000004,
+      "metricDelta": {
+        "queueOverflows": 0,
+        "rateRejected": 0,
+        "writeErrors": 1
+      }
+    },
+    {
+      "from": "enter-afterReconnect",
+      "to": "enter-finalDrain",
+      "startedAtMs": 48241.314833000004,
+      "finishedAtMs": 53250.320416,
+      "metricDelta": {
+        "queueOverflows": 0,
+        "rateRejected": 0,
+        "writeErrors": 0
+      }
+    },
+    {
+      "from": "enter-finalDrain",
+      "to": "enter-cleanup",
+      "startedAtMs": 53250.320416,
+      "finishedAtMs": 53251.315541,
+      "metricDelta": {
+        "queueOverflows": 0,
+        "rateRejected": 0,
+        "writeErrors": 0
+      }
+    },
+    {
+      "from": "enter-cleanup",
+      "to": "after-cleanup",
+      "startedAtMs": 53251.315541,
+      "finishedAtMs": 54783.801375,
+      "metricDelta": {
+        "queueOverflows": 0,
+        "rateRejected": 0,
+        "writeErrors": 0
+      }
+    }
+  ],
+  "errors": [
+    {
+      "connectionIdentity": [
+        "0x7fb0ea677040",
+        "ri-MMagAVjeRTHQtpmAN7pVKXhA6Y-HE5qasMgi21r0Olk",
+        "p-7DxeJWcq-ZhaqFrH",
+        1
+      ],
+      "classification": "old_generation_normal_close_during_reconnect",
+      "write": {
+        "atNs": 1792807156030548000,
+        "body": "*relayv2.ServerEnvelope_PeerStatusChanged",
+        "closeStatus": -1,
+        "connection": "0x7fb0ea677040",
+        "deadlineElapsed": false,
+        "deadlineNs": 1792807157030540000,
+        "error": "failed to write msg: use of closed network connection",
+        "event": "write_error",
+        "generation": 1,
+        "isCanceled": false,
+        "isDeadline": false,
+        "parentContextError": "<nil>",
+        "participant": "p-7DxeJWcq-ZhaqFrH",
+        "readEnd": {
+          "atNs": 1792807156030539000,
+          "error": "failed to get reader: received close frame: status = StatusNormalClosure and reason = \"reconnect\"",
+          "closeStatus": 1000
+        },
+        "roomInstance": "ri-MMagAVjeRTHQtpmAN7pVKXhA6Y-HE5qasMgi21r0Olk",
+        "sequence": 427,
+        "startedNs": 1792807156030541000,
+        "terminal": null,
+        "writeContextError": "<nil>"
+      }
+    }
+  ],
+  "originalFinalSDK10Limit": "Original final5errors have phase counters only; this per-event trace proves the reproduced normal-close mechanism, not individual retrospective attribution of those5."
+}

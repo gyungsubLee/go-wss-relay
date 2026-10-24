@@ -285,6 +285,11 @@ func (c *client) readLoop() {
 			}
 			return
 		}
+		if envelope.GetLeave() != nil {
+			// Let the writer acknowledge Leave before the reader cancels the connection.
+			<-c.ctx.Done()
+			return
+		}
 	}
 }
 

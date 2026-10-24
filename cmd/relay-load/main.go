@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"net"
 	"net/http"
 	"os"
 	"os/exec"
@@ -52,6 +53,11 @@ type runner struct {
 	peakGC             uint32
 	errorsMu           sync.Mutex
 	errorMessages      []string
+	leftAcknowledged   atomic.Uint64
+	normalClosures     atomic.Uint64
+	shutdownFailures   atomic.Uint64
+	forcedClosures     atomic.Uint64
+	shutdownDuration   time.Duration
 }
 
 type report struct {
@@ -78,6 +84,12 @@ type report struct {
 	Errors                []string    `json:"errors,omitempty"`
 	NodeBefore            relay.Stats `json:"nodeBefore"`
 	NodeAfter             relay.Stats `json:"nodeAfter"`
+
+	LeftAcknowledgements   uint64  `json:"leftAcknowledgements"`
+	NormalClosures         uint64  `json:"normalClosures"`
+	ShutdownFailures       uint64  `json:"shutdownFailures"`
+	ShutdownForcedClosures uint64  `json:"shutdownForcedClosures"`
+	ShutdownDurationMs     float64 `json:"shutdownDurationMs"`
 }
 
 func main() {
@@ -129,17 +141,51 @@ func run(c config) error {
 	var begin atomic.Int64
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+	stop := make(chan struct{})
 	var work sync.WaitGroup
+	readersDone := make([]chan struct{}, len(r.connections))
 	for index, conn := range r.connections {
-		work.Add(2)
-		go func() { defer work.Done(); r.publish(ctx, conn) }()
-		go func() { defer work.Done(); r.read(ctx, conn, c.slowMs > 0 && index%c.roomSize == 0, &begin) }()
+		readDone := make(chan struct{})
+		readersDone[index] = readDone
+		var leaveSequence atomic.Uint32
+		work.Go(func() { r.publish(ctx, stop, conn, &leaveSequence) })
+		work.Go(func() {
+			defer close(readDone)
+			r.read(ctx, stop, conn, c.slowMs > 0 && index%c.roomSize == 0, &begin, &leaveSequence)
+		})
 	}
+	shutdown := sync.OnceFunc(func() {
+		begin.Store(0)
+		started := time.Now()
+		// Canceling a coder/websocket Read closes the transport without a close handshake.
+		close(stop)
+		done := make(chan struct{})
+		go func() { work.Wait(); close(done) }()
+		timer := time.NewTimer(5 * time.Second)
+		defer timer.Stop()
+		select {
+		case <-done:
+		case <-timer.C:
+			r.shutdownFailure(errors.New("graceful load shutdown timed out"))
+			for index, conn := range r.connections {
+				select {
+				case <-readersDone[index]:
+				default:
+					r.forcedClosures.Add(1)
+					if err := conn.CloseNow(); err != nil && !errors.Is(err, net.ErrClosed) {
+						r.shutdownFailure(err)
+					}
+				}
+			}
+		}
+		cancel()
+		<-done
+		r.shutdownDuration = time.Since(started)
+	})
+	defer shutdown()
 	time.Sleep(time.Duration(c.warmup) * time.Second)
 	before, err = r.stats()
 	if err != nil {
-		cancel()
-		work.Wait()
 		return err
 	}
 	begin.Store(time.Now().UnixNano())
@@ -158,12 +204,9 @@ func run(c config) error {
 	elapsed := time.Since(started).Seconds()
 	after, err := r.stats()
 	if err != nil {
-		cancel()
-		work.Wait()
 		return err
 	}
-	cancel()
-	work.Wait()
+	shutdown()
 	r.samplesMu.Lock()
 	samples := slices.Clone(r.samples)
 	r.samplesMu.Unlock()
@@ -174,10 +217,36 @@ func run(c config) error {
 		}
 		return float64(samples[min(len(samples)-1, int(math.Ceil(float64(len(samples))*q))-1)]) / 1e6
 	}
-	result := report{RecordedAt: time.Now().UTC(), Runtime: runtime.Version() + " " + runtime.GOOS + "/" + runtime.GOARCH + fmt.Sprintf(" CPUs=%d; same-host loopback TLS; 1/16 rolling latency samples", runtime.NumCPU()),
-		Participants: c.participants, RoomSize: c.roomSize, PublishHz: c.hz, StatePayloadBytes: c.payload, MeasurementSeconds: c.seconds, SlowReadMs: c.slowMs, Connected: len(r.connections),
-		ReceivedStates: r.received.Load(), RollingSampleCount: len(samples), P95Ms: percentile(.95), P99Ms: percentile(.99), IngressBytesPerSecond: float64(after.IngressBytes-before.IngressBytes) / elapsed, EgressBytesPerSecond: float64(after.EgressBytes-before.EgressBytes) / elapsed,
-		PeakRSSKiB: r.rssKiB, PeakCPUPercent: r.cpuPercent, PeakHeapBytes: r.peakHeap, GCCycles: r.peakGC - before.GCCycles, Failures: r.failures.Load(), Errors: r.errorMessages, NodeBefore: before, NodeAfter: after}
+	result := report{
+		RecordedAt:             time.Now().UTC(),
+		Runtime:                runtime.Version() + " " + runtime.GOOS + "/" + runtime.GOARCH + fmt.Sprintf(" CPUs=%d; same-host loopback TLS; 1/16 rolling latency samples", runtime.NumCPU()),
+		Participants:           c.participants,
+		RoomSize:               c.roomSize,
+		PublishHz:              c.hz,
+		StatePayloadBytes:      c.payload,
+		MeasurementSeconds:     c.seconds,
+		SlowReadMs:             c.slowMs,
+		Connected:              len(r.connections),
+		ReceivedStates:         r.received.Load(),
+		RollingSampleCount:     len(samples),
+		P95Ms:                  percentile(.95),
+		P99Ms:                  percentile(.99),
+		IngressBytesPerSecond:  float64(after.IngressBytes-before.IngressBytes) / elapsed,
+		EgressBytesPerSecond:   float64(after.EgressBytes-before.EgressBytes) / elapsed,
+		PeakRSSKiB:             r.rssKiB,
+		PeakCPUPercent:         r.cpuPercent,
+		PeakHeapBytes:          r.peakHeap,
+		GCCycles:               r.peakGC - before.GCCycles,
+		Failures:               r.failures.Load(),
+		Errors:                 r.errorMessages,
+		NodeBefore:             before,
+		NodeAfter:              after,
+		LeftAcknowledgements:   r.leftAcknowledged.Load(),
+		NormalClosures:         r.normalClosures.Load(),
+		ShutdownFailures:       r.shutdownFailures.Load(),
+		ShutdownForcedClosures: r.forcedClosures.Load(),
+		ShutdownDurationMs:     float64(r.shutdownDuration) / float64(time.Millisecond),
+	}
 	data, err := json.MarshalIndent(result, "", "  ")
 	if err != nil {
 		return err
@@ -288,20 +357,34 @@ func (r *runner) provision() error {
 	}
 	return nil
 }
-func (r *runner) publish(ctx context.Context, conn *websocket.Conn) {
+func (r *runner) publish(ctx context.Context, stop <-chan struct{}, conn *websocket.Conn, leaveSequence *atomic.Uint32) {
 	ticker := time.NewTicker(time.Second / time.Duration(r.config.hz))
 	defer ticker.Stop()
 	payload := make([]byte, r.config.payload)
 	var sequence uint32
 	for {
+		leaving := false
 		select {
 		case <-ctx.Done():
 			return
+		case <-stop:
+			leaving = true
 		case <-ticker.C:
+			select {
+			case <-stop:
+				leaving = true
+			default:
+			}
 		}
-		binary.LittleEndian.PutUint64(payload, uint64(time.Now().UnixNano()))
 		sequence++
-		envelope := &wire.ClientEnvelope{ProtocolRevision: 2, Sequence: sequence, Body: &wire.ClientEnvelope_StateUpdate{StateUpdate: &wire.StateUpdate{Payload: payload}}}
+		envelope := &wire.ClientEnvelope{ProtocolRevision: 2, Sequence: sequence}
+		if leaving {
+			leaveSequence.Store(sequence)
+			envelope.Body = &wire.ClientEnvelope_Leave{Leave: &wire.Leave{}}
+		} else {
+			binary.LittleEndian.PutUint64(payload, uint64(time.Now().UnixNano()))
+			envelope.Body = &wire.ClientEnvelope_StateUpdate{StateUpdate: &wire.StateUpdate{Payload: payload}}
+		}
 		data, err := proto.Marshal(envelope)
 		if err == nil {
 			writeCtx, cancel := context.WithTimeout(ctx, time.Second)
@@ -309,18 +392,32 @@ func (r *runner) publish(ctx context.Context, conn *websocket.Conn) {
 			cancel()
 		}
 		if err != nil {
-			if ctx.Err() == nil {
+			select {
+			case <-stop:
+				r.shutdownFailure(fmt.Errorf("load publication or Leave: %w", err))
+			default:
 				r.failure(err)
 			}
 			return
 		}
+		if leaving {
+			return
+		}
 	}
 }
-func (r *runner) read(ctx context.Context, conn *websocket.Conn, slow bool, begin *atomic.Int64) {
+func (r *runner) read(ctx context.Context, stop <-chan struct{}, conn *websocket.Conn, slow bool, begin *atomic.Int64, leaveSequence *atomic.Uint32) {
+	leftAcknowledged := false
 	for {
 		_, data, err := conn.Read(ctx)
 		if err != nil {
-			if ctx.Err() == nil {
+			select {
+			case <-stop:
+				if leftAcknowledged && websocket.CloseStatus(err) == websocket.StatusNormalClosure {
+					r.normalClosures.Add(1)
+				} else {
+					r.shutdownFailure(fmt.Errorf("load closed with Left=%t: %w", leftAcknowledged, err))
+				}
+			default:
 				r.failure(err)
 			}
 			return
@@ -330,13 +427,23 @@ func (r *runner) read(ctx context.Context, conn *websocket.Conn, slow bool, begi
 			r.failure(err)
 			return
 		}
+		if left := envelope.GetLeft(); left != nil {
+			expected := leaveSequence.Load()
+			if leftAcknowledged || expected == 0 || left.RequestSequence != expected {
+				r.shutdownFailure(fmt.Errorf("unexpected Left acknowledgement: got=%d want=%d", left.RequestSequence, expected))
+			} else {
+				leftAcknowledged = true
+				r.leftAcknowledged.Add(1)
+			}
+		}
 		if problem := envelope.GetError(); problem != nil {
 			r.failure(fmt.Errorf("server error %s", problem.Code))
 			if problem.Fatal {
 				return
 			}
 		}
-		if batch := envelope.GetStateBatch(); batch != nil && begin.Load() != 0 {
+		measurementStart := begin.Load()
+		if batch := envelope.GetStateBatch(); batch != nil && measurementStart != 0 {
 			now := time.Now().UnixNano()
 			for _, state := range batch.States {
 				if len(state.Payload) < 8 {
@@ -344,7 +451,7 @@ func (r *runner) read(ctx context.Context, conn *websocket.Conn, slow bool, begi
 					continue
 				}
 				sent := int64(binary.LittleEndian.Uint64(state.Payload))
-				if sent < begin.Load() {
+				if sent < measurementStart {
 					continue
 				}
 				r.received.Add(1)
@@ -369,11 +476,18 @@ func (r *runner) read(ctx context.Context, conn *websocket.Conn, slow bool, begi
 			select {
 			case <-ctx.Done():
 				timer.Stop()
-				return
+				slow = false
+			case <-stop:
+				timer.Stop()
+				slow = false
 			case <-timer.C:
 			}
 		}
 	}
+}
+func (r *runner) shutdownFailure(err error) {
+	r.shutdownFailures.Add(1)
+	r.failure(err)
 }
 func (r *runner) failure(err error) {
 	r.failures.Add(1)
